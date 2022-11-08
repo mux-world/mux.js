@@ -6,9 +6,11 @@
 npm install --save @mux-network/mux.js
 ```
 
-## Quick start
+## Tutorial
 
-1. MUX supports Arbitrum, Avalanche, BSC and Fantom network. The following code connects to Arbitrum.
+MUX currently supports Arbitrum, Avalanche, BSC and Fantom networks. The following code all uses Arbitrum in the examples.
+
+**1. Connects to Arbitrum**
 
 ```js
 import { JsonRpcProvider } from '@ethersproject/providers'
@@ -16,7 +18,7 @@ import { JsonRpcProvider } from '@ethersproject/providers'
 const provider = new JsonRpcProvider('https://arb1.arbitrum.io/rpc')
 ```
 
-2. List asset IDs and symbols.
+**2. List asset IDs and symbols**
 
 ```js
 import { getReaderContract, getChainStorage } from '@mux-network/mux.js'
@@ -39,11 +41,9 @@ assetId: 4 symbol: BTC tokenAddress: 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f
 ...
 ```
 
-3. Calculate a subAccountId
+**3. Calculate a subAccountId**
 
-A sub-account is a segregated account nested under an ETH address. Each { address, collateral asset, underlying asset, long/short } pair is a sub-account.
-
-The following example calculate a sub-account for long ETH, with USDC as collateral.
+A sub-account is a segregated account nested under an ETH address; each { address, collateral asset, underlying asset, long/short } pair is a sub-account. The following example calculates a sub-account for long ETH, with USDC as collateral.
 
 ```js
 import { encodeSubAccountId } from '@mux-network/mux.js'
@@ -53,7 +53,7 @@ const subAccountId = encodeSubAccountId(traderAddress, 0 /* USDC */, 3 /* ETH */
 console.log(subAccountId)
 ```
 
-4. Get the trader's position size.
+**4. Get the trader's position size**
 
 ```js
 import { getSubAccounts } from '@mux-network/mux.js'
@@ -63,7 +63,9 @@ const subAccount = subAccounts[subAccountId]
 console.log(`position: ${subAccount.size.toFixed()}`)
 ```
 
-5. Margin balance requires asset price (ex: ETH price). Reading ETH price is not contained in mux.js. You can read assets price and info from [Broker API](https://app.mux.network/api/liquidityAsset).
+**5. Calculate margin balance**
+
+Calculating margin balance requires asset price (ex: ETH price). Reading ETH price is not contained in mux.js. However, you can read assets price and info from the  [Broker API](https://app.mux.network/api/liquidityAsset).
 
 ```js
 import { computeSubAccount } from '@mux-network/mux.js'
@@ -79,7 +81,9 @@ const computed = computeSubAccount(
 console.log(`marginBalance(usd): ${computed.computed.marginBalanceUsd}`)
 ```
 
-6. Open a position (place a position order). In this example we deposit 10 USDC and long 0.01 ETH using market price. Do not forget to approve USDC to OrderBook before (not included in this example). The OrderBook addresses are different between different chains. Check CHAIN_ID_TO_ORDER_BOOK_ADDRESS in mux.js for the address.
+**6. Open a position (place a position order)**
+
+In this example, we deposit 10 USDC and long 0.01 ETH using the market price. Do not forget to approve USDC to OrderBook before opening the position (not included in this example). The OrderBook addresses are different between different chains. Please check CHAIN_ID_TO_ORDER_BOOK_ADDRESS in mux.js for the addresses.
 
 ```js
 import { CHAIN_ID_TO_ORDER_BOOK_ADDRESS, OrderBook__factory, PositionOrderFlags } from '@mux-network/mux.js'
