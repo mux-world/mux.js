@@ -226,8 +226,7 @@ export enum OrderType {
   Position,
   Liquidity,
   Withdrawal,
-  Rebalance,
-  FlashTakePosition
+  Rebalance
 }
 
 export enum PositionOrderFlags {
@@ -243,26 +242,4 @@ export const PreMinedTokenTotalSupply = '1000000000000000000'
 export enum SpreadType {
   Ask,
   Bid
-}
-
-export const FlashTakeEIP712DomainType = [
-  { name: 'name', type: 'string' }, // "MUX Protocol"
-  { name: 'version', type: 'string' }, // "v1"
-  { name: 'chainId', type: 'uint256' },
-  { name: 'verifyingContract', type: 'address' }
-]
-
-export const FlashTakeEIP712Type = {
-  FlashTake: [
-    { name: 'subAccountId', type: 'bytes32' },
-    { name: 'collateral', type: 'uint96' }, // erc20.decimals
-    { name: 'size', type: 'uint96' }, // 1e18
-    { name: 'gasFee', type: 'uint96' }, // 1e18
-    { name: 'referralCode', type: 'bytes32' },
-    { name: 'orderType', type: 'uint8' }, // should be FlashTakePosition
-    { name: 'flags', type: 'uint8' }, // see LibOrder.POSITION_*
-    { name: 'profitTokenId', type: 'uint8' },
-    { name: 'placeOrderTime', type: 'uint32' },
-    { name: 'salt', type: 'uint32' }
-  ]
 }

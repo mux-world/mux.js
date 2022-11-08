@@ -1,13 +1,12 @@
 import BigNumber from 'bignumber.js'
 import { BytesLike, ethers, CallOverrides } from 'ethers'
-import { arrayify, getAddress, Hexable, hexlify } from 'ethers/lib/utils'
+import { getAddress, Hexable } from 'ethers/lib/utils'
 import {
   Asset,
   BugError,
   ChainStorage,
   DecodedSubAccountId,
   Dex,
-  FlashTakeEIP712,
   InvalidArgumentError,
   LiquidityPool,
   SignerOrProvider,
@@ -259,71 +258,4 @@ export function and64(v1: number, v2: number): number {
 
 export function test64(v1: number, mask: number): boolean {
   return and64(v1, mask) !== 0
-}
-
-function _hashString(x: string): Buffer {
-  return _hash(ethers.utils.toUtf8Bytes(x))
-}
-
-function _hash(x: BytesLike): Buffer {
-  return Buffer.from(ethers.utils.keccak256(x).slice(2), 'hex')
-}
-
-export function getFlashTakeMessageHash(chainId: number, orderBookAddress: string, order: FlashTakeEIP712): string {
-  if (arrayify(order.subAccountId).length !== 32) {
-    throw new Error('invalid subAccountId. should be bytes32')
-  }
-  if (arrayify(order.referralCode).length !== 32) {
-    throw new Error('invalid referralCode. should be bytes32')
-  }
-  const domain = _hash(
-    ethers.utils.defaultAbiCoder.encode(
-      ['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'],
-      [
-        _hashString('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'),
-        _hashString('MUX Protocol'),
-        _hashString('v1'),
-        chainId,
-        orderBookAddress
-      ]
-    )
-  )
-  const typedMessage = _hash(
-    ethers.utils.defaultAbiCoder.encode(
-      ['bytes32', 'bytes32', 'uint96', 'uint96', 'uint96', 'bytes32', 'uint8', 'uint8', 'uint8', 'uint32', 'uint32'],
-      [
-        _hashString(
-          'FlashTake(bytes32 subAccountId,uint96 collateral,uint96 size,uint96 gasFee,bytes32 referralCode,uint8 orderType,uint8 flags,uint8 profitTokenId,uint32 placeOrderTime,uint32 salt)'
-        ),
-        order.subAccountId,
-        order.collateral,
-        order.size,
-        order.gasFee,
-        order.referralCode,
-        order.orderType,
-        order.flags,
-        order.profitTokenId,
-        order.placeOrderTime,
-        order.salt
-      ]
-    )
-  )
-  const eip712MessageHash = _hash(Buffer.concat([Buffer.from('1901', 'hex'), domain, typedMessage]))
-  return hexlify(eip712MessageHash)
-}
-
-// return {r}{s}{v + 4} to indicate that we are using eth_sign
-export function encodeFlashTakeEthSignSignature(signature: string): string {
-  const s = arrayify(signature)
-  if (s.length !== 65) {
-    throw new Error('only {r}{s}{v} is supported')
-  }
-  if (s[64] === 0 || s[64] === 1) {
-    s[64] += 27 + 4
-  } else if (s[64] === 27 || s[64] === 28) {
-    s[64] += 4
-  } else {
-    throw new Error(`invalid {r}{s}{v = ${s[64]}}`)
-  }
-  return hexlify(s)
 }

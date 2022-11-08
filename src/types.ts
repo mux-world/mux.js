@@ -198,16 +198,3 @@ export interface WithdrawProfitResult {
   profitAssetTransferred: BigNumber
   muxTokenTransferred: BigNumber
 }
-
-export interface FlashTakeEIP712 {
-  subAccountId: string
-  collateral: string // collateral.decimals
-  size: string // 1e18
-  gasFee: string // 1e18
-  referralCode: string
-  orderType: number // OrderType.FlashTakeOrder
-  flags: number // PositionOrderFlags.*
-  profitTokenId: number
-  placeOrderTime: number
-  salt: number
-}

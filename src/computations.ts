@@ -264,7 +264,7 @@ export function computeOpenPosition(
   subAccount: SubAccount,
   prices: PriceDict,
   amount: BigNumber,
-  brokerGasFee: BigNumber // in collateral. you can pass _0 when calling placePositionOrder. pass gasFee when calling flashTake
+  brokerGasFee: BigNumber // in collateral. you can pass _0 when calling placePositionOrder
 ): OpenPositionResult {
   // context
   subAccount = cloneSubAccount(subAccount)
@@ -326,7 +326,7 @@ export function computeClosePosition(
   profitAssetId: number,
   prices: PriceDict,
   amount: BigNumber,
-  brokerGasFee: BigNumber // in collateral. you can pass _0 when calling placePositionOrder. pass gasFee when calling flashTake
+  brokerGasFee: BigNumber // in collateral. you can pass _0 when calling placePositionOrder
 ): ClosePositionResult {
   // context
   subAccount = cloneSubAccount(subAccount)

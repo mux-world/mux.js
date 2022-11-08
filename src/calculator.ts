@@ -13,7 +13,7 @@ export function calculateOpenPositionWithCollateral(
   prices: PriceDict,
   leverage: BigNumber,
   collateralAmount: BigNumber,
-  brokerGasFee: BigNumber // in collateral. you can pass _0 when calling placePositionOrder. pass gasFee when calling flashTake
+  brokerGasFee: BigNumber // in collateral. you can pass _0 when calling placePositionOrder
 ): BigNumber {
   const { collateralId, assetId, isLong } = decodeSubAccountId(subAccountId)
   if (collateralId >= assets.length) {
@@ -56,7 +56,7 @@ export function calculateClosePositionCollateralAmount(
   prices: PriceDict,
   profitAssetId: number,
   deltaPosition: BigNumber,
-  brokerGasFee: BigNumber // in collateral. you can pass _0 when calling placePositionOrder. pass gasFee when calling flashTake
+  brokerGasFee: BigNumber // in collateral. you can pass _0 when calling placePositionOrder
 ): BigNumber {
   const { collateralId } = decodeSubAccountId(subAccountId)
   if (collateralId >= assets.length) {
