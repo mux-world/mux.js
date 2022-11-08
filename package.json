@@ -1,0 +1,37 @@
+{
+  "name": "@mux-network/mux.js",
+  "version": "1.1.16",
+  "description": "Mux Protocol JavaScript API",
+  "homepage": "",
+  "author": "",
+  "contributors": [],
+  "keywords": [],
+  "main": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "engines": {
+    "node": "*"
+  },
+  "license": "GPL",
+  "devDependencies": {
+    "@types/jest": "^24.9.1",
+    "@types/node": "^14.18.12",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.3.0",
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.0.2",
+    "ethers": "^5.5.4"
+  },
+  "prepare": "npm run build",
+  "scripts": {
+    "test": "jest --runInBand",
+    "coverage": "jest --coverage",
+    "build": "tsc"
+  },
+  "files": [
+    "dist/**/*"
+  ]
+}
