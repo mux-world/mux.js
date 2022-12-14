@@ -10,7 +10,7 @@ export type SignerOrProvider = ethers.Signer | Provider
 export class InvalidArgumentError extends Error {
   public constructor(message: string) {
     super()
-    this.name = message
+    this.message = message
   }
 }
 
@@ -19,11 +19,21 @@ export class InvalidArgumentError extends Error {
  */
 export class InsufficientLiquidityError extends Error {
   public readonly isInsufficientLiquidityError: true = true
+  public readonly type: InsufficientLiquidityType
 
-  public constructor(message: string) {
+  public constructor(type: InsufficientLiquidityType, message: string) {
     super()
-    this.name = message
+    this.type = type
+    this.message = message
   }
+}
+
+export enum InsufficientLiquidityType {
+  MuxRemoveLiquidityExceedsCurrentAsset,
+
+  AggregatorLimitedCredit,
+  AggregatorLimitedMaxPosition,
+  SwapExceedsCurrentAsset
 }
 
 /**
@@ -32,7 +42,7 @@ export class InsufficientLiquidityError extends Error {
 export class BugError extends Error {
   public constructor(message: string) {
     super()
-    this.name = message
+    this.message = message
   }
 }
 
@@ -147,8 +157,6 @@ export interface DecodedSubAccountId {
 
 export interface SubAccountComputed {
   positionValueUsd: BigNumber
-  positionMarginUsd: BigNumber
-  maintenanceMarginUsd: BigNumber
   marginBalanceUsd: BigNumber
   isIMSafe: boolean
   isMMSafe: boolean
@@ -180,7 +188,6 @@ export interface ClosePositionResult {
   afterTrade: SubAccountDetails
   isTradeSafe: boolean
   feeUsd: BigNumber
-  realizedPnlUsd: BigNumber
   profitAssetTransferred: BigNumber
   muxTokenTransferred: BigNumber
 }

@@ -12,7 +12,8 @@ import {
   InsufficientLiquidityError,
   InvalidArgumentError,
   BugError,
-  WithdrawCollateralResult
+  WithdrawCollateralResult,
+  InsufficientLiquidityType
 } from './types'
 import { SpreadType, _0, _1 } from './constants'
 import { decodeSubAccountId } from './data'
@@ -28,9 +29,6 @@ export function computeSubAccount(
 ): SubAccountDetails {
   const { collateralId, assetId, isLong } = decodeSubAccountId(subAccountId)
   const positionValueUsd = assetPrice.times(subAccount.size)
-  const imr = BigNumber.maximum(assets[assetId].initialMarginRate, '0.01') // limit to 100x in the next calculation
-  const positionMarginUsd = positionValueUsd.times(imr)
-  const maintenanceMarginUsd = positionValueUsd.times(assets[assetId].maintenanceMarginRate)
   const fundingFeeUsd = computeFundingFeeUsd(subAccount, assets[assetId], isLong, assetPrice)
   const { pendingPnlUsd, pnlUsd } = computePositionPnlUsd(
     assets[assetId],
@@ -43,13 +41,13 @@ export function computeSubAccount(
   const pnlAfterFundingUsd = pnlUsd.minus(fundingFeeUsd)
   const collateralValue = subAccount.collateral.times(collateralPrice)
   const marginBalanceUsd = collateralValue.plus(pendingPnlAfterFundingUsd)
-  const isIMSafe = marginBalanceUsd.gte(positionMarginUsd)
-  const isMMSafe = marginBalanceUsd.gte(maintenanceMarginUsd)
+  const isIMSafe = marginBalanceUsd.gte(positionValueUsd.times(assets[assetId].initialMarginRate))
+  const isMMSafe = marginBalanceUsd.gte(positionValueUsd.times(assets[assetId].maintenanceMarginRate))
   const isMarginSafe = marginBalanceUsd.gte(_0)
   const leverage = collateralValue.gt(0) ? subAccount.entryPrice.times(subAccount.size).div(collateralValue) : _0
   const effectiveLeverage = marginBalanceUsd.gt(0) ? positionValueUsd.div(marginBalanceUsd) : _0
   let pendingRoe = collateralValue.gt(0) ? pendingPnlAfterFundingUsd.div(collateralValue) : _0
-  const liquidationPrice = estimateLiquidationPrice(
+  const liquidationPrice = _estimateLiquidationPrice(
     assets,
     collateralId,
     assetId,
@@ -59,15 +57,16 @@ export function computeSubAccount(
     fundingFeeUsd
   )
   // withdraw collateral
+  const safeImr = BigNumber.maximum(assets[assetId].initialMarginRate, '0.01') // limit to 100x in the next calculation
   let withdrawableCollateral = BigNumber.min(
-    collateralValue.plus(pnlAfterFundingUsd).minus(positionMarginUsd), // IM
-    collateralValue.minus(fundingFeeUsd).minus(subAccount.entryPrice.times(subAccount.size).times(imr)) // leverage
+    collateralValue.plus(pnlAfterFundingUsd).minus(positionValueUsd.times(safeImr)), // IM
+    collateralValue.minus(fundingFeeUsd).minus(subAccount.entryPrice.times(subAccount.size).times(safeImr)) // leverage
   )
   withdrawableCollateral = BigNumber.max(_0, withdrawableCollateral)
   withdrawableCollateral = withdrawableCollateral.div(collateralPrice)
   // withdraw profit
   let withdrawableProfit = BigNumber.min(
-    collateralValue.plus(pnlAfterFundingUsd).minus(positionMarginUsd), // IM
+    collateralValue.plus(pnlAfterFundingUsd).minus(positionValueUsd.times(safeImr)), // IM
     pnlAfterFundingUsd // profit
   )
   withdrawableProfit = BigNumber.max(_0, withdrawableProfit)
@@ -76,8 +75,6 @@ export function computeSubAccount(
   }
   const computed: SubAccountComputed = {
     positionValueUsd,
-    positionMarginUsd,
-    maintenanceMarginUsd,
     fundingFeeUsd,
     pendingPnlUsd,
     pendingPnlAfterFundingUsd,
@@ -114,18 +111,18 @@ export function computeTradingPrice(
 ): { assetPrice: BigNumber; collateralPrice: BigNumber } {
   const { collateralId, assetId, isLong } = decodeSubAccountId(subAccountId)
   if (collateralId >= assets.length) {
-    throw new Error(`missing asset[${collateralId}]`)
+    throw new InvalidArgumentError(`missing asset[${collateralId}]`)
   }
   if (assetId >= assets.length) {
-    throw new Error(`missing asset[${assetId}]`)
+    throw new InvalidArgumentError(`missing asset[${assetId}]`)
   }
   let collateralPrice = prices[assets[collateralId].symbol]
   let assetPrice = prices[assets[assetId].symbol]
   if (!collateralPrice || collateralPrice.lte(_0)) {
-    throw new Error(`invalid price[${assets[collateralId].symbol}]`)
+    throw new InvalidArgumentError(`invalid price[${assets[collateralId].symbol}]`)
   }
   if (!assetPrice || assetPrice.lte(_0)) {
-    throw new Error(`invalid price[${assets[assetId].symbol}]`)
+    throw new InvalidArgumentError(`invalid price[${assets[assetId].symbol}]`)
   }
   let spreadType: SpreadType
   if (isOpenPosition) {
@@ -145,11 +142,11 @@ export function computeLiquidityPrice(
   isAddLiquidity: boolean // true if addLiquidity
 ): BigNumber {
   if (tokenId >= assets.length) {
-    throw new Error(`missing asset[${tokenId}]`)
+    throw new InvalidArgumentError(`missing asset[${tokenId}]`)
   }
   let collateralPrice = prices[assets[tokenId].symbol]
   if (!collateralPrice || collateralPrice.lte(_0)) {
-    throw new Error(`invalid price[${assets[tokenId].symbol}]`)
+    throw new InvalidArgumentError(`invalid price[${assets[tokenId].symbol}]`)
   }
   let spreadType = isAddLiquidity ? SpreadType.Bid : SpreadType.Ask
   collateralPrice = computePriceWithSpread(assets[tokenId], collateralPrice, spreadType)
@@ -178,7 +175,7 @@ export function computePositionPnlUsd(
   return { pendingPnlUsd, pnlUsd: pendingPnlUsd }
 }
 
-export function computeFeeUsd(
+function _computeFeeUsd(
   subAccount: SubAccount,
   asset: Asset,
   isLong: boolean,
@@ -186,7 +183,7 @@ export function computeFeeUsd(
   assetPrice: BigNumber
 ): BigNumber {
   let fee = computeFundingFeeUsd(subAccount, asset, isLong, assetPrice)
-  fee = fee.plus(computePositionFeeUsd(asset, amount, assetPrice))
+  fee = fee.plus(_computePositionFeeUsd(asset, amount, assetPrice))
   return fee
 }
 
@@ -209,7 +206,7 @@ export function computeFundingFeeUsd(
   return cumulativeFunding.times(subAccount.size)
 }
 
-export function computePositionFeeUsd(asset: Asset, amount: BigNumber, assetPrice: BigNumber): BigNumber {
+function _computePositionFeeUsd(asset: Asset, amount: BigNumber, assetPrice: BigNumber): BigNumber {
   if (amount.eq(_0)) {
     return _0
   }
@@ -218,7 +215,7 @@ export function computePositionFeeUsd(asset: Asset, amount: BigNumber, assetPric
 }
 
 // note: mutable modify
-function updateEntryFunding(subAccount: SubAccount, asset: Asset, isLong: boolean) {
+function _updateEntryFunding(subAccount: SubAccount, asset: Asset, isLong: boolean) {
   if (isLong) {
     subAccount.entryFunding = asset.longCumulativeFundingRate
   } else {
@@ -226,7 +223,7 @@ function updateEntryFunding(subAccount: SubAccount, asset: Asset, isLong: boolea
   }
 }
 
-export function estimateLiquidationPrice(
+function _estimateLiquidationPrice(
   assets: Asset[],
   collateralId: number,
   assetId: number,
@@ -235,7 +232,7 @@ export function estimateLiquidationPrice(
   collateralPrice: BigNumber,
   fundingFeeUsd: BigNumber
 ): BigNumber {
-  if (subAccount.size.eq(0)) {
+  if (subAccount.size.eq(_0)) {
     return _0
   }
   const { maintenanceMarginRate, positionFeeRate } = assets[assetId]
@@ -271,10 +268,10 @@ export function computeOpenPosition(
   const { collateralId, assetId, isLong } = decodeSubAccountId(subAccountId)
   const { collateralPrice, assetPrice } = computeTradingPrice(assets, subAccountId, prices, true)
   if (amount.lte(_0)) {
-    throw new Error(`invalid amount ${amount.toFixed()}`)
+    throw new InvalidArgumentError(`invalid amount ${amount.toFixed()}`)
   }
   if (brokerGasFee.lt(_0)) {
-    throw new Error(`invalid gasFee ${brokerGasFee.toFixed()}`)
+    throw new InvalidArgumentError(`invalid gasFee ${brokerGasFee.toFixed()}`)
   }
   // protection
   if (
@@ -285,12 +282,12 @@ export function computeOpenPosition(
     !assets[collateralId].isEnabled ||
     (!isLong && !assets[assetId].isShortable)
   ) {
-    throw new Error('not tradable')
+    throw new InvalidArgumentError('not tradable')
   }
 
   // fee & funding
-  const feeUsd = computeFeeUsd(subAccount, assets[assetId], isLong, amount, assetPrice)
-  updateEntryFunding(subAccount, assets[assetId], isLong)
+  const feeUsd = _computeFeeUsd(subAccount, assets[assetId], isLong, amount, assetPrice)
+  _updateEntryFunding(subAccount, assets[assetId], isLong)
   let feeCollateral = feeUsd.div(collateralPrice)
   feeCollateral = feeCollateral.plus(brokerGasFee)
   if (subAccount.collateral.lt(feeCollateral)) {
@@ -338,21 +335,21 @@ export function computeClosePosition(
     profitAssetPrice = assetPrice
   } else {
     if (profitAssetId >= assets.length) {
-      throw new Error(`missing asset[${profitAssetId}]`)
+      throw new InvalidArgumentError(`missing asset[${profitAssetId}]`)
     }
     if (!assets[profitAssetId].isStable) {
-      throw new Error(`profit asset[${profitAssetId}] should be a stable coin`)
+      throw new InvalidArgumentError(`profit asset[${profitAssetId}] should be a stable coin`)
     }
     profitAssetPrice = prices[assets[profitAssetId].symbol]
     if (!profitAssetPrice || profitAssetPrice.lte(_0)) {
-      throw new Error(`invalid price[${assets[profitAssetId].symbol}]`)
+      throw new InvalidArgumentError(`invalid price[${assets[profitAssetId].symbol}]`)
     }
   }
   if (amount.lte(_0) || amount.gt(subAccount.size)) {
-    throw new Error(`invalid amount ${amount.toFixed()}`)
+    throw new InvalidArgumentError(`invalid amount ${amount.toFixed()}`)
   }
   if (brokerGasFee.lt(_0)) {
-    throw new Error(`invalid gasFee ${brokerGasFee.toFixed()}`)
+    throw new InvalidArgumentError(`invalid gasFee ${brokerGasFee.toFixed()}`)
   }
   // protection
   if (
@@ -362,13 +359,12 @@ export function computeClosePosition(
     !assets[collateralId].isEnabled ||
     (!isLong && !assets[assetId].isShortable)
   ) {
-    throw new Error('not tradable')
+    throw new InvalidArgumentError('not tradable')
   }
   // fee & funding
-  const totalFeeUsd = computeFeeUsd(subAccount, assets[assetId], isLong, amount, assetPrice)
-  updateEntryFunding(subAccount, assets[assetId], isLong)
+  const totalFeeUsd = _computeFeeUsd(subAccount, assets[assetId], isLong, amount, assetPrice)
+  _updateEntryFunding(subAccount, assets[assetId], isLong)
   // realize pnl
-  let realizedPnlUsd = _0
   let paidFeeUsd = _0
   let profitAssetTransferred = _0
   let muxTokenTransferred = _0
@@ -408,7 +404,6 @@ export function computeClosePosition(
     afterTrade,
     isTradeSafe: afterTrade.computed.isMarginSafe,
     feeUsd: paidFeeUsd,
-    realizedPnlUsd,
     profitAssetTransferred,
     muxTokenTransferred
   }
@@ -426,16 +421,16 @@ export function computeWithdrawCollateral(
   const { collateralId, assetId, isLong } = decodeSubAccountId(subAccountId)
   const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, subAccountId, prices)
   if (amount.lte(_0)) {
-    throw new Error(`invalid amount ${amount.toFixed()}`)
+    throw new InvalidArgumentError(`invalid amount ${amount.toFixed()}`)
   }
   // protection
   if (!assets[assetId].isEnabled || !assets[collateralId].isEnabled) {
-    throw new Error('not tradable')
+    throw new InvalidArgumentError('not tradable')
   }
   // fee & funding
   const totalFeeUsd = computeFundingFeeUsd(subAccount, assets[assetId], isLong, assetPrice)
   if (subAccount.size.gt(_0)) {
-    updateEntryFunding(subAccount, assets[assetId], isLong)
+    _updateEntryFunding(subAccount, assets[assetId], isLong)
   }
   const feeCollateral = totalFeeUsd.div(collateralPrice)
   subAccount.collateral = subAccount.collateral.minus(feeCollateral)
@@ -468,18 +463,18 @@ export function computeWithdrawProfit(
     profitAssetPrice = assetPrice
   } else {
     if (profitAssetId >= assets.length) {
-      throw new Error(`missing asset[${profitAssetId}]`)
+      throw new InvalidArgumentError(`missing asset[${profitAssetId}]`)
     }
     if (!assets[profitAssetId].isStable) {
-      throw new Error(`profit asset[${profitAssetId}] should be a stable coin`)
+      throw new InvalidArgumentError(`profit asset[${profitAssetId}] should be a stable coin`)
     }
     profitAssetPrice = prices[assets[profitAssetId].symbol]
     if (!profitAssetPrice || profitAssetPrice.lte(_0)) {
-      throw new Error(`invalid price[${assets[profitAssetId].symbol}]`)
+      throw new InvalidArgumentError(`invalid price[${assets[profitAssetId].symbol}]`)
     }
   }
   if (amount.lte(_0)) {
-    throw new Error(`invalid amount ${amount.toFixed()}`)
+    throw new InvalidArgumentError(`invalid amount ${amount.toFixed()}`)
   }
   // protection
   if (
@@ -489,14 +484,14 @@ export function computeWithdrawProfit(
     !assets[collateralId].isEnabled ||
     (!isLong && !assets[assetId].isShortable)
   ) {
-    throw new Error('not tradable')
+    throw new InvalidArgumentError('not tradable')
   }
   if (subAccount.size.eq(_0)) {
-    throw new Error('empty position')
+    throw new InvalidArgumentError('empty position')
   }
   // fee & funding
   const totalFeeUsd = computeFundingFeeUsd(subAccount, assets[assetId], isLong, assetPrice)
-  updateEntryFunding(subAccount, assets[assetId], isLong)
+  _updateEntryFunding(subAccount, assets[assetId], isLong)
   // withdraw
   const deltaUsd = amount.times(profitAssetPrice).plus(totalFeeUsd)
   // profit
@@ -588,7 +583,10 @@ export function computeLiquidityFeeRate(
     newAssetValue = currentAssetValue.plus(deltaValue)
   } else {
     if (currentAssetValue.lt(deltaValue)) {
-      throw new InsufficientLiquidityError(`removed value ${deltaValue} > liquidity ${currentAssetValue}`)
+      throw new InsufficientLiquidityError(
+        InsufficientLiquidityType.MuxRemoveLiquidityExceedsCurrentAsset,
+        `removed value ${deltaValue} > liquidity ${currentAssetValue}`
+      )
     }
     newAssetValue = currentAssetValue.minus(deltaValue)
   }

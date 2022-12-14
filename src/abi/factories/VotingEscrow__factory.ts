@@ -108,6 +108,30 @@ const _abi = [
     type: "event",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "addr",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_t",
+        type: "uint256",
+      },
+    ],
+    name: "_balanceOf",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "averageUnlockTime",
     outputs: [
@@ -153,30 +177,6 @@ const _abi = [
       },
     ],
     name: "balanceOfAt",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "addr",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_t",
-        type: "uint256",
-      },
-    ],
-    name: "balanceOfWhen",
     outputs: [
       {
         internalType: "uint256",

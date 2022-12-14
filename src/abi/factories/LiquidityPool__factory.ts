@@ -98,6 +98,43 @@ const _abi = [
     inputs: [
       {
         indexed: true,
+        internalType: "uint8",
+        name: "assetId",
+        type: "uint8",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "project",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "rawBorrowAmount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "rawFee",
+        type: "uint256",
+      },
+    ],
+    name: "BorrowAsset",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "address",
         name: "receiver",
         type: "address",
@@ -614,6 +651,49 @@ const _abi = [
         type: "uint8",
       },
       {
+        indexed: true,
+        internalType: "address",
+        name: "project",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "repayer",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "rawRepayAmount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "rawFee",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "badDebt",
+        type: "uint256",
+      },
+    ],
+    name: "RepayAsset",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint8",
+        name: "assetId",
+        type: "uint8",
+      },
+      {
         indexed: false,
         internalType: "uint56",
         name: "oldFlags",
@@ -782,6 +862,25 @@ const _abi = [
       },
     ],
     name: "SetLiquidityFee",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newLiquidityManager",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "isAdd",
+        type: "bool",
+      },
+    ],
+    name: "SetLiquidityManager",
     type: "event",
   },
   {
@@ -1182,6 +1281,40 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+      {
+        internalType: "uint8",
+        name: "assetId",
+        type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "rawBorrowAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "rawFee",
+        type: "uint256",
+      },
+    ],
+    name: "borrowAsset",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "receiver",
         type: "address",
       },
@@ -1341,9 +1474,9 @@ const _abi = [
             type: "uint32",
           },
           {
-            internalType: "uint128",
-            name: "_reserved1",
-            type: "uint128",
+            internalType: "uint96",
+            name: "credit",
+            type: "uint96",
           },
           {
             internalType: "uint128",
@@ -1541,9 +1674,9 @@ const _abi = [
             type: "uint32",
           },
           {
-            internalType: "uint128",
-            name: "_reserved1",
-            type: "uint128",
+            internalType: "uint96",
+            name: "credit",
+            type: "uint96",
           },
           {
             internalType: "uint128",
@@ -1706,11 +1839,6 @@ const _abi = [
       {
         internalType: "address",
         name: "orderBook",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "liquidityManager",
         type: "address",
       },
       {
@@ -1944,6 +2072,39 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "repayer",
+        type: "address",
+      },
+      {
+        internalType: "uint8",
+        name: "assetId",
+        type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "rawRepayAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "rawFee",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "rawBadDebt",
+        type: "uint256",
+      },
+    ],
+    name: "repayAsset",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint8",
         name: "assetId",
         type: "uint8",
@@ -2094,6 +2255,24 @@ const _abi = [
       },
     ],
     name: "setFundingParams",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newLiquidityManager",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "isAdd",
+        type: "bool",
+      },
+    ],
+    name: "setLiquidityManager",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

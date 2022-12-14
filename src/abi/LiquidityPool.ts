@@ -33,7 +33,7 @@ export type AssetStruct = {
   referenceDeviation: BigNumberish;
   referenceOracleType: BigNumberish;
   halfSpread: BigNumberish;
-  _reserved1: BigNumberish;
+  credit: BigNumberish;
   _reserved2: BigNumberish;
   collectedFee: BigNumberish;
   liquidationFeeRate: BigNumberish;
@@ -101,7 +101,7 @@ export type AssetStructOutput = [
   referenceDeviation: number;
   referenceOracleType: number;
   halfSpread: number;
-  _reserved1: BigNumber;
+  credit: BigNumber;
   _reserved2: BigNumber;
   collectedFee: BigNumber;
   liquidationFeeRate: number;
@@ -290,6 +290,7 @@ export interface LiquidityPoolInterface extends utils.Interface {
   functions: {
     "addAsset(uint8,bytes32,uint8,bool,address,address)": FunctionFragment;
     "addLiquidity(address,uint8,uint256,uint96,uint96,uint96,uint96)": FunctionFragment;
+    "borrowAsset(address,uint8,uint256,uint256)": FunctionFragment;
     "claimBrokerGasRebate(address)": FunctionFragment;
     "closePosition(bytes32,uint96,uint8,uint96,uint96,uint96)": FunctionFragment;
     "depositCollateral(bytes32,uint256)": FunctionFragment;
@@ -298,7 +299,7 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "getAssetInfo(uint8)": FunctionFragment;
     "getLiquidityPoolStorage()": FunctionFragment;
     "getSubAccount(bytes32)": FunctionFragment;
-    "initialize(address,address,address,address,address,address,address)": FunctionFragment;
+    "initialize(address,address,address,address,address,address)": FunctionFragment;
     "liquidate(bytes32,uint8,uint96,uint96,uint96)": FunctionFragment;
     "openPosition(bytes32,uint96,uint96,uint96)": FunctionFragment;
     "owner()": FunctionFragment;
@@ -306,10 +307,12 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "redeemMuxToken(address,uint8,uint96)": FunctionFragment;
     "removeLiquidity(address,uint96,uint8,uint96,uint96,uint96,uint96)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "repayAsset(address,uint8,uint256,uint256,uint256)": FunctionFragment;
     "setAssetFlags(uint8,bool,bool,bool,bool,bool,bool,bool)": FunctionFragment;
     "setAssetParams(uint8,bytes32,uint32,uint32,uint32,uint32,uint32,uint32,uint96,uint96,uint32,uint32)": FunctionFragment;
     "setEmergencyNumbers(uint96,uint96)": FunctionFragment;
     "setFundingParams(uint8,uint32,uint32)": FunctionFragment;
+    "setLiquidityManager(address,bool)": FunctionFragment;
     "setMaintainer(address)": FunctionFragment;
     "setNumbers(uint32,uint32,uint32,uint32,uint96)": FunctionFragment;
     "setReferenceOracle(uint8,uint8,address,uint32)": FunctionFragment;
@@ -340,6 +343,10 @@ export interface LiquidityPoolInterface extends utils.Interface {
       BigNumberish,
       BigNumberish
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "borrowAsset",
+    values: [string, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "claimBrokerGasRebate",
@@ -382,7 +389,7 @@ export interface LiquidityPoolInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [string, string, string, string, string, string, string]
+    values: [string, string, string, string, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "liquidate",
@@ -427,6 +434,10 @@ export interface LiquidityPoolInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "repayAsset",
+    values: [string, BigNumberish, BigNumberish, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setAssetFlags",
     values: [
       BigNumberish,
@@ -463,6 +474,10 @@ export interface LiquidityPoolInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "setFundingParams",
     values: [BigNumberish, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setLiquidityManager",
+    values: [string, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "setMaintainer",
@@ -536,6 +551,10 @@ export interface LiquidityPoolInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "borrowAsset",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "claimBrokerGasRebate",
     data: BytesLike
   ): Result;
@@ -587,6 +606,7 @@ export interface LiquidityPoolInterface extends utils.Interface {
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "repayAsset", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setAssetFlags",
     data: BytesLike
@@ -601,6 +621,10 @@ export interface LiquidityPoolInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setFundingParams",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setLiquidityManager",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -656,6 +680,7 @@ export interface LiquidityPoolInterface extends utils.Interface {
   events: {
     "AddAsset(uint8,bytes32,uint8,bool,address,address)": EventFragment;
     "AddLiquidity(address,uint8,uint96,uint96,uint96,uint96)": EventFragment;
+    "BorrowAsset(uint8,address,address,uint256,uint256)": EventFragment;
     "ClaimBrokerGasRebate(address,uint32,uint256)": EventFragment;
     "ClosePosition(address,uint8,tuple)": EventFragment;
     "CollectedFee(uint8,uint96)": EventFragment;
@@ -668,12 +693,14 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "Rebalance(address,uint8,uint8,uint96,uint96,uint96,uint96)": EventFragment;
     "RedeemMuxToken(address,uint8,uint96)": EventFragment;
     "RemoveLiquidity(address,uint8,uint96,uint96,uint96,uint96)": EventFragment;
+    "RepayAsset(uint8,address,address,uint256,uint256,uint256)": EventFragment;
     "SetAssetFlags(uint8,uint56,uint56)": EventFragment;
     "SetAssetParams(uint8,bytes32,uint32,uint32,uint32,uint32,uint32,uint32,uint96,uint96,uint32,uint32)": EventFragment;
     "SetBrokerGasRebate(uint96)": EventFragment;
     "SetFundingInterval(uint32,uint32)": EventFragment;
     "SetFundingParams(uint8,uint32,uint32)": EventFragment;
     "SetLiquidityFee(uint32,uint32)": EventFragment;
+    "SetLiquidityManager(address,bool)": EventFragment;
     "SetMaintainer(address)": EventFragment;
     "SetMlpPriceRange(uint96,uint96)": EventFragment;
     "SetReferenceOracle(uint8,uint8,address,uint32)": EventFragment;
@@ -689,6 +716,7 @@ export interface LiquidityPoolInterface extends utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "AddAsset"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AddLiquidity"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "BorrowAsset"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ClaimBrokerGasRebate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ClosePosition"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "CollectedFee"): EventFragment;
@@ -701,12 +729,14 @@ export interface LiquidityPoolInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Rebalance"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RedeemMuxToken"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RemoveLiquidity"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RepayAsset"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetAssetFlags"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetAssetParams"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetBrokerGasRebate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetFundingInterval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetFundingParams"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetLiquidityFee"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetLiquidityManager"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMaintainer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMlpPriceRange"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetReferenceOracle"): EventFragment;
@@ -747,6 +777,19 @@ export type AddLiquidityEvent = TypedEvent<
 >;
 
 export type AddLiquidityEventFilter = TypedEventFilter<AddLiquidityEvent>;
+
+export type BorrowAssetEvent = TypedEvent<
+  [number, string, string, BigNumber, BigNumber],
+  {
+    assetId: number;
+    project: string;
+    borrower: string;
+    rawBorrowAmount: BigNumber;
+    rawFee: BigNumber;
+  }
+>;
+
+export type BorrowAssetEventFilter = TypedEventFilter<BorrowAssetEvent>;
 
 export type ClaimBrokerGasRebateEvent = TypedEvent<
   [string, number, BigNumber],
@@ -861,6 +904,20 @@ export type RemoveLiquidityEvent = TypedEvent<
 
 export type RemoveLiquidityEventFilter = TypedEventFilter<RemoveLiquidityEvent>;
 
+export type RepayAssetEvent = TypedEvent<
+  [number, string, string, BigNumber, BigNumber, BigNumber],
+  {
+    assetId: number;
+    project: string;
+    repayer: string;
+    rawRepayAmount: BigNumber;
+    rawFee: BigNumber;
+    badDebt: BigNumber;
+  }
+>;
+
+export type RepayAssetEventFilter = TypedEventFilter<RepayAssetEvent>;
+
 export type SetAssetFlagsEvent = TypedEvent<
   [number, BigNumber, BigNumber],
   { assetId: number; oldFlags: BigNumber; newFlags: BigNumber }
@@ -931,6 +988,14 @@ export type SetLiquidityFeeEvent = TypedEvent<
 >;
 
 export type SetLiquidityFeeEventFilter = TypedEventFilter<SetLiquidityFeeEvent>;
+
+export type SetLiquidityManagerEvent = TypedEvent<
+  [string, boolean],
+  { newLiquidityManager: string; isAdd: boolean }
+>;
+
+export type SetLiquidityManagerEventFilter =
+  TypedEventFilter<SetLiquidityManagerEvent>;
 
 export type SetMaintainerEvent = TypedEvent<
   [string],
@@ -1084,6 +1149,14 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    borrowAsset(
+      borrower: string,
+      assetId: BigNumberish,
+      rawBorrowAmount: BigNumberish,
+      rawFee: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     claimBrokerGasRebate(
       receiver: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1143,7 +1216,6 @@ export interface LiquidityPool extends BaseContract {
       nextHop: string,
       mlp: string,
       orderBook: string,
-      liquidityManager: string,
       weth: string,
       nativeUnwrapper: string,
       vault: string,
@@ -1203,6 +1275,15 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    repayAsset(
+      repayer: string,
+      assetId: BigNumberish,
+      rawRepayAmount: BigNumberish,
+      rawFee: BigNumberish,
+      rawBadDebt: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setAssetFlags(
       assetId: BigNumberish,
       isTradable: boolean,
@@ -1241,6 +1322,12 @@ export interface LiquidityPool extends BaseContract {
       assetId: BigNumberish,
       newBaseRate8H: BigNumberish,
       newLimitRate8H: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setLiquidityManager(
+      newLiquidityManager: string,
+      isAdd: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1350,6 +1437,14 @@ export interface LiquidityPool extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  borrowAsset(
+    borrower: string,
+    assetId: BigNumberish,
+    rawBorrowAmount: BigNumberish,
+    rawFee: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   claimBrokerGasRebate(
     receiver: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1409,7 +1504,6 @@ export interface LiquidityPool extends BaseContract {
     nextHop: string,
     mlp: string,
     orderBook: string,
-    liquidityManager: string,
     weth: string,
     nativeUnwrapper: string,
     vault: string,
@@ -1469,6 +1563,15 @@ export interface LiquidityPool extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  repayAsset(
+    repayer: string,
+    assetId: BigNumberish,
+    rawRepayAmount: BigNumberish,
+    rawFee: BigNumberish,
+    rawBadDebt: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setAssetFlags(
     assetId: BigNumberish,
     isTradable: boolean,
@@ -1507,6 +1610,12 @@ export interface LiquidityPool extends BaseContract {
     assetId: BigNumberish,
     newBaseRate8H: BigNumberish,
     newLimitRate8H: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setLiquidityManager(
+    newLiquidityManager: string,
+    isAdd: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1616,6 +1725,14 @@ export interface LiquidityPool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    borrowAsset(
+      borrower: string,
+      assetId: BigNumberish,
+      rawBorrowAmount: BigNumberish,
+      rawFee: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     claimBrokerGasRebate(
       receiver: string,
       overrides?: CallOverrides
@@ -1675,7 +1792,6 @@ export interface LiquidityPool extends BaseContract {
       nextHop: string,
       mlp: string,
       orderBook: string,
-      liquidityManager: string,
       weth: string,
       nativeUnwrapper: string,
       vault: string,
@@ -1733,6 +1849,15 @@ export interface LiquidityPool extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
+    repayAsset(
+      repayer: string,
+      assetId: BigNumberish,
+      rawRepayAmount: BigNumberish,
+      rawFee: BigNumberish,
+      rawBadDebt: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setAssetFlags(
       assetId: BigNumberish,
       isTradable: boolean,
@@ -1771,6 +1896,12 @@ export interface LiquidityPool extends BaseContract {
       assetId: BigNumberish,
       newBaseRate8H: BigNumberish,
       newLimitRate8H: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setLiquidityManager(
+      newLiquidityManager: string,
+      isAdd: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1891,6 +2022,21 @@ export interface LiquidityPool extends BaseContract {
       mlpAmount?: null,
       fee?: null
     ): AddLiquidityEventFilter;
+
+    "BorrowAsset(uint8,address,address,uint256,uint256)"(
+      assetId?: BigNumberish | null,
+      project?: string | null,
+      borrower?: string | null,
+      rawBorrowAmount?: null,
+      rawFee?: null
+    ): BorrowAssetEventFilter;
+    BorrowAsset(
+      assetId?: BigNumberish | null,
+      project?: string | null,
+      borrower?: string | null,
+      rawBorrowAmount?: null,
+      rawFee?: null
+    ): BorrowAssetEventFilter;
 
     "ClaimBrokerGasRebate(address,uint32,uint256)"(
       receiver?: string | null,
@@ -2031,6 +2177,23 @@ export interface LiquidityPool extends BaseContract {
       fee?: null
     ): RemoveLiquidityEventFilter;
 
+    "RepayAsset(uint8,address,address,uint256,uint256,uint256)"(
+      assetId?: BigNumberish | null,
+      project?: string | null,
+      repayer?: string | null,
+      rawRepayAmount?: null,
+      rawFee?: null,
+      badDebt?: null
+    ): RepayAssetEventFilter;
+    RepayAsset(
+      assetId?: BigNumberish | null,
+      project?: string | null,
+      repayer?: string | null,
+      rawRepayAmount?: null,
+      rawFee?: null,
+      badDebt?: null
+    ): RepayAssetEventFilter;
+
     "SetAssetFlags(uint8,uint56,uint56)"(
       assetId?: BigNumberish | null,
       oldFlags?: null,
@@ -2106,6 +2269,15 @@ export interface LiquidityPool extends BaseContract {
       newLiquidityBaseFeeRate?: null,
       newLiquidityDynamicFeeRate?: null
     ): SetLiquidityFeeEventFilter;
+
+    "SetLiquidityManager(address,bool)"(
+      newLiquidityManager?: string | null,
+      isAdd?: null
+    ): SetLiquidityManagerEventFilter;
+    SetLiquidityManager(
+      newLiquidityManager?: string | null,
+      isAdd?: null
+    ): SetLiquidityManagerEventFilter;
 
     "SetMaintainer(address)"(
       newMaintainer?: string | null
@@ -2239,6 +2411,14 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    borrowAsset(
+      borrower: string,
+      assetId: BigNumberish,
+      rawBorrowAmount: BigNumberish,
+      rawFee: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     claimBrokerGasRebate(
       receiver: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2283,7 +2463,6 @@ export interface LiquidityPool extends BaseContract {
       nextHop: string,
       mlp: string,
       orderBook: string,
-      liquidityManager: string,
       weth: string,
       nativeUnwrapper: string,
       vault: string,
@@ -2343,6 +2522,15 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    repayAsset(
+      repayer: string,
+      assetId: BigNumberish,
+      rawRepayAmount: BigNumberish,
+      rawFee: BigNumberish,
+      rawBadDebt: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setAssetFlags(
       assetId: BigNumberish,
       isTradable: boolean,
@@ -2381,6 +2569,12 @@ export interface LiquidityPool extends BaseContract {
       assetId: BigNumberish,
       newBaseRate8H: BigNumberish,
       newLimitRate8H: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setLiquidityManager(
+      newLiquidityManager: string,
+      isAdd: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2491,6 +2685,14 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    borrowAsset(
+      borrower: string,
+      assetId: BigNumberish,
+      rawBorrowAmount: BigNumberish,
+      rawFee: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     claimBrokerGasRebate(
       receiver: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2537,7 +2739,6 @@ export interface LiquidityPool extends BaseContract {
       nextHop: string,
       mlp: string,
       orderBook: string,
-      liquidityManager: string,
       weth: string,
       nativeUnwrapper: string,
       vault: string,
@@ -2597,6 +2798,15 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    repayAsset(
+      repayer: string,
+      assetId: BigNumberish,
+      rawRepayAmount: BigNumberish,
+      rawFee: BigNumberish,
+      rawBadDebt: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setAssetFlags(
       assetId: BigNumberish,
       isTradable: boolean,
@@ -2635,6 +2845,12 @@ export interface LiquidityPool extends BaseContract {
       assetId: BigNumberish,
       newBaseRate8H: BigNumberish,
       newLimitRate8H: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setLiquidityManager(
+      newLiquidityManager: string,
+      isAdd: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

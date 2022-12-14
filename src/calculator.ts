@@ -17,27 +17,27 @@ export function calculateOpenPositionWithCollateral(
 ): BigNumber {
   const { collateralId, assetId, isLong } = decodeSubAccountId(subAccountId)
   if (collateralId >= assets.length) {
-    throw new Error(`missing asset[${collateralId}]`)
+    throw new InvalidArgumentError(`missing asset[${collateralId}]`)
   }
   if (assetId >= assets.length) {
-    throw new Error(`missing asset[${assetId}]`)
+    throw new InvalidArgumentError(`missing asset[${assetId}]`)
   }
   const collateralPrice = prices[assets[collateralId].symbol]
   const assetPrice = prices[assets[assetId].symbol]
   if (!collateralPrice || collateralPrice.lte(_0)) {
-    throw new Error(`invalid price[${assets[collateralId].symbol}]`)
+    throw new InvalidArgumentError(`invalid price[${assets[collateralId].symbol}]`)
   }
   if (!assetPrice || assetPrice.lte(_0)) {
-    throw new Error(`invalid price[${assets[assetId].symbol}]`)
+    throw new InvalidArgumentError(`invalid price[${assets[assetId].symbol}]`)
   }
   if (collateralAmount.lte(_0)) {
-    throw new Error(`invalid collateral ${collateralAmount.toFixed()}`)
+    throw new InvalidArgumentError(`invalid collateral ${collateralAmount.toFixed()}`)
   }
   if (brokerGasFee.lt(_0)) {
-    throw new Error(`invalid gasFee ${brokerGasFee.toFixed()}`)
+    throw new InvalidArgumentError(`invalid gasFee ${brokerGasFee.toFixed()}`)
   }
   if (collateralAmount.lt(brokerGasFee)) {
-    throw new Error(`collateral ${collateralAmount.toFixed()} < brokerGasFee ${brokerGasFee.toFixed()}`)
+    throw new InvalidArgumentError(`collateral ${collateralAmount.toFixed()} < brokerGasFee ${brokerGasFee.toFixed()}`)
   }
   const collateralUsd = collateralAmount.minus(brokerGasFee).times(collateralPrice)
   const positionFeeRate = assets[assetId].positionFeeRate
@@ -60,7 +60,7 @@ export function calculateClosePositionCollateralAmount(
 ): BigNumber {
   const { collateralId } = decodeSubAccountId(subAccountId)
   if (collateralId >= assets.length) {
-    throw new Error(`missing asset[${collateralId}]`)
+    throw new InvalidArgumentError(`missing asset[${collateralId}]`)
   }
   const { collateralPrice, assetPrice } = computeTradingPrice(assets, subAccountId, prices, false)
   const beforeTrade = computeSubAccount(assets, subAccountId, subAccount, collateralPrice, assetPrice)
@@ -93,4 +93,132 @@ export function calculateClosePositionCollateralAmount(
   let deltaCollateral = afterTrade.afterTrade.subAccount.collateral.minus(collateralRequired)
   deltaCollateral = BigNumber.maximum(deltaCollateral, _0)
   return deltaCollateral
+}
+
+// search x*, satisfies:
+// * f(0 <= x < x*) = false
+// * f(x >= x*) = true
+// the returned x MUST satisfy f(x) = true
+export function binarySearchRight(
+  f: (x: BigNumber) => boolean,
+  guess: BigNumber | null,
+  upperLimit: BigNumber | null = null, // x* < upperLimit
+  maxIteration: number | null = null,
+  tolerance: BigNumber | null = null // | new - old | / old < tolerance
+): BigNumber {
+  // x* ∈ [left, right]
+  let left = _0
+  let right = new BigNumber('Infinite')
+  if (maxIteration === null) {
+    maxIteration = 100
+  }
+  if (tolerance === null) {
+    tolerance = new BigNumber('1e-7')
+  }
+  if (upperLimit === null && guess !== null) {
+    // search an upper limit
+    if (guess.lte(_0) || !guess.isFinite()) {
+      guess = _1
+    }
+    while (maxIteration > 0) {
+      maxIteration -= 1
+      if (f(guess)) {
+        right = guess
+        break
+      } else {
+        left = guess
+        guess = left.times(2)
+      }
+    }
+  } else if (upperLimit !== null && guess === null) {
+    // a simple bisect
+    right = upperLimit
+  } else {
+    throw new InvalidArgumentError('not supported yet')
+  }
+  // simple bisect
+  while (maxIteration > 0) {
+    maxIteration -= 1
+    guess = left.plus(right).div(2)
+    if (f(guess)) {
+      right = guess
+    } else {
+      left = guess
+    }
+    if (
+      right
+        .minus(left)
+        .div(right)
+        .lt(tolerance)
+    ) {
+      return right
+    }
+  }
+  return right
+}
+
+// search x*, satisfies:
+// * f(0 <= x <= x*) = true
+// * f(x > x*) = false
+// the returned x MUST satisfy f(x) = true
+export function binarySearchLeft(
+  f: (x: BigNumber) => boolean,
+  guess: BigNumber | null,
+  upperLimit: BigNumber | null = null, // x* < upperLimit
+  maxIteration: number | null = null,
+  tolerance: BigNumber | null = null // | new - old | / old < tolerance
+): BigNumber {
+  // x* ∈ [left, right)
+  let left = _0
+  let right = new BigNumber('Infinite')
+  if (maxIteration === null) {
+    maxIteration = 100
+  }
+  if (tolerance === null) {
+    tolerance = new BigNumber('1e-7')
+  }
+  // shortcut of "0"
+  if (!f(tolerance)) {
+    return _0
+  }
+  if (upperLimit === null && guess !== null) {
+    // search an upper limit
+    if (guess.lte(_0) || !guess.isFinite()) {
+      guess = _1
+    }
+    while (maxIteration > 0) {
+      maxIteration -= 1
+      if (f(guess)) {
+        left = guess
+        guess = left.times(2)
+      } else {
+        right = guess
+        break
+      }
+    }
+  } else if (upperLimit !== null && guess === null) {
+    // a simple bisect
+    right = upperLimit
+  } else {
+    throw new InvalidArgumentError('not supported yet')
+  }
+  // simple bisect
+  while (maxIteration > 0) {
+    maxIteration -= 1
+    guess = left.plus(right).div(2)
+    if (f(guess)) {
+      left = guess
+    } else {
+      right = guess
+    }
+    if (
+      right
+        .minus(left)
+        .div(right)
+        .lt(tolerance)
+    ) {
+      return left
+    }
+  }
+  return left
 }

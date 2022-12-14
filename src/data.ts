@@ -43,7 +43,7 @@ export function encodeSubAccountId(
   isLong: boolean
 ): string {
   if (ethers.utils.arrayify(account).length !== 20) {
-    throw new Error(`malformed account: ${account}`)
+    throw new InvalidArgumentError(`malformed account: ${account}`)
   }
   return (
     ethers.utils.solidityPack(['address', 'uint8', 'uint8', 'bool'], [account, collateralId, assetId, isLong]) +
@@ -54,7 +54,7 @@ export function encodeSubAccountId(
 export function decodeSubAccountId(subAccountId: BytesLike | Hexable): DecodedSubAccountId {
   const raw = ethers.utils.arrayify(subAccountId)
   if (raw.length !== 32) {
-    throw new Error(`unrecognized subAccountId: ${subAccountId}`)
+    throw new InvalidArgumentError(`unrecognized subAccountId: ${subAccountId}`)
   }
   return {
     account: ethers.utils.hexlify(raw.subarray(0, 20)),
@@ -146,11 +146,15 @@ export async function getChainStorage(reader: Reader, overrides: CallOverrides =
   }
 }
 
-export function fromWei(n: ethers.BigNumber): BigNumber {
-  return new BigNumber(n.toString()).shiftedBy(-DECIMALS)
+export function fromUnit(n: ethers.BigNumber, decimals: number): BigNumber {
+  return new BigNumber(n.toString()).shiftedBy(-decimals)
 }
 
-function fromRate(n: number): BigNumber {
+export function fromWei(n: ethers.BigNumber): BigNumber {
+  return fromUnit(n, DECIMALS)
+}
+
+export function fromRate(n: number): BigNumber {
   return new BigNumber(n.toString()).shiftedBy(-RATIO_DECIMALS)
 }
 

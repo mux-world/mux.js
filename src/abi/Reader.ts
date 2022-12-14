@@ -65,6 +65,7 @@ export declare namespace Reader {
     initialMarginRate: BigNumberish;
     maintenanceMarginRate: BigNumberish;
     positionFeeRate: BigNumberish;
+    liquidationFeeRate: BigNumberish;
     minProfitRate: BigNumberish;
     minProfitTime: BigNumberish;
     maxLongPositionSize: BigNumberish;
@@ -79,6 +80,7 @@ export declare namespace Reader {
     longCumulativeFundingRate: BigNumberish;
     shortCumulativeFunding: BigNumberish;
     spotLiquidity: BigNumberish;
+    credit: BigNumberish;
     totalLongPosition: BigNumberish;
     totalShortPosition: BigNumberish;
     averageLongPrice: BigNumberish;
@@ -99,6 +101,7 @@ export declare namespace Reader {
     number,
     number,
     number,
+    number,
     BigNumber,
     BigNumber,
     number,
@@ -108,6 +111,7 @@ export declare namespace Reader {
     string,
     number,
     number,
+    BigNumber,
     BigNumber,
     BigNumber,
     BigNumber,
@@ -127,6 +131,7 @@ export declare namespace Reader {
     initialMarginRate: number;
     maintenanceMarginRate: number;
     positionFeeRate: number;
+    liquidationFeeRate: number;
     minProfitRate: number;
     minProfitTime: number;
     maxLongPositionSize: BigNumber;
@@ -141,6 +146,7 @@ export declare namespace Reader {
     longCumulativeFundingRate: BigNumber;
     shortCumulativeFunding: BigNumber;
     spotLiquidity: BigNumber;
+    credit: BigNumber;
     totalLongPosition: BigNumber;
     totalShortPosition: BigNumber;
     averageLongPrice: BigNumber;

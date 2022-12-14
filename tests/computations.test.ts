@@ -169,8 +169,6 @@ describe('computeSubAccount', function() {
 
   const expectOutput0: SubAccountComputed = {
     positionValueUsd: _0,
-    positionMarginUsd: _0,
-    maintenanceMarginUsd: _0,
     isIMSafe: true,
     isMMSafe: true,
     isMarginSafe: true,
@@ -189,8 +187,6 @@ describe('computeSubAccount', function() {
 
   const expectOutput1: SubAccountComputed = {
     positionValueUsd: new BigNumber('16019.5'),
-    positionMarginUsd: new BigNumber('1601.95'),
-    maintenanceMarginUsd: new BigNumber('800.975'),
     isIMSafe: true,
     isMMSafe: true,
     isMarginSafe: true,
@@ -209,8 +205,6 @@ describe('computeSubAccount', function() {
 
   const expectOutput2: SubAccountComputed = {
     positionValueUsd: new BigNumber('16019.5'),
-    positionMarginUsd: new BigNumber('1601.95'),
-    maintenanceMarginUsd: new BigNumber('800.975'),
     isIMSafe: true,
     isMMSafe: true,
     isMarginSafe: true,
@@ -229,8 +223,6 @@ describe('computeSubAccount', function() {
 
   const expectOutput3: SubAccountComputed = {
     positionValueUsd: new BigNumber('16019.5'),
-    positionMarginUsd: new BigNumber('1601.95'),
-    maintenanceMarginUsd: new BigNumber('800.975'),
     isIMSafe: false,
     isMMSafe: false,
     isMarginSafe: true,
@@ -283,8 +275,6 @@ describe('computeSubAccount', function() {
       )
       const computed = accountDetails.computed
       expect(computed.positionValueUsd).toBeBigNumber(expectedOutput.positionValueUsd)
-      expect(computed.positionMarginUsd).toBeBigNumber(expectedOutput.positionMarginUsd)
-      expect(computed.maintenanceMarginUsd).toBeBigNumber(expectedOutput.maintenanceMarginUsd)
       expect(computed.fundingFeeUsd).toApproximate(expectedOutput.fundingFeeUsd)
       expect(computed.pendingPnlUsd).toApproximate(expectedOutput.pendingPnlUsd)
       expect(computed.pendingPnlAfterFundingUsd).toApproximate(expectedOutput.pendingPnlAfterFundingUsd)

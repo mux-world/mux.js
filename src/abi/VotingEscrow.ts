@@ -20,10 +20,10 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export interface VotingEscrowInterface extends utils.Interface {
   contractName: "VotingEscrow";
   functions: {
+    "_balanceOf(address,uint256)": FunctionFragment;
     "averageUnlockTime()": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "balanceOfAt(address,uint256)": FunctionFragment;
-    "balanceOfWhen(address,uint256)": FunctionFragment;
     "checkpoint()": FunctionFragment;
     "decimals()": FunctionFragment;
     "deposit(address,uint256,uint256)": FunctionFragment;
@@ -64,16 +64,16 @@ export interface VotingEscrowInterface extends utils.Interface {
   };
 
   encodeFunctionData(
+    functionFragment: "_balanceOf",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "averageUnlockTime",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(
     functionFragment: "balanceOfAt",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "balanceOfWhen",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -183,6 +183,7 @@ export interface VotingEscrowInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
   encodeFunctionData(functionFragment: "withdrawFor", values: [string]): string;
 
+  decodeFunctionResult(functionFragment: "_balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "averageUnlockTime",
     data: BytesLike
@@ -190,10 +191,6 @@ export interface VotingEscrowInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "balanceOfAt",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "balanceOfWhen",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "checkpoint", data: BytesLike): Result;
@@ -367,6 +364,12 @@ export interface VotingEscrow extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    _balanceOf(
+      addr: string,
+      _t: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     averageUnlockTime(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     balanceOf(addr: string, overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -374,12 +377,6 @@ export interface VotingEscrow extends BaseContract {
     balanceOfAt(
       addr: string,
       _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    balanceOfWhen(
-      addr: string,
-      _t: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
@@ -563,6 +560,12 @@ export interface VotingEscrow extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  _balanceOf(
+    addr: string,
+    _t: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   averageUnlockTime(overrides?: CallOverrides): Promise<BigNumber>;
 
   balanceOf(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -570,12 +573,6 @@ export interface VotingEscrow extends BaseContract {
   balanceOfAt(
     addr: string,
     _block: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  balanceOfWhen(
-    addr: string,
-    _t: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -747,6 +744,12 @@ export interface VotingEscrow extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    _balanceOf(
+      addr: string,
+      _t: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     averageUnlockTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     balanceOf(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -754,12 +757,6 @@ export interface VotingEscrow extends BaseContract {
     balanceOfAt(
       addr: string,
       _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    balanceOfWhen(
-      addr: string,
-      _t: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -972,6 +969,12 @@ export interface VotingEscrow extends BaseContract {
   };
 
   estimateGas: {
+    _balanceOf(
+      addr: string,
+      _t: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     averageUnlockTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     balanceOf(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -979,12 +982,6 @@ export interface VotingEscrow extends BaseContract {
     balanceOfAt(
       addr: string,
       _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    balanceOfWhen(
-      addr: string,
-      _t: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1144,6 +1141,12 @@ export interface VotingEscrow extends BaseContract {
   };
 
   populateTransaction: {
+    _balanceOf(
+      addr: string,
+      _t: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     averageUnlockTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     balanceOf(
@@ -1154,12 +1157,6 @@ export interface VotingEscrow extends BaseContract {
     balanceOfAt(
       addr: string,
       _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    balanceOfWhen(
-      addr: string,
-      _t: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

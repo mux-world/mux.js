@@ -182,6 +182,11 @@ const _abi = [
               },
               {
                 internalType: "uint32",
+                name: "liquidationFeeRate",
+                type: "uint32",
+              },
+              {
+                internalType: "uint32",
                 name: "minProfitRate",
                 type: "uint32",
               },
@@ -248,6 +253,11 @@ const _abi = [
               {
                 internalType: "uint96",
                 name: "spotLiquidity",
+                type: "uint96",
+              },
+              {
+                internalType: "uint96",
+                name: "credit",
                 type: "uint96",
               },
               {

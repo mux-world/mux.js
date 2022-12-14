@@ -3,7 +3,12 @@ import { _0, _1 } from '../src/constants'
 import { encodeSubAccountId } from '../src/data'
 import { Asset, PriceDict, SubAccount } from '../src/types'
 import { extendExpect } from './helper'
-import { calculateClosePositionCollateralAmount, calculateOpenPositionWithCollateral } from '../src/calculator'
+import {
+  calculateClosePositionCollateralAmount,
+  calculateOpenPositionWithCollateral,
+  binarySearchRight,
+  binarySearchLeft
+} from '../src/calculator'
 import {
   computeLiquidationPrice,
   computeClosePosition,
@@ -318,5 +323,121 @@ describe('calculateClosePositionCollateralAmount', function() {
       _0
     )
     expect(computed.afterTrade.computed.leverage).toApproximate(new BigNumber('9.56589691246774616423'))
+  })
+})
+
+describe('binarySearchRight', (): void => {
+  let groundTruth = new BigNumber('314159.265358979323846264')
+  const f1 = (x: BigNumber) => {
+    return x.gte(groundTruth)
+  }
+  it('guess 1', () => {
+    const res = binarySearchRight(f1, new BigNumber('100000'))
+    expect(res.gte(groundTruth)).toBeTruthy()
+    expect(res.lt(groundTruth.plus('0.001'))).toBeTruthy()
+  })
+  it('guess 2', () => {
+    const res = binarySearchRight(f1, new BigNumber('500000'))
+    expect(res.gte(groundTruth)).toBeTruthy()
+    expect(res.lt(groundTruth.plus('0.001'))).toBeTruthy()
+  })
+  it('upper 1', () => {
+    const res = binarySearchRight(f1, null, new BigNumber('10000000'))
+    expect(res.gte(groundTruth)).toBeTruthy()
+    expect(res.lt(groundTruth.plus('0.001'))).toBeTruthy()
+  })
+
+  const f2 = (x: BigNumber) => {
+    return !x.isZero()
+  }
+  it('guess 1', () => {
+    const res = binarySearchRight(f2, new BigNumber('0'))
+    expect(res.gt(_0)).toBeTruthy()
+  })
+  it('guess 2', () => {
+    const res = binarySearchRight(f2, new BigNumber('100000'))
+    expect(res.gt(_0)).toBeTruthy()
+  })
+  it('upper 1', () => {
+    const res = binarySearchRight(f2, null, new BigNumber('10000000'))
+    expect(res.gt(_0)).toBeTruthy()
+  })
+
+  groundTruth = new BigNumber('0.000000123456')
+  const f3 = (x: BigNumber) => {
+    return x.gte(groundTruth)
+  }
+  it('guess 1', () => {
+    const res = binarySearchRight(f3, new BigNumber('0'))
+    expect(res.gte(groundTruth)).toBeTruthy()
+    expect(res.lt(groundTruth.plus('0.001'))).toBeTruthy()
+  })
+  it('guess 2', () => {
+    const res = binarySearchRight(f3, new BigNumber('10000'))
+    expect(res.gte(groundTruth)).toBeTruthy()
+    expect(res.lt(groundTruth.plus('0.001'))).toBeTruthy()
+  })
+  it('upper 1', () => {
+    const res = binarySearchRight(f3, null, new BigNumber('10000000'))
+    expect(res.gte(groundTruth)).toBeTruthy()
+    expect(res.lt(groundTruth.plus('0.001'))).toBeTruthy()
+  })
+})
+
+describe('binarySearchLeft', (): void => {
+  let groundTruth = new BigNumber('314159.265358979323846264')
+  const f1 = (x: BigNumber) => {
+    return x.lt(groundTruth)
+  }
+  it('guess 1', () => {
+    const res = binarySearchLeft(f1, new BigNumber('100000'))
+    expect(res.lte(groundTruth)).toBeTruthy()
+    expect(res.gt(groundTruth.minus('0.001'))).toBeTruthy()
+  })
+  it('guess 2', () => {
+    const res = binarySearchLeft(f1, new BigNumber('500000'))
+    expect(res.lte(groundTruth)).toBeTruthy()
+    expect(res.gt(groundTruth.minus('0.001'))).toBeTruthy()
+  })
+  it('upper 1', () => {
+    const res = binarySearchLeft(f1, null, new BigNumber('10000000'))
+    expect(res.lte(groundTruth)).toBeTruthy()
+    expect(res.gt(groundTruth.minus('0.001'))).toBeTruthy()
+  })
+
+  const f2 = (x: BigNumber) => {
+    return x.isZero()
+  }
+  it('guess 1', () => {
+    const res = binarySearchLeft(f2, new BigNumber('0'))
+    expect(res).toBeBigNumber(_0)
+  })
+  it('guess 2', () => {
+    const res = binarySearchLeft(f2, new BigNumber('100000'))
+    expect(res).toBeBigNumber(_0)
+  })
+  it('upper 1', () => {
+    const res = binarySearchLeft(f2, null, new BigNumber('10000000'))
+    expect(res).toBeBigNumber(_0)
+  })
+
+  groundTruth = new BigNumber('0.000000123456')
+  const f3 = (x: BigNumber) => {
+    return x.lt(groundTruth)
+  }
+  it('guess 1', () => {
+    const res = binarySearchLeft(f3, new BigNumber('0'))
+    expect(res.lte(groundTruth)).toBeTruthy()
+    expect(res.gt(groundTruth.minus('0.001'))).toBeTruthy()
+  })
+  it('guess 2', () => {
+    const res = binarySearchLeft(f3, new BigNumber('10000'))
+    expect(res.lte(groundTruth)).toBeTruthy()
+    expect(res.gt(groundTruth.minus('0.001'))).toBeTruthy()
+  })
+  it('upper 1', () => {
+    const res = binarySearchLeft(f3, null, new BigNumber('10000000'))
+    expect(res.lte(groundTruth)).toBeTruthy()
+    expect(res.gt(groundTruth.minus('0.001'))).toBeTruthy()
   })
 })
