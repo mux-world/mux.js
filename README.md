@@ -100,7 +100,7 @@ const tx = await orderBook.placePositionOrder2(
   0, // only used when close a position
   PositionOrderFlags.OpenPosition + PositionOrderFlags.MarketOrder, // check PositionOrderFlags for details
   0, // a default deadline will be applied on a market order
-  '0x0000000000000000000000000000000000000000' // an empty referral code
+  '0x0000000000000000000000000000000000000000000000000000000000000000' // an empty referral code
 )
 console.log(`placing order. tx: ${tx.hash}`)
 await tx.wait()
