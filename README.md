@@ -114,7 +114,7 @@ const tx = await orderBook.placePositionOrder2(
   '0', // we leave the collateral = 0 because we will withdraw all collaterals later in the flag
   new BigNumber('0.01').shiftedBy(18).toFixed(), // position 0.01 ETH. decimals is always 18
   '0', // limit price must be 0 for a market order
-  3, // profitTokenId is the token id for you profit (the loss will always charged from your collateral). should be 3 (ETH) for a long position. should be 0 (USDC) or other stable coins for a short position
+  3, // profitTokenId is the token id for you profit (the loss will always be charged from your collateral). should be 3 (ETH) for a long position. should be 0 (USDC) or other stable coins for a short position
   PositionOrderFlags.MarketOrder + PositionOrderFlags.WithdrawAllIfEmpty, // check PositionOrderFlags for details
   0, // a default deadline will be applied on a market order
   '0x0000000000000000000000000000000000000000000000000000000000000000' // an empty referral code
