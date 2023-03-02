@@ -65,7 +65,7 @@ console.log(`position: ${subAccount.size.toFixed()}`)
 
 **5. Calculate margin balance**
 
-Calculating margin balance requires asset price (ex: ETH price). Reading ETH price is not contained in mux.js. However, you can read assets price and info from the  [Broker API](https://app.mux.network/api/liquidityAsset).
+Calculating margin balance requires asset price (ex: ETH price). Reading ETH price is not contained in mux.js. However, you can read assets price and info from the [Broker API](https://app.mux.network/api/liquidityAsset).
 
 ```js
 import { computeSubAccount } from '@mux-network/mux.js'
@@ -97,8 +97,25 @@ const tx = await orderBook.placePositionOrder2(
   new BigNumber('10').shiftedBy(6).toFixed(), // deposit $10 as collateral. USDC.decimals = 6
   new BigNumber('0.01').shiftedBy(18).toFixed(), // position 0.01 ETH. decimals is always 18
   '0', // limit price must be 0 for a market order
-  0, // only used when close a position
+  0, // profitTokenId is only used when close a position
   PositionOrderFlags.OpenPosition + PositionOrderFlags.MarketOrder, // check PositionOrderFlags for details
+  0, // a default deadline will be applied on a market order
+  '0x0000000000000000000000000000000000000000000000000000000000000000' // an empty referral code
+)
+console.log(`placing order. tx: ${tx.hash}`)
+await tx.wait()
+```
+
+**7. Close the position (place another position order)**
+
+```js
+const tx = await orderBook.placePositionOrder2(
+  subAccountId,
+  '0', // we leave the collateral = 0 because we will withdraw all collaterals later in the flag
+  new BigNumber('0.01').shiftedBy(18).toFixed(), // position 0.01 ETH. decimals is always 18
+  '0', // limit price must be 0 for a market order
+  3, // profitTokenId is the token id for you profit (the loss will always charged from your collateral). should be 3 (ETH) for a long position. should be 0 (USDC) or other stable coins for a short position
+  PositionOrderFlags.MarketOrder + PositionOrderFlags.WithdrawAllIfEmpty, // check PositionOrderFlags for details
   0, // a default deadline will be applied on a market order
   '0x0000000000000000000000000000000000000000000000000000000000000000' // an empty referral code
 )
