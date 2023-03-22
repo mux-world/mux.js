@@ -615,23 +615,25 @@ export function computeLiquidityFeeRate(
   }
 }
 
-export function computeFundingRate(
+// NOTE: this function always returns 8h funding rate. if fundingInterval is 1h, the fee will be
+//       fundingRate8H / 8 every hour.
+export function computeFundingRate8H(
   pool: LiquidityPool,
   asset: Asset,
   stableUtilization: BigNumber,
   unstableUtilization: BigNumber
-): { longFundingRate: BigNumber; shortFundingRate: BigNumber } {
-  const shortFundingRate = computeSingleFundingRate(
+): { longFundingRate8H: BigNumber; shortFundingRate8H: BigNumber } {
+  const shortFundingRate8H = computeSingleFundingRate8H(
     pool.shortFundingBaseRate8H,
     pool.shortFundingLimitRate8H,
     stableUtilization
   )
-  const longFundingRate = computeSingleFundingRate(
+  const longFundingRate8H = computeSingleFundingRate8H(
     asset.longFundingBaseRate8H,
     asset.longFundingLimitRate8H,
     unstableUtilization
   )
-  return { longFundingRate, shortFundingRate }
+  return { longFundingRate8H, shortFundingRate8H }
 }
 
 /**
@@ -646,8 +648,11 @@ export function computeFundingRate(
  * |  .
  * |.
  * +-------------------> %util
+ *
+ * NOTE: this function always returns 8h funding rate. if fundingInterval is 1h, the fee will be
+ *       fundingRate8H / 8 every hour.
  */
-export function computeSingleFundingRate(
+export function computeSingleFundingRate8H(
   baseRate8H: BigNumber,
   limitRate8H: BigNumber,
   utilization: BigNumber
@@ -655,9 +660,9 @@ export function computeSingleFundingRate(
   if (utilization.gt(_1)) {
     throw new InvalidArgumentError('%utilization > 100%')
   }
-  let fundingRate = utilization.times(limitRate8H)
-  fundingRate = BigNumber.maximum(fundingRate, baseRate8H)
-  return fundingRate
+  let fundingRate8H = utilization.times(limitRate8H)
+  fundingRate8H = BigNumber.maximum(fundingRate8H, baseRate8H)
+  return fundingRate8H
 }
 
 /**
