@@ -192,6 +192,16 @@ const _abi = [
                 name: "triggerAboveThreshold",
                 type: "bool",
               },
+              {
+                internalType: "bytes32",
+                name: "tpOrderHistoryKey",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "slOrderHistoryKey",
+                type: "bytes32",
+              },
             ],
             internalType: "struct Reader.GmxAdapterOrder[]",
             name: "gmxOrders",
@@ -351,6 +361,16 @@ const _abi = [
                 internalType: "bool",
                 name: "triggerAboveThreshold",
                 type: "bool",
+              },
+              {
+                internalType: "bytes32",
+                name: "tpOrderHistoryKey",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "slOrderHistoryKey",
+                type: "bytes32",
               },
             ],
             internalType: "struct Reader.GmxAdapterOrder[]",

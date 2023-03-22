@@ -44,7 +44,9 @@ export const CHAIN_ID_TO_MLP_ADDRESS: { [chainID: number]: string } = {
   // bsc
   56: '0x07145Ad7C7351c6FE86b6B841fC9Bed74eb475A7',
   // fantom
-  250: '0xDDAde9a8dA4851960DFcff1AE4A18EE75C39eDD2'
+  250: '0xDDAde9a8dA4851960DFcff1AE4A18EE75C39eDD2',
+  // optimism
+  10: '0x0509474f102b5cd3f1f09e1E91feb25938eF0f17'
 }
 
 export const CHAIN_ID_TO_LIQUIDITY_POOL_ADDRESS: { [chainID: number]: string } = {
@@ -55,7 +57,9 @@ export const CHAIN_ID_TO_LIQUIDITY_POOL_ADDRESS: { [chainID: number]: string } =
   // bsc
   56: '0x855E99F768FaD76DD0d3EB7c446C0b759C96D520',
   // fantom
-  250: '0x2e81F443A11a943196c88afcB5A0D807721A88E6'
+  250: '0x2e81F443A11a943196c88afcB5A0D807721A88E6',
+  // optimism
+  10: '0xc6BD76FA1E9e789345e003B361e4A0037DFb7260'
 }
 
 export const CHAIN_ID_TO_ORDER_BOOK_ADDRESS: { [chainID: number]: string } = {
@@ -66,7 +70,9 @@ export const CHAIN_ID_TO_ORDER_BOOK_ADDRESS: { [chainID: number]: string } = {
   // bsc
   56: '0xa67aA293642C4e02D1b9F360b007C0dBDc451A08',
   // fantom
-  250: '0x0c30b10462CdED51C3CA31e7C51019b7d25a965B'
+  250: '0x0c30b10462CdED51C3CA31e7C51019b7d25a965B',
+  // optimism
+  10: '0x6Fde9892Fd5302ac3c68688085BD5b031A63BC9D'
 }
 
 export const CHAIN_ID_TO_LIQUIDITY_MANAGER_ADDRESS: { [chainID: number]: string } = {
@@ -77,18 +83,22 @@ export const CHAIN_ID_TO_LIQUIDITY_MANAGER_ADDRESS: { [chainID: number]: string 
   // bsc
   56: '0x0c30b10462CdED51C3CA31e7C51019b7d25a965B',
   // fantom
-  250: '0xee85CDdCe0CF068091081eA0fcd53f279aa3B09F'
+  250: '0xee85CDdCe0CF068091081eA0fcd53f279aa3B09F',
+  // optimism
+  10: '0xFEc3704f4A02cB0EE6C7d52Cbf72b11E0441E9d5'
 }
 
 export const CHAIN_ID_TO_READER_ADDRESS: { [chainID: number]: string } = {
   // arb1
-  42161: '0x437CEa956B415e97517020490205c07f4a845168',
+  42161: '0xF64B4bD682E792e0BA78956B86F2Cee946d2E7D6',
   // avalanche
-  43114: '0xB33e3dDcE77b7679fA92AF77863Ae439C44c8519',
+  43114: '0xCE443B8c1C3E3edb3b9F3B2B482FaaC09A95B01d',
   // bsc
-  56: '0x2981Bb8F9c7f7C5b9d8CA5e41C0D9cBbd89C7489',
+  56: '0x9897A73a606606394FA2324D16f3926f5963a9C3',
   // fantom
-  250: '0xfb0DCDC30BF892Ec981255e7133AEcb8ea642b76'
+  250: '0x30acc119F8b60C9cb92b8E3c4c7f8830c82f707E',
+  // optimism
+  10: '0xdF88Fe94EF674D8c1ab1743AD88717E7AE893a44'
 }
 
 export const CHAIN_ID_TO_REWARD_ROUTER_ADDRESS: { [chainID: number]: string } = {
@@ -129,7 +139,9 @@ export const CHAIN_ID_TO_VAULT_ADDRESS: { [chainID: number]: string } = {
   // bsc
   56: '0x8D751570BA1Fd8a8ae89E4B27d18bf6C321Aab0a',
   // fantom
-  250: '0xdAF2064F52F123EE1D410e97C2df549c23a99683'
+  250: '0xdAF2064F52F123EE1D410e97C2df549c23a99683',
+  // optimism
+  10: '0x39d653884B611E0A8dbdb9720Ad5D75642fd544b'
 }
 
 export const CHAIN_ID_TO_REFERRAL_MANAGER_ADDRESS: { [chainID: number]: string } = {
@@ -140,7 +152,9 @@ export const CHAIN_ID_TO_REFERRAL_MANAGER_ADDRESS: { [chainID: number]: string }
   // bsc
   56: '0x3EfE4639eb082e22209fee29aAbaf14Ade5bF82B',
   // fantom
-  250: '0x3EfE4639eb082e22209fee29aAbaf14Ade5bF82B'
+  250: '0x3EfE4639eb082e22209fee29aAbaf14Ade5bF82B',
+  // optimism
+  10: '0xc9296e12e2Fe55605d9F6dB5412EaA1938F0B404'
 }
 
 export enum OrderType {
@@ -152,10 +166,12 @@ export enum OrderType {
 }
 
 export enum PositionOrderFlags {
-  OpenPosition = 0x80, // 0x80 means openPosition; otherwise closePosition
-  MarketOrder = 0x40, // 0x40 means ignore limitPrice
-  WithdrawAllIfEmpty = 0x20, // 0x20 means auto withdraw all collateral if position.size == 0
-  TriggerOrder = 0x10 // 0x10 means this is a trigger order (ex: stop-loss order). 0 means this is a limit order (ex: take-profit order)
+  OpenPosition = 0x80, // this flag means openPosition; otherwise closePosition
+  MarketOrder = 0x40, // this flag means ignore limitPrice
+  WithdrawAllIfEmpty = 0x20, // this flag means auto withdraw all collateral if position.size == 0
+  TriggerOrder = 0x10, // this flag means this is a trigger order (ex: stop-loss order). otherwise this is a limit order (ex: take-profit order)
+  TpSlStratrgy = 0x08 // for open-position-order, this flag auto place take-profit and stop-loss orders when open-position-order fills.
+  //                     for close-position-order, this flag means ignore limitPrice and profitTokenId, and use extra.tpPrice, extra.slPrice, extra.tpslProfitTokenId instead.
 }
 
 // do not forget toWei(PreMinedTokenTotalSupply)

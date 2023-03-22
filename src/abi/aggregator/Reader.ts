@@ -52,6 +52,8 @@ export declare namespace Reader {
     sizeDeltaUsd: PromiseOrValue<BigNumberish>;
     triggerPrice: PromiseOrValue<BigNumberish>;
     triggerAboveThreshold: PromiseOrValue<boolean>;
+    tpOrderHistoryKey: PromiseOrValue<BytesLike>;
+    slOrderHistoryKey: PromiseOrValue<BytesLike>;
   };
 
   export type GmxAdapterOrderStructOutput = [
@@ -61,7 +63,9 @@ export declare namespace Reader {
     BigNumber,
     BigNumber,
     BigNumber,
-    boolean
+    boolean,
+    string,
+    string
   ] & {
     orderHistoryKey: string;
     isFillOrCancel: boolean;
@@ -70,6 +74,8 @@ export declare namespace Reader {
     sizeDeltaUsd: BigNumber;
     triggerPrice: BigNumber;
     triggerAboveThreshold: boolean;
+    tpOrderHistoryKey: string;
+    slOrderHistoryKey: string;
   };
 
   export type AggregatorSubAccountStruct = {

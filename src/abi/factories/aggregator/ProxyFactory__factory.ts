@@ -275,40 +275,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "account_",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "collateralToken_",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "indexToken_",
-        type: "address",
-      },
-      {
-        internalType: "bool",
-        name: "isLong_",
-        type: "bool",
-      },
-    ],
-    name: "_makeGmxPositionKey",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    stateMutability: "pure",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "projectId",
         type: "uint256",
@@ -467,6 +433,76 @@ const _abi = [
       },
     ],
     name: "closePosition",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "projectId",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "collateralToken",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "assetToken",
+            type: "address",
+          },
+          {
+            internalType: "bool",
+            name: "isLong",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "collateralUsd",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "sizeUsd",
+            type: "uint256",
+          },
+          {
+            internalType: "uint96",
+            name: "priceUsd",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "tpPriceUsd",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "slPriceUsd",
+            type: "uint96",
+          },
+          {
+            internalType: "uint8",
+            name: "flags",
+            type: "uint8",
+          },
+          {
+            internalType: "bytes32",
+            name: "referralCode",
+            type: "bytes32",
+          },
+        ],
+        internalType: "struct ProxyFactory.ClosePositionArgsV2",
+        name: "args",
+        type: "tuple",
+      },
+    ],
+    name: "closePositionV2",
     outputs: [],
     stateMutability: "payable",
     type: "function",
@@ -871,6 +907,91 @@ const _abi = [
       },
     ],
     name: "openPosition",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "projectId",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "collateralToken",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "assetToken",
+            type: "address",
+          },
+          {
+            internalType: "bool",
+            name: "isLong",
+            type: "bool",
+          },
+          {
+            internalType: "address",
+            name: "tokenIn",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "amountIn",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "minOut",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "borrow",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "sizeUsd",
+            type: "uint256",
+          },
+          {
+            internalType: "uint96",
+            name: "priceUsd",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "tpPriceUsd",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "slPriceUsd",
+            type: "uint96",
+          },
+          {
+            internalType: "uint8",
+            name: "flags",
+            type: "uint8",
+          },
+          {
+            internalType: "bytes32",
+            name: "referralCode",
+            type: "bytes32",
+          },
+        ],
+        internalType: "struct ProxyFactory.OpenPositionArgsV2",
+        name: "args",
+        type: "tuple",
+      },
+    ],
+    name: "openPositionV2",
     outputs: [],
     stateMutability: "payable",
     type: "function",

@@ -180,6 +180,89 @@ const _abi = [
     inputs: [
       {
         indexed: true,
+        internalType: "bytes32",
+        name: "subAccountId",
+        type: "bytes32",
+      },
+      {
+        indexed: true,
+        internalType: "uint64",
+        name: "orderId",
+        type: "uint64",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "collateral",
+        type: "uint96",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "size",
+        type: "uint96",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "price",
+        type: "uint96",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "profitTokenId",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "flags",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "deadline",
+        type: "uint32",
+      },
+      {
+        components: [
+          {
+            internalType: "uint96",
+            name: "tpPrice",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "slPrice",
+            type: "uint96",
+          },
+          {
+            internalType: "uint8",
+            name: "tpslProfitTokenId",
+            type: "uint8",
+          },
+          {
+            internalType: "uint32",
+            name: "tpslDeadline",
+            type: "uint32",
+          },
+        ],
+        indexed: false,
+        internalType: "struct PositionOrderExtra",
+        name: "extra",
+        type: "tuple",
+      },
+    ],
+    name: "NewPositionOrderExtra",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "address",
         name: "rebalancer",
         type: "address",
@@ -932,8 +1015,13 @@ const _abi = [
         name: "deadline",
         type: "uint32",
       },
+      {
+        internalType: "bytes32",
+        name: "referralCode",
+        type: "bytes32",
+      },
     ],
-    name: "placePositionOrder",
+    name: "placePositionOrder2",
     outputs: [],
     stateMutability: "payable",
     type: "function",
@@ -980,8 +1068,35 @@ const _abi = [
         name: "referralCode",
         type: "bytes32",
       },
+      {
+        components: [
+          {
+            internalType: "uint96",
+            name: "tpPrice",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "slPrice",
+            type: "uint96",
+          },
+          {
+            internalType: "uint8",
+            name: "tpslProfitTokenId",
+            type: "uint8",
+          },
+          {
+            internalType: "uint32",
+            name: "tpslDeadline",
+            type: "uint32",
+          },
+        ],
+        internalType: "struct PositionOrderExtra",
+        name: "extra",
+        type: "tuple",
+      },
     ],
-    name: "placePositionOrder2",
+    name: "placePositionOrder3",
     outputs: [],
     stateMutability: "payable",
     type: "function",
@@ -1045,6 +1160,40 @@ const _abi = [
     name: "placeWithdrawalOrder",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    name: "positionOrderExtras",
+    outputs: [
+      {
+        internalType: "uint96",
+        name: "tpPrice",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "slPrice",
+        type: "uint96",
+      },
+      {
+        internalType: "uint8",
+        name: "tpslProfitTokenId",
+        type: "uint8",
+      },
+      {
+        internalType: "uint32",
+        name: "tpslDeadline",
+        type: "uint32",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {

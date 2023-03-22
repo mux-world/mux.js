@@ -93,6 +93,8 @@ export interface GmxAdapterOrder {
   sizeDeltaUsd: BigNumber
   triggerPrice: BigNumber // 0 if market order
   triggerAboveThreshold: boolean
+  tpOrderHistoryKey: string
+  slOrderHistoryKey: string
 }
 
 export interface GmxAdapterOpenPositionResult {

@@ -17,6 +17,25 @@ import { FunctionFragment, Result } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
+export type PositionOrderExtraStruct = {
+  tpPrice: BigNumberish;
+  slPrice: BigNumberish;
+  tpslProfitTokenId: BigNumberish;
+  tpslDeadline: BigNumberish;
+};
+
+export type PositionOrderExtraStructOutput = [
+  BigNumber,
+  BigNumber,
+  number,
+  number
+] & {
+  tpPrice: BigNumber;
+  slPrice: BigNumber;
+  tpslProfitTokenId: number;
+  tpslDeadline: number;
+};
+
 export declare namespace Reader {
   export type PoolStorageStruct = {
     shortFundingBaseRate8H: BigNumberish;
@@ -254,6 +273,7 @@ export interface ReaderInterface extends utils.Interface {
     "getChainStorage()": FunctionFragment;
     "getErc20Balances(address[],address)": FunctionFragment;
     "getOrders(uint64[])": FunctionFragment;
+    "getPositionOrdersExtra(uint64[])": FunctionFragment;
     "getSubAccounts(bytes32[])": FunctionFragment;
     "getSubAccountsAndOrders(bytes32[],uint64[])": FunctionFragment;
     "mlp()": FunctionFragment;
@@ -276,6 +296,10 @@ export interface ReaderInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getOrders",
+    values: [BigNumberish[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getPositionOrdersExtra",
     values: [BigNumberish[]]
   ): string;
   encodeFunctionData(
@@ -304,6 +328,10 @@ export interface ReaderInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getOrders", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getPositionOrdersExtra",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getSubAccounts",
     data: BytesLike
@@ -374,6 +402,15 @@ export interface Reader extends BaseContract {
       }
     >;
 
+    getPositionOrdersExtra(
+      orderIds: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<
+      [PositionOrderExtraStructOutput[]] & {
+        extras: PositionOrderExtraStructOutput[];
+      }
+    >;
+
     getSubAccounts(
       subAccountIds: BytesLike[],
       overrides?: CallOverrides
@@ -433,6 +470,11 @@ export interface Reader extends BaseContract {
     }
   >;
 
+  getPositionOrdersExtra(
+    orderIds: BigNumberish[],
+    overrides?: CallOverrides
+  ): Promise<PositionOrderExtraStructOutput[]>;
+
   getSubAccounts(
     subAccountIds: BytesLike[],
     overrides?: CallOverrides
@@ -488,6 +530,11 @@ export interface Reader extends BaseContract {
       }
     >;
 
+    getPositionOrdersExtra(
+      orderIds: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<PositionOrderExtraStructOutput[]>;
+
     getSubAccounts(
       subAccountIds: BytesLike[],
       overrides?: CallOverrides
@@ -541,6 +588,11 @@ export interface Reader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getPositionOrdersExtra(
+      orderIds: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getSubAccounts(
       subAccountIds: BytesLike[],
       overrides?: CallOverrides
@@ -578,6 +630,11 @@ export interface Reader extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getOrders(
+      orderIds: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getPositionOrdersExtra(
       orderIds: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

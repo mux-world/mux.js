@@ -18,6 +18,25 @@ import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
+export type PositionOrderExtraStruct = {
+  tpPrice: BigNumberish;
+  slPrice: BigNumberish;
+  tpslProfitTokenId: BigNumberish;
+  tpslDeadline: BigNumberish;
+};
+
+export type PositionOrderExtraStructOutput = [
+  BigNumber,
+  BigNumber,
+  number,
+  number
+] & {
+  tpPrice: BigNumber;
+  slPrice: BigNumber;
+  tpslProfitTokenId: number;
+  tpslDeadline: number;
+};
+
 export interface OrderBookInterface extends utils.Interface {
   contractName: "OrderBook";
   functions: {
@@ -47,10 +66,11 @@ export interface OrderBookInterface extends utils.Interface {
     "owner()": FunctionFragment;
     "pause(bool,bool)": FunctionFragment;
     "placeLiquidityOrder(uint8,uint96,bool)": FunctionFragment;
-    "placePositionOrder(bytes32,uint96,uint96,uint96,uint8,uint8,uint32)": FunctionFragment;
     "placePositionOrder2(bytes32,uint96,uint96,uint96,uint8,uint8,uint32,bytes32)": FunctionFragment;
+    "placePositionOrder3(bytes32,uint96,uint96,uint96,uint8,uint8,uint32,bytes32,(uint96,uint96,uint8,uint32))": FunctionFragment;
     "placeRebalanceOrder(uint8,uint8,uint96,uint96,bytes32)": FunctionFragment;
     "placeWithdrawalOrder(bytes32,uint96,uint8,bool)": FunctionFragment;
+    "positionOrderExtras(uint64)": FunctionFragment;
     "rebalancers(address)": FunctionFragment;
     "redeemMuxToken(uint8,uint96)": FunctionFragment;
     "referralManager()": FunctionFragment;
@@ -171,18 +191,6 @@ export interface OrderBookInterface extends utils.Interface {
     values: [BigNumberish, BigNumberish, boolean]
   ): string;
   encodeFunctionData(
-    functionFragment: "placePositionOrder",
-    values: [
-      BytesLike,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "placePositionOrder2",
     values: [
       BytesLike,
@@ -196,12 +204,30 @@ export interface OrderBookInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "placePositionOrder3",
+    values: [
+      BytesLike,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BytesLike,
+      PositionOrderExtraStruct
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "placeRebalanceOrder",
     values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "placeWithdrawalOrder",
     values: [BytesLike, BigNumberish, BigNumberish, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "positionOrderExtras",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "rebalancers", values: [string]): string;
   encodeFunctionData(
@@ -343,11 +369,11 @@ export interface OrderBookInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "placePositionOrder",
+    functionFragment: "placePositionOrder2",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "placePositionOrder2",
+    functionFragment: "placePositionOrder3",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -356,6 +382,10 @@ export interface OrderBookInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "placeWithdrawalOrder",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "positionOrderExtras",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -430,6 +460,7 @@ export interface OrderBookInterface extends utils.Interface {
     "FillOrder(uint64,uint8,bytes32[3])": EventFragment;
     "NewLiquidityOrder(address,uint64,uint8,uint96,bool)": EventFragment;
     "NewPositionOrder(bytes32,uint64,uint96,uint96,uint96,uint8,uint8,uint32)": EventFragment;
+    "NewPositionOrderExtra(bytes32,uint64,uint96,uint96,uint96,uint8,uint8,uint32,tuple)": EventFragment;
     "NewRebalanceOrder(address,uint64,uint8,uint8,uint96,uint96,bytes32)": EventFragment;
     "NewWithdrawalOrder(bytes32,uint64,uint96,uint8,bool)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
@@ -450,6 +481,7 @@ export interface OrderBookInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "FillOrder"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewLiquidityOrder"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewPositionOrder"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewPositionOrderExtra"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewRebalanceOrder"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewWithdrawalOrder"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
@@ -519,6 +551,34 @@ export type NewPositionOrderEvent = TypedEvent<
 
 export type NewPositionOrderEventFilter =
   TypedEventFilter<NewPositionOrderEvent>;
+
+export type NewPositionOrderExtraEvent = TypedEvent<
+  [
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    number,
+    number,
+    number,
+    PositionOrderExtraStructOutput
+  ],
+  {
+    subAccountId: string;
+    orderId: BigNumber;
+    collateral: BigNumber;
+    size: BigNumber;
+    price: BigNumber;
+    profitTokenId: number;
+    flags: number;
+    deadline: number;
+    extra: PositionOrderExtraStructOutput;
+  }
+>;
+
+export type NewPositionOrderExtraEventFilter =
+  TypedEventFilter<NewPositionOrderExtraEvent>;
 
 export type NewRebalanceOrderEvent = TypedEvent<
   [string, BigNumber, number, number, BigNumber, BigNumber, string],
@@ -777,17 +837,6 @@ export interface OrderBook extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    placePositionOrder(
-      subAccountId: BytesLike,
-      collateralAmount: BigNumberish,
-      size: BigNumberish,
-      price: BigNumberish,
-      profitTokenId: BigNumberish,
-      flags: BigNumberish,
-      deadline: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     placePositionOrder2(
       subAccountId: BytesLike,
       collateralAmount: BigNumberish,
@@ -797,6 +846,19 @@ export interface OrderBook extends BaseContract {
       flags: BigNumberish,
       deadline: BigNumberish,
       referralCode: BytesLike,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    placePositionOrder3(
+      subAccountId: BytesLike,
+      collateralAmount: BigNumberish,
+      size: BigNumberish,
+      price: BigNumberish,
+      profitTokenId: BigNumberish,
+      flags: BigNumberish,
+      deadline: BigNumberish,
+      referralCode: BytesLike,
+      extra: PositionOrderExtraStruct,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -816,6 +878,18 @@ export interface OrderBook extends BaseContract {
       isProfit: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    positionOrderExtras(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, number, number] & {
+        tpPrice: BigNumber;
+        slPrice: BigNumber;
+        tpslProfitTokenId: number;
+        tpslDeadline: number;
+      }
+    >;
 
     rebalancers(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -1018,17 +1092,6 @@ export interface OrderBook extends BaseContract {
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  placePositionOrder(
-    subAccountId: BytesLike,
-    collateralAmount: BigNumberish,
-    size: BigNumberish,
-    price: BigNumberish,
-    profitTokenId: BigNumberish,
-    flags: BigNumberish,
-    deadline: BigNumberish,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   placePositionOrder2(
     subAccountId: BytesLike,
     collateralAmount: BigNumberish,
@@ -1038,6 +1101,19 @@ export interface OrderBook extends BaseContract {
     flags: BigNumberish,
     deadline: BigNumberish,
     referralCode: BytesLike,
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  placePositionOrder3(
+    subAccountId: BytesLike,
+    collateralAmount: BigNumberish,
+    size: BigNumberish,
+    price: BigNumberish,
+    profitTokenId: BigNumberish,
+    flags: BigNumberish,
+    deadline: BigNumberish,
+    referralCode: BytesLike,
+    extra: PositionOrderExtraStruct,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1057,6 +1133,18 @@ export interface OrderBook extends BaseContract {
     isProfit: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  positionOrderExtras(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, number, number] & {
+      tpPrice: BigNumber;
+      slPrice: BigNumber;
+      tpslProfitTokenId: number;
+      tpslDeadline: number;
+    }
+  >;
 
   rebalancers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -1254,17 +1342,6 @@ export interface OrderBook extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    placePositionOrder(
-      subAccountId: BytesLike,
-      collateralAmount: BigNumberish,
-      size: BigNumberish,
-      price: BigNumberish,
-      profitTokenId: BigNumberish,
-      flags: BigNumberish,
-      deadline: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     placePositionOrder2(
       subAccountId: BytesLike,
       collateralAmount: BigNumberish,
@@ -1274,6 +1351,19 @@ export interface OrderBook extends BaseContract {
       flags: BigNumberish,
       deadline: BigNumberish,
       referralCode: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    placePositionOrder3(
+      subAccountId: BytesLike,
+      collateralAmount: BigNumberish,
+      size: BigNumberish,
+      price: BigNumberish,
+      profitTokenId: BigNumberish,
+      flags: BigNumberish,
+      deadline: BigNumberish,
+      referralCode: BytesLike,
+      extra: PositionOrderExtraStruct,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1293,6 +1383,18 @@ export interface OrderBook extends BaseContract {
       isProfit: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    positionOrderExtras(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, number, number] & {
+        tpPrice: BigNumber;
+        slPrice: BigNumber;
+        tpslProfitTokenId: number;
+        tpslDeadline: number;
+      }
+    >;
 
     rebalancers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -1425,6 +1527,29 @@ export interface OrderBook extends BaseContract {
       flags?: null,
       deadline?: null
     ): NewPositionOrderEventFilter;
+
+    "NewPositionOrderExtra(bytes32,uint64,uint96,uint96,uint96,uint8,uint8,uint32,tuple)"(
+      subAccountId?: BytesLike | null,
+      orderId?: BigNumberish | null,
+      collateral?: null,
+      size?: null,
+      price?: null,
+      profitTokenId?: null,
+      flags?: null,
+      deadline?: null,
+      extra?: null
+    ): NewPositionOrderExtraEventFilter;
+    NewPositionOrderExtra(
+      subAccountId?: BytesLike | null,
+      orderId?: BigNumberish | null,
+      collateral?: null,
+      size?: null,
+      price?: null,
+      profitTokenId?: null,
+      flags?: null,
+      deadline?: null,
+      extra?: null
+    ): NewPositionOrderExtraEventFilter;
 
     "NewRebalanceOrder(address,uint64,uint8,uint8,uint96,uint96,bytes32)"(
       rebalancer?: string | null,
@@ -1644,17 +1769,6 @@ export interface OrderBook extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    placePositionOrder(
-      subAccountId: BytesLike,
-      collateralAmount: BigNumberish,
-      size: BigNumberish,
-      price: BigNumberish,
-      profitTokenId: BigNumberish,
-      flags: BigNumberish,
-      deadline: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     placePositionOrder2(
       subAccountId: BytesLike,
       collateralAmount: BigNumberish,
@@ -1664,6 +1778,19 @@ export interface OrderBook extends BaseContract {
       flags: BigNumberish,
       deadline: BigNumberish,
       referralCode: BytesLike,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    placePositionOrder3(
+      subAccountId: BytesLike,
+      collateralAmount: BigNumberish,
+      size: BigNumberish,
+      price: BigNumberish,
+      profitTokenId: BigNumberish,
+      flags: BigNumberish,
+      deadline: BigNumberish,
+      referralCode: BytesLike,
+      extra: PositionOrderExtraStruct,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1682,6 +1809,11 @@ export interface OrderBook extends BaseContract {
       profitTokenId: BigNumberish,
       isProfit: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    positionOrderExtras(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     rebalancers(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -1894,17 +2026,6 @@ export interface OrderBook extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    placePositionOrder(
-      subAccountId: BytesLike,
-      collateralAmount: BigNumberish,
-      size: BigNumberish,
-      price: BigNumberish,
-      profitTokenId: BigNumberish,
-      flags: BigNumberish,
-      deadline: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     placePositionOrder2(
       subAccountId: BytesLike,
       collateralAmount: BigNumberish,
@@ -1914,6 +2035,19 @@ export interface OrderBook extends BaseContract {
       flags: BigNumberish,
       deadline: BigNumberish,
       referralCode: BytesLike,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    placePositionOrder3(
+      subAccountId: BytesLike,
+      collateralAmount: BigNumberish,
+      size: BigNumberish,
+      price: BigNumberish,
+      profitTokenId: BigNumberish,
+      flags: BigNumberish,
+      deadline: BigNumberish,
+      referralCode: BytesLike,
+      extra: PositionOrderExtraStruct,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1932,6 +2066,11 @@ export interface OrderBook extends BaseContract {
       profitTokenId: BigNumberish,
       isProfit: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    positionOrderExtras(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     rebalancers(

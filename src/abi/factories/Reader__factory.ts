@@ -437,6 +437,47 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint64[]",
+        name: "orderIds",
+        type: "uint64[]",
+      },
+    ],
+    name: "getPositionOrdersExtra",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint96",
+            name: "tpPrice",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "slPrice",
+            type: "uint96",
+          },
+          {
+            internalType: "uint8",
+            name: "tpslProfitTokenId",
+            type: "uint8",
+          },
+          {
+            internalType: "uint32",
+            name: "tpslDeadline",
+            type: "uint32",
+          },
+        ],
+        internalType: "struct PositionOrderExtra[]",
+        name: "extras",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32[]",
         name: "subAccountIds",
         type: "bytes32[]",

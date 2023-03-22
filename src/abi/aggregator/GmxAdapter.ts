@@ -34,6 +34,7 @@ export type ClosePositionContextStruct = {
   priceUsd: PromiseOrValue<BigNumberish>;
   isMarket: PromiseOrValue<boolean>;
   gmxOrderIndex: PromiseOrValue<BigNumberish>;
+  executionFee: PromiseOrValue<BigNumberish>;
 };
 
 export type ClosePositionContextStructOutput = [
@@ -41,6 +42,7 @@ export type ClosePositionContextStructOutput = [
   BigNumber,
   BigNumber,
   boolean,
+  BigNumber,
   BigNumber
 ] & {
   collateralUsd: BigNumber;
@@ -48,6 +50,7 @@ export type ClosePositionContextStructOutput = [
   priceUsd: BigNumber;
   isMarket: boolean;
   gmxOrderIndex: BigNumber;
+  executionFee: BigNumber;
 };
 
 export type OpenPositionContextStruct = {
@@ -161,13 +164,14 @@ export interface GmxAdapterInterface extends utils.Interface {
   functions: {
     "cancelOrders(bytes32[])": FunctionFragment;
     "cancelTimeoutOrders(bytes32[])": FunctionFragment;
-    "closePosition(uint256,uint256,uint96,uint8)": FunctionFragment;
+    "closePosition(uint256,uint256,uint96,uint96,uint96,uint8)": FunctionFragment;
     "debtStates()": FunctionFragment;
     "getPendingGmxOrderKeys()": FunctionFragment;
+    "getTpslOrderKeys(bytes32)": FunctionFragment;
     "initialize(uint256,address,address,address,address,bool)": FunctionFragment;
     "liquidatePosition(uint256)": FunctionFragment;
     "muxAccountState()": FunctionFragment;
-    "openPosition(address,uint256,uint256,uint256,uint256,uint96,uint8)": FunctionFragment;
+    "openPosition(address,uint256,uint256,uint256,uint256,uint96,uint96,uint96,uint8)": FunctionFragment;
     "withdraw()": FunctionFragment;
   };
 
@@ -178,6 +182,7 @@ export interface GmxAdapterInterface extends utils.Interface {
       | "closePosition"
       | "debtStates"
       | "getPendingGmxOrderKeys"
+      | "getTpslOrderKeys"
       | "initialize"
       | "liquidatePosition"
       | "muxAccountState"
@@ -199,6 +204,8 @@ export interface GmxAdapterInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
     ]
   ): string;
@@ -209,6 +216,10 @@ export interface GmxAdapterInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "getPendingGmxOrderKeys",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getTpslOrderKeys",
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
@@ -238,6 +249,8 @@ export interface GmxAdapterInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
     ]
   ): string;
@@ -258,6 +271,10 @@ export interface GmxAdapterInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "debtStates", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getPendingGmxOrderKeys",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTpslOrderKeys",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
@@ -516,6 +533,8 @@ export interface GmxAdapter extends BaseContract {
       collateralUsd: PromiseOrValue<BigNumberish>,
       sizeUsd: PromiseOrValue<BigNumberish>,
       priceUsd: PromiseOrValue<BigNumberish>,
+      tpPriceUsd: PromiseOrValue<BigNumberish>,
+      slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -531,6 +550,11 @@ export interface GmxAdapter extends BaseContract {
     >;
 
     getPendingGmxOrderKeys(overrides?: CallOverrides): Promise<[string[]]>;
+
+    getTpslOrderKeys(
+      orderKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string, string]>;
 
     initialize(
       projectId: PromiseOrValue<BigNumberish>,
@@ -558,6 +582,8 @@ export interface GmxAdapter extends BaseContract {
       borrow: PromiseOrValue<BigNumberish>,
       sizeUsd: PromiseOrValue<BigNumberish>,
       priceUsd: PromiseOrValue<BigNumberish>,
+      tpPriceUsd: PromiseOrValue<BigNumberish>,
+      slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -581,6 +607,8 @@ export interface GmxAdapter extends BaseContract {
     collateralUsd: PromiseOrValue<BigNumberish>,
     sizeUsd: PromiseOrValue<BigNumberish>,
     priceUsd: PromiseOrValue<BigNumberish>,
+    tpPriceUsd: PromiseOrValue<BigNumberish>,
+    slPriceUsd: PromiseOrValue<BigNumberish>,
     flags: PromiseOrValue<BigNumberish>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -596,6 +624,11 @@ export interface GmxAdapter extends BaseContract {
   >;
 
   getPendingGmxOrderKeys(overrides?: CallOverrides): Promise<string[]>;
+
+  getTpslOrderKeys(
+    orderKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<[string, string]>;
 
   initialize(
     projectId: PromiseOrValue<BigNumberish>,
@@ -621,6 +654,8 @@ export interface GmxAdapter extends BaseContract {
     borrow: PromiseOrValue<BigNumberish>,
     sizeUsd: PromiseOrValue<BigNumberish>,
     priceUsd: PromiseOrValue<BigNumberish>,
+    tpPriceUsd: PromiseOrValue<BigNumberish>,
+    slPriceUsd: PromiseOrValue<BigNumberish>,
     flags: PromiseOrValue<BigNumberish>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -644,6 +679,8 @@ export interface GmxAdapter extends BaseContract {
       collateralUsd: PromiseOrValue<BigNumberish>,
       sizeUsd: PromiseOrValue<BigNumberish>,
       priceUsd: PromiseOrValue<BigNumberish>,
+      tpPriceUsd: PromiseOrValue<BigNumberish>,
+      slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -659,6 +696,11 @@ export interface GmxAdapter extends BaseContract {
     >;
 
     getPendingGmxOrderKeys(overrides?: CallOverrides): Promise<string[]>;
+
+    getTpslOrderKeys(
+      orderKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string, string]>;
 
     initialize(
       projectId: PromiseOrValue<BigNumberish>,
@@ -686,6 +728,8 @@ export interface GmxAdapter extends BaseContract {
       borrow: PromiseOrValue<BigNumberish>,
       sizeUsd: PromiseOrValue<BigNumberish>,
       priceUsd: PromiseOrValue<BigNumberish>,
+      tpPriceUsd: PromiseOrValue<BigNumberish>,
+      slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -850,6 +894,8 @@ export interface GmxAdapter extends BaseContract {
       collateralUsd: PromiseOrValue<BigNumberish>,
       sizeUsd: PromiseOrValue<BigNumberish>,
       priceUsd: PromiseOrValue<BigNumberish>,
+      tpPriceUsd: PromiseOrValue<BigNumberish>,
+      slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -857,6 +903,11 @@ export interface GmxAdapter extends BaseContract {
     debtStates(overrides?: CallOverrides): Promise<BigNumber>;
 
     getPendingGmxOrderKeys(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getTpslOrderKeys(
+      orderKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     initialize(
       projectId: PromiseOrValue<BigNumberish>,
@@ -882,6 +933,8 @@ export interface GmxAdapter extends BaseContract {
       borrow: PromiseOrValue<BigNumberish>,
       sizeUsd: PromiseOrValue<BigNumberish>,
       priceUsd: PromiseOrValue<BigNumberish>,
+      tpPriceUsd: PromiseOrValue<BigNumberish>,
+      slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -906,6 +959,8 @@ export interface GmxAdapter extends BaseContract {
       collateralUsd: PromiseOrValue<BigNumberish>,
       sizeUsd: PromiseOrValue<BigNumberish>,
       priceUsd: PromiseOrValue<BigNumberish>,
+      tpPriceUsd: PromiseOrValue<BigNumberish>,
+      slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -913,6 +968,11 @@ export interface GmxAdapter extends BaseContract {
     debtStates(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getPendingGmxOrderKeys(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getTpslOrderKeys(
+      orderKey: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -940,6 +1000,8 @@ export interface GmxAdapter extends BaseContract {
       borrow: PromiseOrValue<BigNumberish>,
       sizeUsd: PromiseOrValue<BigNumberish>,
       priceUsd: PromiseOrValue<BigNumberish>,
+      tpPriceUsd: PromiseOrValue<BigNumberish>,
+      slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

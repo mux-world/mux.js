@@ -162,6 +162,11 @@ const _abi = [
             name: "gmxOrderIndex",
             type: "uint256",
           },
+          {
+            internalType: "uint256",
+            name: "executionFee",
+            type: "uint256",
+          },
         ],
         indexed: false,
         internalType: "struct ClosePositionContext",
@@ -542,6 +547,16 @@ const _abi = [
         type: "uint96",
       },
       {
+        internalType: "uint96",
+        name: "tpPriceUsd",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "slPriceUsd",
+        type: "uint96",
+      },
+      {
         internalType: "uint8",
         name: "flags",
         type: "uint8",
@@ -583,6 +598,30 @@ const _abi = [
         internalType: "bytes32[]",
         name: "",
         type: "bytes32[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "orderKey",
+        type: "bytes32",
+      },
+    ],
+    name: "getTpslOrderKeys",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
       },
     ],
     stateMutability: "view",
@@ -744,6 +783,16 @@ const _abi = [
       {
         internalType: "uint96",
         name: "priceUsd",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "tpPriceUsd",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "slPriceUsd",
         type: "uint96",
       },
       {
