@@ -184,7 +184,7 @@ function _parseGmxTokens(
     }
 
     token.maxLongCapacityUsd =
-      token.maxGlobalLongSizeUsd.gt(0) && token.maxGlobalLongSizeUsd.lt(token.availableUsd)
+      token.maxGlobalLongSizeUsd.gt(0) && token.maxGlobalLongSizeUsd.lt(token.availableUsd.plus(token.guaranteedUsd))
         ? token.maxGlobalLongSizeUsd
         : token.availableUsd.plus(token.guaranteedUsd)
 
@@ -322,7 +322,9 @@ function _parseGmxAdapterOrder(
       collateralDeltaUsd: fromGmxUsd(i.collateralDeltaUsd),
       sizeDeltaUsd: fromGmxUsd(i.sizeDeltaUsd),
       triggerPrice: fromGmxUsd(i.triggerPrice),
-      triggerAboveThreshold: i.triggerAboveThreshold
+      triggerAboveThreshold: i.triggerAboveThreshold,
+      slOrderHistoryKey: i.slOrderHistoryKey,
+      tpOrderHistoryKey: i.tpOrderHistoryKey
     })
   }
   return ret
