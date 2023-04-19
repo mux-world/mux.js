@@ -62,6 +62,7 @@ const assets: Asset[] = [
     totalLongPosition: new BigNumber(1),
     totalShortPosition: new BigNumber(1),
     spotLiquidity: new BigNumber(1000),
+    credit: new BigNumber(0),
     averageLongPrice: new BigNumber(2500),
     averageShortPrice: new BigNumber(2600),
     collectedFee: new BigNumber(100),
@@ -100,6 +101,7 @@ const assets: Asset[] = [
     totalLongPosition: new BigNumber(0),
     totalShortPosition: new BigNumber(0),
     spotLiquidity: new BigNumber(1000000),
+    credit: new BigNumber(0),
     averageLongPrice: new BigNumber(0),
     averageShortPrice: new BigNumber(0),
     collectedFee: new BigNumber(10000),
@@ -155,7 +157,7 @@ const accountStorage3 = {
   }
 }
 
-describe('computeSubAccount', function() {
+describe('computeSubAccount', function () {
   const prices: PriceDict = {
     ETH: new BigNumber('6965'),
     USDC: _1
@@ -263,7 +265,7 @@ describe('computeSubAccount', function() {
   ]
 
   successCases.forEach((element, index) => {
-    it(`computeAccount.${index}`, function() {
+    it(`computeAccount.${index}`, function () {
       const expectedOutput = element.expectedOutput
       const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, element.subAccountId, prices)
       const accountDetails = computeSubAccount(
@@ -289,7 +291,7 @@ describe('computeSubAccount', function() {
       expect(computed.withdrawableCollateral).toApproximate(expectedOutput.withdrawableCollateral)
       expect(computed.withdrawableProfit).toApproximate(expectedOutput.withdrawableProfit)
     })
-    it(`computeWithdrawCollateral.${index}`, function() {
+    it(`computeWithdrawCollateral.${index}`, function () {
       const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, element.subAccountId, prices)
       const accountDetails = computeSubAccount(
         assets,
@@ -306,7 +308,7 @@ describe('computeSubAccount', function() {
       expect(after.isTradeSafe).toBeTruthy()
       expect(after.afterTrade.computed.withdrawableCollateral.lt('1e-3')).toBeTruthy()
     })
-    it(`computeWithdrawProfit.${index}`, function() {
+    it(`computeWithdrawProfit.${index}`, function () {
       const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, element.subAccountId, prices)
       const accountDetails = computeSubAccount(
         assets,
@@ -326,7 +328,7 @@ describe('computeSubAccount', function() {
   })
 })
 
-describe('computePositionPnlUsd', function() {
+describe('computePositionPnlUsd', function () {
   let position: SubAccount = {
     collateral: _0,
     size: _1,
@@ -386,19 +388,19 @@ describe('computePositionPnlUsd', function() {
   })
 })
 
-describe('trade fail', function() {
+describe('trade fail', function () {
   const prices: PriceDict = {
     ETH: new BigNumber('6965'),
     USDC: _1
   }
 
-  it('decrease flat', function() {
+  it('decrease flat', function () {
     expect((): void => {
       computeClosePosition(assets, accountStorage0.subAccountId, accountStorage0.subAccount, 1, prices, _1, _0)
     }).toThrow('invalid amount 1')
   })
 
-  it('decrease zero price', function() {
+  it('decrease zero price', function () {
     expect((): void => {
       computeClosePosition(
         assets,
@@ -415,13 +417,13 @@ describe('trade fail', function() {
     }).toThrow('invalid price[USDC]')
   })
 
-  it('decrease zero amount', function() {
+  it('decrease zero amount', function () {
     expect((): void => {
       computeClosePosition(assets, accountStorage1.subAccountId, accountStorage1.subAccount, 1, prices, _0, _0)
     }).toThrow('invalid amount 0')
   })
 
-  it('decrease large amount', function() {
+  it('decrease large amount', function () {
     expect((): void => {
       computeClosePosition(
         assets,
@@ -435,7 +437,7 @@ describe('trade fail', function() {
     }).toThrow('invalid amount 3')
   })
 
-  it('decrease negated', function() {
+  it('decrease negated', function () {
     expect((): void => {
       computeClosePosition(
         assets,
@@ -449,7 +451,7 @@ describe('trade fail', function() {
     }).toThrow('invalid amount -1')
   })
 
-  it('decrease USDC', function() {
+  it('decrease USDC', function () {
     expect((): void => {
       computeClosePosition(
         assets,
@@ -463,7 +465,7 @@ describe('trade fail', function() {
     }).toThrow('not tradable')
   })
 
-  it('increase zero price', function() {
+  it('increase zero price', function () {
     expect((): void => {
       computeOpenPosition(
         assets,
@@ -479,13 +481,13 @@ describe('trade fail', function() {
     }).toThrow('invalid price[USDC]')
   })
 
-  it('increase zero amount', function() {
+  it('increase zero amount', function () {
     expect((): void => {
       computeOpenPosition(assets, accountStorage1.subAccountId, accountStorage1.subAccount, prices, _0, _0)
     }).toThrow('invalid amount 0')
   })
 
-  it('increase negated', function() {
+  it('increase negated', function () {
     expect((): void => {
       computeOpenPosition(
         assets,
@@ -498,7 +500,7 @@ describe('trade fail', function() {
     }).toThrow('invalid amount -1')
   })
 
-  it('increase USDC', function() {
+  it('increase USDC', function () {
     expect((): void => {
       computeOpenPosition(
         assets,
@@ -512,7 +514,7 @@ describe('trade fail', function() {
   })
 })
 
-describe('openPosition', function() {
+describe('openPosition', function () {
   interface Case {
     name: string
     input: {
@@ -559,7 +561,7 @@ describe('openPosition', function() {
   ]
 
   successCases.forEach(element => {
-    it(element.name, function() {
+    it(element.name, function () {
       const expectedOutput = element.expectedOutput
       const tradeAssets = [
         {
@@ -591,7 +593,7 @@ describe('openPosition', function() {
   })
 })
 
-describe('closePosition', function() {
+describe('closePosition', function () {
   interface Case {
     name: string
     input: {
@@ -719,7 +721,7 @@ describe('closePosition', function() {
   ]
 
   successCases.forEach(element => {
-    it(element.name, function() {
+    it(element.name, function () {
       const expectedOutput = element.expectedOutput
       const tradeAssets = [
         {
@@ -888,7 +890,7 @@ describe('computeLiquidityFeeRate', () => {
     }
   ]
   successCases.forEach(element => {
-    it(`${element.input.current}-${element.input.target}, ${element.input.amount}`, function() {
+    it(`${element.input.current}-${element.input.target}, ${element.input.amount}`, function () {
       const fee = computeLiquidityFeeRate(
         pool,
         element.input.current,

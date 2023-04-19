@@ -51,6 +51,7 @@ const assets: Asset[] = [
     totalLongPosition: new BigNumber(1),
     totalShortPosition: new BigNumber(1),
     spotLiquidity: new BigNumber(1000),
+    credit: new BigNumber(0),
     averageLongPrice: new BigNumber(2500),
     averageShortPrice: new BigNumber(2600),
     collectedFee: new BigNumber(100),
@@ -89,6 +90,7 @@ const assets: Asset[] = [
     totalLongPosition: new BigNumber(0),
     totalShortPosition: new BigNumber(0),
     spotLiquidity: new BigNumber(1000000),
+    credit: new BigNumber(0),
     averageLongPrice: new BigNumber(0),
     averageShortPrice: new BigNumber(0),
     collectedFee: new BigNumber(10000),
@@ -97,14 +99,14 @@ const assets: Asset[] = [
   }
 ]
 
-describe('calculateOpenPositionWithCollateral', function() {
+describe('calculateOpenPositionWithCollateral', function () {
   const prices: PriceDict = {
     ETH: new BigNumber('7000'),
     USDC: _1
   }
   const subAccountId = encodeSubAccountId('0x1111111111111111111111111111111111111111', 1, 0, true)
 
-  it(`from 0`, function() {
+  it(`from 0`, function () {
     const subAccount = {
       collateral: _0,
       size: _0,
@@ -130,7 +132,7 @@ describe('calculateOpenPositionWithCollateral', function() {
     expect(computed.afterTrade.computed.leverage).toBeBigNumber(new BigNumber(2))
   })
 
-  it(`from 1`, function() {
+  it(`from 1`, function () {
     const subAccount = {
       collateral: new BigNumber('3500'),
       size: _1,
@@ -158,8 +160,8 @@ describe('calculateOpenPositionWithCollateral', function() {
   })
 })
 
-describe('calculateClosePositionCollateralAmount', function() {
-  it('short ETH/USDC without profit', function() {
+describe('calculateClosePositionCollateralAmount', function () {
+  it('short ETH/USDC without profit', function () {
     const prices: PriceDict = {
       ETH: new BigNumber('7000'),
       USDC: _1
@@ -203,7 +205,7 @@ describe('calculateClosePositionCollateralAmount', function() {
     expect(computed.afterTrade.computed.leverage).toBeBigNumber(new BigNumber(2))
   })
 
-  it('short BTC/BTC with profit', function() {
+  it('short BTC/BTC with profit', function () {
     const assets: Asset[] = [
       {
         symbol: 'USDC',
@@ -236,6 +238,7 @@ describe('calculateClosePositionCollateralAmount', function() {
         longCumulativeFundingRate: new BigNumber('0'),
         shortCumulativeFunding: new BigNumber('0'),
         spotLiquidity: new BigNumber('19905.784771394040578368'),
+        credit: new BigNumber(0),
         totalLongPosition: new BigNumber('0'),
         averageLongPrice: new BigNumber('0'),
         totalShortPosition: new BigNumber('0'),
@@ -274,6 +277,7 @@ describe('calculateClosePositionCollateralAmount', function() {
         longCumulativeFundingRate: new BigNumber('0.0301'),
         shortCumulativeFunding: new BigNumber('773.54034'),
         spotLiquidity: new BigNumber('2.326231295875720941'),
+        credit: new BigNumber(0),
         totalLongPosition: new BigNumber('0.02558'),
         averageLongPrice: new BigNumber('20392.999999999999999924'),
         totalShortPosition: new BigNumber('0.056625628806906317'),

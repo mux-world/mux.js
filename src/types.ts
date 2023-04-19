@@ -107,6 +107,7 @@ export interface AssetState {
   longCumulativeFundingRate: BigNumber // Σ_t fundingRate_t
   shortCumulativeFunding: BigNumber // Σ_t fundingRate_t * indexPrice_t
   spotLiquidity: BigNumber
+  credit: BigNumber
   totalLongPosition: BigNumber
   totalShortPosition: BigNumber
   averageLongPrice: BigNumber

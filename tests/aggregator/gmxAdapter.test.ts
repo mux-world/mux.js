@@ -63,6 +63,7 @@ assets1.push({
   longCumulativeFundingRate: _0,
   shortCumulativeFunding: _0,
   spotLiquidity: new BigNumber('1112756.616434367696668975'),
+  credit: new BigNumber(0),
   totalLongPosition: _0,
   averageLongPrice: _0,
   totalShortPosition: _0,
@@ -103,6 +104,7 @@ assets1.push({
   longCumulativeFundingRate: new BigNumber('0.03081'),
   shortCumulativeFunding: new BigNumber('50.460957'),
   spotLiquidity: new BigNumber('1035.767290003340633667'),
+  credit: new BigNumber(0),
   totalLongPosition: new BigNumber('53.0201'),
   averageLongPrice: new BigNumber('1438.777138389403253393'),
   totalShortPosition: new BigNumber('69.2812'),
@@ -141,6 +143,7 @@ assets1.push({
   longCumulativeFundingRate: new BigNumber('0.02914'),
   shortCumulativeFunding: new BigNumber('750.28618'),
   spotLiquidity: new BigNumber('0.216109424610438445'),
+  credit: new BigNumber(0),
   totalLongPosition: new BigNumber('0.08494'),
   averageLongPrice: new BigNumber('19548.63503649635031495'),
   totalShortPosition: new BigNumber('1.271'),
@@ -388,7 +391,9 @@ describe('aggregator:gmxAggregator', () => {
           collateralDeltaUsd: _0, // decrease only
           sizeDeltaUsd: new BigNumber('1296.5'),
           triggerPrice: _0, // 0 if market order
-          triggerAboveThreshold: false
+          triggerAboveThreshold: false,
+          tpOrderHistoryKey: '',
+          slOrderHistoryKey: '',
         }
       ]
     }
@@ -430,7 +435,9 @@ describe('aggregator:gmxAggregator', () => {
           collateralDeltaUsd: _0, // decrease only
           sizeDeltaUsd: new BigNumber('1296.5'),
           triggerPrice: _0, // 0 if market order
-          triggerAboveThreshold: false
+          triggerAboveThreshold: false,
+          tpOrderHistoryKey: '',
+          slOrderHistoryKey: '',
         }
       ]
     }
@@ -1388,7 +1395,9 @@ describe('aggregator:gmxAggregator', () => {
       collateralDeltaUsd: _0, // decrease only
       sizeDeltaUsd: new BigNumber('1296.5'),
       triggerPrice: _0, // 0 if market order
-      triggerAboveThreshold: false
+      triggerAboveThreshold: false,
+      tpOrderHistoryKey: '',
+      slOrderHistoryKey: '',
     }
     const result1WithOrders = computeGmxAdapterAccount(
       assets1,
@@ -1485,7 +1494,9 @@ describe('aggregator:gmxAggregator', () => {
       collateralDeltaUsd: _0, // decrease only
       sizeDeltaUsd: new BigNumber('1296.5'),
       triggerPrice: _0, // 0 if market order
-      triggerAboveThreshold: false
+      triggerAboveThreshold: false,
+      tpOrderHistoryKey: '',
+      slOrderHistoryKey: '',
     }
     const result1WithOrders = computeGmxAdapterAccount(
       assets1,

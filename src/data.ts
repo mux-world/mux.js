@@ -215,6 +215,7 @@ function _convertAssetStorage(a: Reader.AssetStorageStructOutput): Asset {
     longCumulativeFundingRate: fromWei(a.longCumulativeFundingRate),
     shortCumulativeFunding: fromWei(a.shortCumulativeFunding),
     spotLiquidity: fromWei(a.spotLiquidity),
+    credit: fromWei(a.credit),
     totalLongPosition: fromWei(a.totalLongPosition),
     averageLongPrice: fromWei(a.averageLongPrice),
     totalShortPosition: fromWei(a.totalShortPosition),
