@@ -308,8 +308,8 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "removeLiquidity(address,uint96,uint8,uint96,uint96,uint96,uint96)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "repayAsset(address,uint8,uint256,uint256,uint256)": FunctionFragment;
-    "setAssetFlags(uint8,bool,bool,bool,bool,bool,bool,bool)": FunctionFragment;
-    "setAssetParams(uint8,bytes32,uint32,uint32,uint32,uint32,uint32,uint32,uint96,uint96,uint32,uint32)": FunctionFragment;
+    "setAssetFlags(uint8,bool,bool,bool,bool,bool,bool,bool,uint32)": FunctionFragment;
+    "setAssetParams(uint8,bytes32,uint32,uint32,uint32,uint32,uint32,uint32,uint96,uint96,uint32)": FunctionFragment;
     "setEmergencyNumbers(uint96,uint96)": FunctionFragment;
     "setFundingParams(uint8,uint32,uint32)": FunctionFragment;
     "setLiquidityManager(address,bool)": FunctionFragment;
@@ -447,7 +447,8 @@ export interface LiquidityPoolInterface extends utils.Interface {
       boolean,
       boolean,
       boolean,
-      boolean
+      boolean,
+      BigNumberish
     ]
   ): string;
   encodeFunctionData(
@@ -455,7 +456,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
     values: [
       BigNumberish,
       BytesLike,
-      BigNumberish,
       BigNumberish,
       BigNumberish,
       BigNumberish,
@@ -694,8 +694,8 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "RedeemMuxToken(address,uint8,uint96)": EventFragment;
     "RemoveLiquidity(address,uint8,uint96,uint96,uint96,uint96)": EventFragment;
     "RepayAsset(uint8,address,address,uint256,uint256,uint256)": EventFragment;
-    "SetAssetFlags(uint8,uint56,uint56)": EventFragment;
-    "SetAssetParams(uint8,bytes32,uint32,uint32,uint32,uint32,uint32,uint32,uint96,uint96,uint32,uint32)": EventFragment;
+    "SetAssetFlags(uint8,uint56,uint32)": EventFragment;
+    "SetAssetParams(uint8,bytes32,uint32,uint32,uint32,uint32,uint32,uint32,uint96,uint96,uint32)": EventFragment;
     "SetBrokerGasRebate(uint96)": EventFragment;
     "SetFundingInterval(uint32,uint32)": EventFragment;
     "SetFundingParams(uint8,uint32,uint32)": EventFragment;
@@ -919,8 +919,8 @@ export type RepayAssetEvent = TypedEvent<
 export type RepayAssetEventFilter = TypedEventFilter<RepayAssetEvent>;
 
 export type SetAssetFlagsEvent = TypedEvent<
-  [number, BigNumber, BigNumber],
-  { assetId: number; oldFlags: BigNumber; newFlags: BigNumber }
+  [number, BigNumber, number],
+  { assetId: number; newFlags: BigNumber; newHalfSpread: number }
 >;
 
 export type SetAssetFlagsEventFilter = TypedEventFilter<SetAssetFlagsEvent>;
@@ -937,7 +937,6 @@ export type SetAssetParamsEvent = TypedEvent<
     number,
     BigNumber,
     BigNumber,
-    number,
     number
   ],
   {
@@ -952,7 +951,6 @@ export type SetAssetParamsEvent = TypedEvent<
     newMaxLongPositionSize: BigNumber;
     newMaxShortPositionSize: BigNumber;
     newSpotWeight: number;
-    newHalfSpread: number;
   }
 >;
 
@@ -1293,6 +1291,7 @@ export interface LiquidityPool extends BaseContract {
       isEnabled: boolean,
       isStrictStable: boolean,
       canAddRemoveLiquidity: boolean,
+      newHalfSpread: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1308,7 +1307,6 @@ export interface LiquidityPool extends BaseContract {
       newMaxLongPositionSize: BigNumberish,
       newMaxShortPositionSize: BigNumberish,
       newSpotWeight: BigNumberish,
-      newHalfSpread: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1581,6 +1579,7 @@ export interface LiquidityPool extends BaseContract {
     isEnabled: boolean,
     isStrictStable: boolean,
     canAddRemoveLiquidity: boolean,
+    newHalfSpread: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1596,7 +1595,6 @@ export interface LiquidityPool extends BaseContract {
     newMaxLongPositionSize: BigNumberish,
     newMaxShortPositionSize: BigNumberish,
     newSpotWeight: BigNumberish,
-    newHalfSpread: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1867,6 +1865,7 @@ export interface LiquidityPool extends BaseContract {
       isEnabled: boolean,
       isStrictStable: boolean,
       canAddRemoveLiquidity: boolean,
+      newHalfSpread: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1882,7 +1881,6 @@ export interface LiquidityPool extends BaseContract {
       newMaxLongPositionSize: BigNumberish,
       newMaxShortPositionSize: BigNumberish,
       newSpotWeight: BigNumberish,
-      newHalfSpread: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -2194,18 +2192,18 @@ export interface LiquidityPool extends BaseContract {
       badDebt?: null
     ): RepayAssetEventFilter;
 
-    "SetAssetFlags(uint8,uint56,uint56)"(
+    "SetAssetFlags(uint8,uint56,uint32)"(
       assetId?: BigNumberish | null,
-      oldFlags?: null,
-      newFlags?: null
+      newFlags?: null,
+      newHalfSpread?: null
     ): SetAssetFlagsEventFilter;
     SetAssetFlags(
       assetId?: BigNumberish | null,
-      oldFlags?: null,
-      newFlags?: null
+      newFlags?: null,
+      newHalfSpread?: null
     ): SetAssetFlagsEventFilter;
 
-    "SetAssetParams(uint8,bytes32,uint32,uint32,uint32,uint32,uint32,uint32,uint96,uint96,uint32,uint32)"(
+    "SetAssetParams(uint8,bytes32,uint32,uint32,uint32,uint32,uint32,uint32,uint96,uint96,uint32)"(
       assetId?: BigNumberish | null,
       symbol?: null,
       newInitialMarginRate?: null,
@@ -2216,8 +2214,7 @@ export interface LiquidityPool extends BaseContract {
       newMinProfitTime?: null,
       newMaxLongPositionSize?: null,
       newMaxShortPositionSize?: null,
-      newSpotWeight?: null,
-      newHalfSpread?: null
+      newSpotWeight?: null
     ): SetAssetParamsEventFilter;
     SetAssetParams(
       assetId?: BigNumberish | null,
@@ -2230,8 +2227,7 @@ export interface LiquidityPool extends BaseContract {
       newMinProfitTime?: null,
       newMaxLongPositionSize?: null,
       newMaxShortPositionSize?: null,
-      newSpotWeight?: null,
-      newHalfSpread?: null
+      newSpotWeight?: null
     ): SetAssetParamsEventFilter;
 
     "SetBrokerGasRebate(uint96)"(
@@ -2540,6 +2536,7 @@ export interface LiquidityPool extends BaseContract {
       isEnabled: boolean,
       isStrictStable: boolean,
       canAddRemoveLiquidity: boolean,
+      newHalfSpread: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2555,7 +2552,6 @@ export interface LiquidityPool extends BaseContract {
       newMaxLongPositionSize: BigNumberish,
       newMaxShortPositionSize: BigNumberish,
       newSpotWeight: BigNumberish,
-      newHalfSpread: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2816,6 +2812,7 @@ export interface LiquidityPool extends BaseContract {
       isEnabled: boolean,
       isStrictStable: boolean,
       canAddRemoveLiquidity: boolean,
+      newHalfSpread: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2831,7 +2828,6 @@ export interface LiquidityPool extends BaseContract {
       newMaxLongPositionSize: BigNumberish,
       newMaxShortPositionSize: BigNumberish,
       newSpotWeight: BigNumberish,
-      newHalfSpread: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
