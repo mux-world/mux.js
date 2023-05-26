@@ -182,7 +182,8 @@ export interface SubAccountDetails {
 export interface OpenPositionResult {
   afterTrade: SubAccountDetails
   isTradeSafe: boolean
-  feeUsd: BigNumber
+  fundingFeeUsd: BigNumber
+  feeUsd: BigNumber // fundingFee + positionFee
 }
 
 export interface ClosePositionResult {

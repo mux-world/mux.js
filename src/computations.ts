@@ -286,6 +286,7 @@ export function computeOpenPosition(
   }
 
   // fee & funding
+  const fundingFeeUsd = computeFundingFeeUsd(subAccount, assets[assetId], isLong, assetPrice)
   const feeUsd = _computeFeeUsd(subAccount, assets[assetId], isLong, amount, assetPrice)
   _updateEntryFunding(subAccount, assets[assetId], isLong)
   let feeCollateral = feeUsd.div(collateralPrice)
@@ -312,6 +313,7 @@ export function computeOpenPosition(
   return {
     afterTrade,
     isTradeSafe: afterTrade.computed.isIMSafe,
+    fundingFeeUsd,
     feeUsd
   }
 }
