@@ -502,9 +502,9 @@ export interface GainsReader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [GNSTradingStorageV5.OpenLimitOrderStructOutput[], number[]] & {
-      openLimitOrders: GNSTradingStorageV5.OpenLimitOrderStructOutput[];
-      openLimitOrderTypes: number[];
-    }
+        openLimitOrders: GNSTradingStorageV5.OpenLimitOrderStructOutput[];
+        openLimitOrderTypes: number[];
+      }
     >;
 
     getPairsCount(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -517,9 +517,9 @@ export interface GainsReader extends BaseContract {
         GainsReader.PositionInfoStructOutput[],
         GainsReader.MarketOrderStructOutput[]
       ] & {
-      positionInfos: GainsReader.PositionInfoStructOutput[];
-      marketOrders: GainsReader.MarketOrderStructOutput[];
-    }
+        positionInfos: GainsReader.PositionInfoStructOutput[];
+        marketOrders: GainsReader.MarketOrderStructOutput[];
+      }
     >;
 
     pair(
@@ -527,8 +527,8 @@ export interface GainsReader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [GainsReader.GainsPairStructOutput] & {
-      gainsPair: GainsReader.GainsPairStructOutput;
-    }
+        gainsPair: GainsReader.GainsPairStructOutput;
+      }
     >;
 
     pairStorage(overrides?: CallOverrides): Promise<[string]>;
@@ -545,9 +545,9 @@ export interface GainsReader extends BaseContract {
     overrides?: CallOverrides
   ): Promise<
     [GNSTradingStorageV5.OpenLimitOrderStructOutput[], number[]] & {
-    openLimitOrders: GNSTradingStorageV5.OpenLimitOrderStructOutput[];
-    openLimitOrderTypes: number[];
-  }
+      openLimitOrders: GNSTradingStorageV5.OpenLimitOrderStructOutput[];
+      openLimitOrderTypes: number[];
+    }
   >;
 
   getPairsCount(overrides?: CallOverrides): Promise<BigNumber>;
@@ -560,9 +560,9 @@ export interface GainsReader extends BaseContract {
       GainsReader.PositionInfoStructOutput[],
       GainsReader.MarketOrderStructOutput[]
     ] & {
-    positionInfos: GainsReader.PositionInfoStructOutput[];
-    marketOrders: GainsReader.MarketOrderStructOutput[];
-  }
+      positionInfos: GainsReader.PositionInfoStructOutput[];
+      marketOrders: GainsReader.MarketOrderStructOutput[];
+    }
   >;
 
   pair(
@@ -584,9 +584,9 @@ export interface GainsReader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [GNSTradingStorageV5.OpenLimitOrderStructOutput[], number[]] & {
-      openLimitOrders: GNSTradingStorageV5.OpenLimitOrderStructOutput[];
-      openLimitOrderTypes: number[];
-    }
+        openLimitOrders: GNSTradingStorageV5.OpenLimitOrderStructOutput[];
+        openLimitOrderTypes: number[];
+      }
     >;
 
     getPairsCount(overrides?: CallOverrides): Promise<BigNumber>;
@@ -599,9 +599,9 @@ export interface GainsReader extends BaseContract {
         GainsReader.PositionInfoStructOutput[],
         GainsReader.MarketOrderStructOutput[]
       ] & {
-      positionInfos: GainsReader.PositionInfoStructOutput[];
-      marketOrders: GainsReader.MarketOrderStructOutput[];
-    }
+        positionInfos: GainsReader.PositionInfoStructOutput[];
+        marketOrders: GainsReader.MarketOrderStructOutput[];
+      }
     >;
 
     pair(
