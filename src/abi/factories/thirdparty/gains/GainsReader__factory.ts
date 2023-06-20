@@ -685,7 +685,7 @@ const _abi = [
     stateMutability: "view",
     type: "function",
   },
-];
+] as const;
 
 export class GainsReader__factory {
   static readonly abi = _abi;

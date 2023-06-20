@@ -40,7 +40,6 @@ export type PositionOrderExtraStructOutput = [
 export interface OrderBookInterface extends utils.Interface {
   contractName: "OrderBook";
   functions: {
-    "_nativeUnwrapper()": FunctionFragment;
     "addBroker(address)": FunctionFragment;
     "addRebalancer(address)": FunctionFragment;
     "brokers(address)": FunctionFragment;
@@ -79,6 +78,7 @@ export interface OrderBookInterface extends utils.Interface {
     "renounceBroker()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "renounceRebalancer()": FunctionFragment;
+    "setAggregator(address,bool)": FunctionFragment;
     "setLiquidityLockPeriod(uint32)": FunctionFragment;
     "setMaintainer(address)": FunctionFragment;
     "setOrderTimeout(uint32,uint32)": FunctionFragment;
@@ -89,10 +89,6 @@ export interface OrderBookInterface extends utils.Interface {
     "withdrawAllCollateral(bytes32)": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "_nativeUnwrapper",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "addBroker", values: [string]): string;
   encodeFunctionData(
     functionFragment: "addRebalancer",
@@ -259,6 +255,10 @@ export interface OrderBookInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setAggregator",
+    values: [string, boolean]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setLiquidityLockPeriod",
     values: [BigNumberish]
   ): string;
@@ -291,10 +291,6 @@ export interface OrderBookInterface extends utils.Interface {
     values: [BytesLike]
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "_nativeUnwrapper",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "addBroker", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "addRebalancer",
@@ -421,6 +417,10 @@ export interface OrderBookInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setAggregator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setLiquidityLockPeriod",
     data: BytesLike
   ): Result;
@@ -469,6 +469,7 @@ export interface OrderBookInterface extends utils.Interface {
     "PrepareToTransferOwnership(address)": EventFragment;
     "RemoveBroker(address)": EventFragment;
     "RemoveRebalancer(address)": EventFragment;
+    "SetAggregator(address,bool)": EventFragment;
     "SetLiquidityLockPeriod(uint32,uint32)": EventFragment;
     "SetMaintainer(address)": EventFragment;
     "SetOrderTimeout(uint32,uint32)": EventFragment;
@@ -490,6 +491,7 @@ export interface OrderBookInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "PrepareToTransferOwnership"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RemoveBroker"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RemoveRebalancer"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetAggregator"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetLiquidityLockPeriod"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMaintainer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetOrderTimeout"): EventFragment;
@@ -654,6 +656,13 @@ export type RemoveRebalancerEvent = TypedEvent<
 export type RemoveRebalancerEventFilter =
   TypedEventFilter<RemoveRebalancerEvent>;
 
+export type SetAggregatorEvent = TypedEvent<
+  [string, boolean],
+  { aggregatorAddress: string; isEnable: boolean }
+>;
+
+export type SetAggregatorEventFilter = TypedEventFilter<SetAggregatorEvent>;
+
 export type SetLiquidityLockPeriodEvent = TypedEvent<
   [number, number],
   { oldLockPeriod: number; newLockPeriod: number }
@@ -712,8 +721,6 @@ export interface OrderBook extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    _nativeUnwrapper(overrides?: CallOverrides): Promise<[string]>;
-
     addBroker(
       newBroker: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -724,7 +731,7 @@ export interface OrderBook extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    brokers(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
+    brokers(broker: string, overrides?: CallOverrides): Promise<[boolean]>;
 
     cancelOrder(
       orderId: BigNumberish,
@@ -880,18 +887,14 @@ export interface OrderBook extends BaseContract {
     ): Promise<ContractTransaction>;
 
     positionOrderExtras(
-      arg0: BigNumberish,
+      orderId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, number, number] & {
-        tpPrice: BigNumber;
-        slPrice: BigNumber;
-        tpslProfitTokenId: number;
-        tpslDeadline: number;
-      }
-    >;
+    ): Promise<[PositionOrderExtraStructOutput]>;
 
-    rebalancers(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
+    rebalancers(
+      rebalancer: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     redeemMuxToken(
       tokenId: BigNumberish,
@@ -920,6 +923,12 @@ export interface OrderBook extends BaseContract {
     ): Promise<ContractTransaction>;
 
     renounceRebalancer(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setAggregator(
+      aggregatorAddress: string,
+      isEnable: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -967,8 +976,6 @@ export interface OrderBook extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
-  _nativeUnwrapper(overrides?: CallOverrides): Promise<string>;
-
   addBroker(
     newBroker: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -979,7 +986,7 @@ export interface OrderBook extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  brokers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+  brokers(broker: string, overrides?: CallOverrides): Promise<boolean>;
 
   cancelOrder(
     orderId: BigNumberish,
@@ -1135,18 +1142,11 @@ export interface OrderBook extends BaseContract {
   ): Promise<ContractTransaction>;
 
   positionOrderExtras(
-    arg0: BigNumberish,
+    orderId: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, number, number] & {
-      tpPrice: BigNumber;
-      slPrice: BigNumber;
-      tpslProfitTokenId: number;
-      tpslDeadline: number;
-    }
-  >;
+  ): Promise<PositionOrderExtraStructOutput>;
 
-  rebalancers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+  rebalancers(rebalancer: string, overrides?: CallOverrides): Promise<boolean>;
 
   redeemMuxToken(
     tokenId: BigNumberish,
@@ -1175,6 +1175,12 @@ export interface OrderBook extends BaseContract {
   ): Promise<ContractTransaction>;
 
   renounceRebalancer(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setAggregator(
+    aggregatorAddress: string,
+    isEnable: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1222,8 +1228,6 @@ export interface OrderBook extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    _nativeUnwrapper(overrides?: CallOverrides): Promise<string>;
-
     addBroker(newBroker: string, overrides?: CallOverrides): Promise<void>;
 
     addRebalancer(
@@ -1231,7 +1235,7 @@ export interface OrderBook extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    brokers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+    brokers(broker: string, overrides?: CallOverrides): Promise<boolean>;
 
     cancelOrder(
       orderId: BigNumberish,
@@ -1385,18 +1389,14 @@ export interface OrderBook extends BaseContract {
     ): Promise<void>;
 
     positionOrderExtras(
-      arg0: BigNumberish,
+      orderId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, number, number] & {
-        tpPrice: BigNumber;
-        slPrice: BigNumber;
-        tpslProfitTokenId: number;
-        tpslDeadline: number;
-      }
-    >;
+    ): Promise<PositionOrderExtraStructOutput>;
 
-    rebalancers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+    rebalancers(
+      rebalancer: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     redeemMuxToken(
       tokenId: BigNumberish,
@@ -1418,6 +1418,12 @@ export interface OrderBook extends BaseContract {
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
     renounceRebalancer(overrides?: CallOverrides): Promise<void>;
+
+    setAggregator(
+      aggregatorAddress: string,
+      isEnable: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setLiquidityLockPeriod(
       newLiquidityLockPeriod: BigNumberish,
@@ -1617,6 +1623,15 @@ export interface OrderBook extends BaseContract {
     ): RemoveRebalancerEventFilter;
     RemoveRebalancer(rebalancer?: string | null): RemoveRebalancerEventFilter;
 
+    "SetAggregator(address,bool)"(
+      aggregatorAddress?: string | null,
+      isEnable?: null
+    ): SetAggregatorEventFilter;
+    SetAggregator(
+      aggregatorAddress?: string | null,
+      isEnable?: null
+    ): SetAggregatorEventFilter;
+
     "SetLiquidityLockPeriod(uint32,uint32)"(
       oldLockPeriod?: null,
       newLockPeriod?: null
@@ -1649,8 +1664,6 @@ export interface OrderBook extends BaseContract {
   };
 
   estimateGas: {
-    _nativeUnwrapper(overrides?: CallOverrides): Promise<BigNumber>;
-
     addBroker(
       newBroker: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1661,7 +1674,7 @@ export interface OrderBook extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    brokers(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    brokers(broker: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     cancelOrder(
       orderId: BigNumberish,
@@ -1812,11 +1825,14 @@ export interface OrderBook extends BaseContract {
     ): Promise<BigNumber>;
 
     positionOrderExtras(
-      arg0: BigNumberish,
+      orderId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    rebalancers(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    rebalancers(
+      rebalancer: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     redeemMuxToken(
       tokenId: BigNumberish,
@@ -1845,6 +1861,12 @@ export interface OrderBook extends BaseContract {
     ): Promise<BigNumber>;
 
     renounceRebalancer(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setAggregator(
+      aggregatorAddress: string,
+      isEnable: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1893,8 +1915,6 @@ export interface OrderBook extends BaseContract {
   };
 
   populateTransaction: {
-    _nativeUnwrapper(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     addBroker(
       newBroker: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1906,7 +1926,7 @@ export interface OrderBook extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     brokers(
-      arg0: string,
+      broker: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2069,12 +2089,12 @@ export interface OrderBook extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     positionOrderExtras(
-      arg0: BigNumberish,
+      orderId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     rebalancers(
-      arg0: string,
+      rebalancer: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2105,6 +2125,12 @@ export interface OrderBook extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     renounceRebalancer(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setAggregator(
+      aggregatorAddress: string,
+      isEnable: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

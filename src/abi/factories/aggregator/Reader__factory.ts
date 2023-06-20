@@ -647,7 +647,7 @@ const _abi = [
     stateMutability: "view",
     type: "function",
   },
-];
+] as const;
 
 export class Reader__factory {
   static readonly abi = _abi;

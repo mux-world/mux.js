@@ -432,6 +432,25 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: "address",
+        name: "aggregatorAddress",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "isEnable",
+        type: "bool",
+      },
+    ],
+    name: "SetAggregator",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: false,
         internalType: "uint32",
         name: "oldLockPeriod",
@@ -493,19 +512,6 @@ const _abi = [
     type: "event",
   },
   {
-    inputs: [],
-    name: "_nativeUnwrapper",
-    outputs: [
-      {
-        internalType: "contract INativeUnwrapper",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "address",
@@ -535,7 +541,7 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "",
+        name: "broker",
         type: "address",
       },
     ],
@@ -1166,31 +1172,38 @@ const _abi = [
     inputs: [
       {
         internalType: "uint64",
-        name: "",
+        name: "orderId",
         type: "uint64",
       },
     ],
     name: "positionOrderExtras",
     outputs: [
       {
-        internalType: "uint96",
-        name: "tpPrice",
-        type: "uint96",
-      },
-      {
-        internalType: "uint96",
-        name: "slPrice",
-        type: "uint96",
-      },
-      {
-        internalType: "uint8",
-        name: "tpslProfitTokenId",
-        type: "uint8",
-      },
-      {
-        internalType: "uint32",
-        name: "tpslDeadline",
-        type: "uint32",
+        components: [
+          {
+            internalType: "uint96",
+            name: "tpPrice",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "slPrice",
+            type: "uint96",
+          },
+          {
+            internalType: "uint8",
+            name: "tpslProfitTokenId",
+            type: "uint8",
+          },
+          {
+            internalType: "uint32",
+            name: "tpslDeadline",
+            type: "uint32",
+          },
+        ],
+        internalType: "struct PositionOrderExtra",
+        name: "",
+        type: "tuple",
       },
     ],
     stateMutability: "view",
@@ -1200,7 +1213,7 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "",
+        name: "rebalancer",
         type: "address",
       },
     ],
@@ -1289,6 +1302,24 @@ const _abi = [
   {
     inputs: [],
     name: "renounceRebalancer",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "aggregatorAddress",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "isEnable",
+        type: "bool",
+      },
+    ],
+    name: "setAggregator",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

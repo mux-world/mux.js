@@ -194,6 +194,83 @@ export declare namespace ProxyFactory {
     flags: number;
     referralCode: string;
   };
+
+  export type MuxOrderParamsStruct = {
+    subAccountId: PromiseOrValue<BytesLike>;
+    collateralAmount: PromiseOrValue<BigNumberish>;
+    size: PromiseOrValue<BigNumberish>;
+    price: PromiseOrValue<BigNumberish>;
+    profitTokenId: PromiseOrValue<BigNumberish>;
+    flags: PromiseOrValue<BigNumberish>;
+    deadline: PromiseOrValue<BigNumberish>;
+    referralCode: PromiseOrValue<BytesLike>;
+    extra: IMuxOrderBook.PositionOrderExtraStruct;
+  };
+
+  export type MuxOrderParamsStructOutput = [
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    number,
+    number,
+    number,
+    string,
+    IMuxOrderBook.PositionOrderExtraStructOutput
+  ] & {
+    subAccountId: string;
+    collateralAmount: BigNumber;
+    size: BigNumber;
+    price: BigNumber;
+    profitTokenId: number;
+    flags: number;
+    deadline: number;
+    referralCode: string;
+    extra: IMuxOrderBook.PositionOrderExtraStructOutput;
+  };
+
+  export type OrderParamsStruct = {
+    orderKey: PromiseOrValue<BytesLike>;
+    collateralDelta: PromiseOrValue<BigNumberish>;
+    sizeDelta: PromiseOrValue<BigNumberish>;
+    triggerPrice: PromiseOrValue<BigNumberish>;
+    triggerAboveThreshold: PromiseOrValue<boolean>;
+  };
+
+  export type OrderParamsStructOutput = [
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    boolean
+  ] & {
+    orderKey: string;
+    collateralDelta: BigNumber;
+    sizeDelta: BigNumber;
+    triggerPrice: BigNumber;
+    triggerAboveThreshold: boolean;
+  };
+}
+
+export declare namespace IMuxOrderBook {
+  export type PositionOrderExtraStruct = {
+    tpPrice: PromiseOrValue<BigNumberish>;
+    slPrice: PromiseOrValue<BigNumberish>;
+    tpslProfitTokenId: PromiseOrValue<BigNumberish>;
+    tpslDeadline: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PositionOrderExtraStructOutput = [
+    BigNumber,
+    BigNumber,
+    number,
+    number
+  ] & {
+    tpPrice: BigNumber;
+    slPrice: BigNumber;
+    tpslProfitTokenId: number;
+    tpslDeadline: number;
+  };
 }
 
 export interface ProxyFactoryInterface extends utils.Interface {
@@ -218,16 +295,19 @@ export interface ProxyFactoryInterface extends utils.Interface {
     "liquidatePosition(uint256,address,address,address,bool,uint256)": FunctionFragment;
     "openPosition((uint256,address,address,bool,address,uint256,uint256,uint256,uint256,uint96,uint8,bytes32))": FunctionFragment;
     "openPositionV2((uint256,address,address,bool,address,uint256,uint256,uint256,uint256,uint96,uint96,uint96,uint8,bytes32))": FunctionFragment;
+    "openPositionV3((uint256,address,address,bool,address,uint256,uint256,uint256,uint256,uint96,uint96,uint96,uint8,bytes32),(bytes32,uint96,uint96,uint96,uint8,uint8,uint32,bytes32,(uint96,uint96,uint8,uint32)),uint256)": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "repayAsset(uint256,address,uint256,uint256,uint256)": FunctionFragment;
     "setBorrowConfig(uint256,address,uint8,uint256)": FunctionFragment;
     "setKeeper(address,bool)": FunctionFragment;
     "setMaintainer(address,bool)": FunctionFragment;
+    "setMuxOrderBook(address)": FunctionFragment;
     "setProjectAssetConfig(uint256,address,uint256[])": FunctionFragment;
     "setProjectConfig(uint256,uint256[])": FunctionFragment;
     "setReferralManager(address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
+    "updateOrder(uint256,address,address,bool,(bytes32,uint256,uint256,uint256,bool)[])": FunctionFragment;
     "upgradeTo(uint256,address)": FunctionFragment;
     "weth()": FunctionFragment;
     "withdraw(uint256,address,address,address,bool)": FunctionFragment;
@@ -255,16 +335,19 @@ export interface ProxyFactoryInterface extends utils.Interface {
       | "liquidatePosition"
       | "openPosition"
       | "openPositionV2"
+      | "openPositionV3"
       | "owner"
       | "renounceOwnership"
       | "repayAsset"
       | "setBorrowConfig"
       | "setKeeper"
       | "setMaintainer"
+      | "setMuxOrderBook"
       | "setProjectAssetConfig"
       | "setProjectConfig"
       | "setReferralManager"
       | "transferOwnership"
+      | "updateOrder"
       | "upgradeTo"
       | "weth"
       | "withdraw"
@@ -386,6 +469,14 @@ export interface ProxyFactoryInterface extends utils.Interface {
     functionFragment: "openPositionV2",
     values: [ProxyFactory.OpenPositionArgsV2Struct]
   ): string;
+  encodeFunctionData(
+    functionFragment: "openPositionV3",
+    values: [
+      ProxyFactory.OpenPositionArgsV2Struct,
+      ProxyFactory.MuxOrderParamsStruct,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -419,6 +510,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
   ): string;
   encodeFunctionData(
+    functionFragment: "setMuxOrderBook",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setProjectAssetConfig",
     values: [
       PromiseOrValue<BigNumberish>,
@@ -437,6 +532,16 @@ export interface ProxyFactoryInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateOrder",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<boolean>,
+      ProxyFactory.OrderParamsStruct[]
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "upgradeTo",
@@ -522,6 +627,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
     functionFragment: "openPositionV2",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "openPositionV3",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
@@ -535,6 +644,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "setKeeper", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMaintainer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setMuxOrderBook",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -553,6 +666,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateOrder",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "upgradeTo", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "weth", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
@@ -560,6 +677,7 @@ export interface ProxyFactoryInterface extends utils.Interface {
   events: {
     "CreateProxy(uint256,bytes32,address,address,bytes32,address,address,uint8,bool)": EventFragment;
     "Initialized(uint8)": EventFragment;
+    "MuxCall(address,uint256,bytes)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "SetBorrowConfig(uint256,address,uint8,uint8,uint256,uint256)": EventFragment;
     "SetGmxReferralCode(bytes32)": EventFragment;
@@ -572,6 +690,7 @@ export interface ProxyFactoryInterface extends utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "CreateProxy"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MuxCall"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetBorrowConfig"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetGmxReferralCode"): EventFragment;
@@ -606,6 +725,18 @@ export interface InitializedEventObject {
 export type InitializedEvent = TypedEvent<[number], InitializedEventObject>;
 
 export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
+
+export interface MuxCallEventObject {
+  target: string;
+  value: BigNumber;
+  data: string;
+}
+export type MuxCallEvent = TypedEvent<
+  [string, BigNumber, string],
+  MuxCallEventObject
+>;
+
+export type MuxCallEventFilter = TypedEventFilter<MuxCallEvent>;
 
 export interface OwnershipTransferredEventObject {
   previousOwner: string;
@@ -869,6 +1000,13 @@ export interface ProxyFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    openPositionV3(
+      args: ProxyFactory.OpenPositionArgsV2Struct,
+      muxParams: ProxyFactory.MuxOrderParamsStruct,
+      muxValue: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     renounceOwnership(
@@ -904,6 +1042,11 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setMuxOrderBook(
+      muxOrderBook: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setProjectAssetConfig(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
@@ -924,6 +1067,15 @@ export interface ProxyFactory extends BaseContract {
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    updateOrder(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      orderParams: ProxyFactory.OrderParamsStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1082,6 +1234,13 @@ export interface ProxyFactory extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  openPositionV3(
+    args: ProxyFactory.OpenPositionArgsV2Struct,
+    muxParams: ProxyFactory.MuxOrderParamsStruct,
+    muxValue: PromiseOrValue<BigNumberish>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   renounceOwnership(
@@ -1117,6 +1276,11 @@ export interface ProxyFactory extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setMuxOrderBook(
+    muxOrderBook: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setProjectAssetConfig(
     projectId: PromiseOrValue<BigNumberish>,
     assetToken: PromiseOrValue<string>,
@@ -1137,6 +1301,15 @@ export interface ProxyFactory extends BaseContract {
 
   transferOwnership(
     newOwner: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  updateOrder(
+    projectId: PromiseOrValue<BigNumberish>,
+    collateralToken: PromiseOrValue<string>,
+    assetToken: PromiseOrValue<string>,
+    isLong: PromiseOrValue<boolean>,
+    orderParams: ProxyFactory.OrderParamsStruct[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1295,6 +1468,13 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    openPositionV3(
+      args: ProxyFactory.OpenPositionArgsV2Struct,
+      muxParams: ProxyFactory.MuxOrderParamsStruct,
+      muxValue: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
@@ -1328,6 +1508,11 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setMuxOrderBook(
+      muxOrderBook: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setProjectAssetConfig(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
@@ -1348,6 +1533,15 @@ export interface ProxyFactory extends BaseContract {
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateOrder(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      orderParams: ProxyFactory.OrderParamsStruct[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1395,6 +1589,13 @@ export interface ProxyFactory extends BaseContract {
 
     "Initialized(uint8)"(version?: null): InitializedEventFilter;
     Initialized(version?: null): InitializedEventFilter;
+
+    "MuxCall(address,uint256,bytes)"(
+      target?: null,
+      value?: null,
+      data?: null
+    ): MuxCallEventFilter;
+    MuxCall(target?: null, value?: null, data?: null): MuxCallEventFilter;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: PromiseOrValue<string> | null,
@@ -1600,6 +1801,13 @@ export interface ProxyFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    openPositionV3(
+      args: ProxyFactory.OpenPositionArgsV2Struct,
+      muxParams: ProxyFactory.MuxOrderParamsStruct,
+      muxValue: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceOwnership(
@@ -1635,6 +1843,11 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setMuxOrderBook(
+      muxOrderBook: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setProjectAssetConfig(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
@@ -1655,6 +1868,15 @@ export interface ProxyFactory extends BaseContract {
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    updateOrder(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      orderParams: ProxyFactory.OrderParamsStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1803,6 +2025,13 @@ export interface ProxyFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    openPositionV3(
+      args: ProxyFactory.OpenPositionArgsV2Struct,
+      muxParams: ProxyFactory.MuxOrderParamsStruct,
+      muxValue: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceOwnership(
@@ -1838,6 +2067,11 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    setMuxOrderBook(
+      muxOrderBook: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     setProjectAssetConfig(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
@@ -1858,6 +2092,15 @@ export interface ProxyFactory extends BaseContract {
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    updateOrder(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      orderParams: ProxyFactory.OrderParamsStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

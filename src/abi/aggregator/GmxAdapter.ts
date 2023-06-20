@@ -172,6 +172,7 @@ export interface GmxAdapterInterface extends utils.Interface {
     "liquidatePosition(uint256)": FunctionFragment;
     "muxAccountState()": FunctionFragment;
     "openPosition(address,uint256,uint256,uint256,uint256,uint96,uint96,uint96,uint8)": FunctionFragment;
+    "updateOrder(bytes32,uint256,uint256,uint256,bool)": FunctionFragment;
     "withdraw()": FunctionFragment;
   };
 
@@ -187,6 +188,7 @@ export interface GmxAdapterInterface extends utils.Interface {
       | "liquidatePosition"
       | "muxAccountState"
       | "openPosition"
+      | "updateOrder"
       | "withdraw"
   ): FunctionFragment;
 
@@ -254,6 +256,16 @@ export interface GmxAdapterInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>
     ]
   ): string;
+  encodeFunctionData(
+    functionFragment: "updateOrder",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<boolean>
+    ]
+  ): string;
   encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
   decodeFunctionResult(
@@ -288,6 +300,10 @@ export interface GmxAdapterInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "openPosition",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateOrder",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
@@ -588,6 +604,15 @@ export interface GmxAdapter extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    updateOrder(
+      orderKey: PromiseOrValue<BytesLike>,
+      collateralDelta: PromiseOrValue<BigNumberish>,
+      sizeDelta: PromiseOrValue<BigNumberish>,
+      triggerPrice: PromiseOrValue<BigNumberish>,
+      triggerAboveThreshold: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     withdraw(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -658,6 +683,15 @@ export interface GmxAdapter extends BaseContract {
     slPriceUsd: PromiseOrValue<BigNumberish>,
     flags: PromiseOrValue<BigNumberish>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  updateOrder(
+    orderKey: PromiseOrValue<BytesLike>,
+    collateralDelta: PromiseOrValue<BigNumberish>,
+    sizeDelta: PromiseOrValue<BigNumberish>,
+    triggerPrice: PromiseOrValue<BigNumberish>,
+    triggerAboveThreshold: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   withdraw(
@@ -731,6 +765,15 @@ export interface GmxAdapter extends BaseContract {
       tpPriceUsd: PromiseOrValue<BigNumberish>,
       slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateOrder(
+      orderKey: PromiseOrValue<BytesLike>,
+      collateralDelta: PromiseOrValue<BigNumberish>,
+      sizeDelta: PromiseOrValue<BigNumberish>,
+      triggerPrice: PromiseOrValue<BigNumberish>,
+      triggerAboveThreshold: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -939,6 +982,15 @@ export interface GmxAdapter extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    updateOrder(
+      orderKey: PromiseOrValue<BytesLike>,
+      collateralDelta: PromiseOrValue<BigNumberish>,
+      sizeDelta: PromiseOrValue<BigNumberish>,
+      triggerPrice: PromiseOrValue<BigNumberish>,
+      triggerAboveThreshold: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     withdraw(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1004,6 +1056,15 @@ export interface GmxAdapter extends BaseContract {
       slPriceUsd: PromiseOrValue<BigNumberish>,
       flags: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    updateOrder(
+      orderKey: PromiseOrValue<BytesLike>,
+      collateralDelta: PromiseOrValue<BigNumberish>,
+      sizeDelta: PromiseOrValue<BigNumberish>,
+      triggerPrice: PromiseOrValue<BigNumberish>,
+      triggerAboveThreshold: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     withdraw(

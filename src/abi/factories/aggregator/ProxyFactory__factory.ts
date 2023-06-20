@@ -88,6 +88,31 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "address",
+        name: "target",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "MuxCall",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "previousOwner",
@@ -997,6 +1022,170 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "projectId",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "collateralToken",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "assetToken",
+            type: "address",
+          },
+          {
+            internalType: "bool",
+            name: "isLong",
+            type: "bool",
+          },
+          {
+            internalType: "address",
+            name: "tokenIn",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "amountIn",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "minOut",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "borrow",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "sizeUsd",
+            type: "uint256",
+          },
+          {
+            internalType: "uint96",
+            name: "priceUsd",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "tpPriceUsd",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "slPriceUsd",
+            type: "uint96",
+          },
+          {
+            internalType: "uint8",
+            name: "flags",
+            type: "uint8",
+          },
+          {
+            internalType: "bytes32",
+            name: "referralCode",
+            type: "bytes32",
+          },
+        ],
+        internalType: "struct ProxyFactory.OpenPositionArgsV2",
+        name: "args",
+        type: "tuple",
+      },
+      {
+        components: [
+          {
+            internalType: "bytes32",
+            name: "subAccountId",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint96",
+            name: "collateralAmount",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "size",
+            type: "uint96",
+          },
+          {
+            internalType: "uint96",
+            name: "price",
+            type: "uint96",
+          },
+          {
+            internalType: "uint8",
+            name: "profitTokenId",
+            type: "uint8",
+          },
+          {
+            internalType: "uint8",
+            name: "flags",
+            type: "uint8",
+          },
+          {
+            internalType: "uint32",
+            name: "deadline",
+            type: "uint32",
+          },
+          {
+            internalType: "bytes32",
+            name: "referralCode",
+            type: "bytes32",
+          },
+          {
+            components: [
+              {
+                internalType: "uint96",
+                name: "tpPrice",
+                type: "uint96",
+              },
+              {
+                internalType: "uint96",
+                name: "slPrice",
+                type: "uint96",
+              },
+              {
+                internalType: "uint8",
+                name: "tpslProfitTokenId",
+                type: "uint8",
+              },
+              {
+                internalType: "uint32",
+                name: "tpslDeadline",
+                type: "uint32",
+              },
+            ],
+            internalType: "struct IMuxOrderBook.PositionOrderExtra",
+            name: "extra",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct ProxyFactory.MuxOrderParams",
+        name: "muxParams",
+        type: "tuple",
+      },
+      {
+        internalType: "uint256",
+        name: "muxValue",
+        type: "uint256",
+      },
+    ],
+    name: "openPositionV3",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "owner",
     outputs: [
@@ -1116,6 +1305,19 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "muxOrderBook",
+        type: "address",
+      },
+    ],
+    name: "setMuxOrderBook",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "projectId",
         type: "uint256",
@@ -1189,6 +1391,66 @@ const _abi = [
       },
       {
         internalType: "address",
+        name: "collateralToken",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "assetToken",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "isLong",
+        type: "bool",
+      },
+      {
+        components: [
+          {
+            internalType: "bytes32",
+            name: "orderKey",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint256",
+            name: "collateralDelta",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "sizeDelta",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "triggerPrice",
+            type: "uint256",
+          },
+          {
+            internalType: "bool",
+            name: "triggerAboveThreshold",
+            type: "bool",
+          },
+        ],
+        internalType: "struct ProxyFactory.OrderParams[]",
+        name: "orderParams",
+        type: "tuple[]",
+      },
+    ],
+    name: "updateOrder",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "projectId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
         name: "newImplementation_",
         type: "address",
       },
@@ -1244,7 +1506,7 @@ const _abi = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const;
 
 export class ProxyFactory__factory {
   static readonly abi = _abi;

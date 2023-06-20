@@ -807,6 +807,39 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "orderKey",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "collateralDelta",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "sizeDelta",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "triggerPrice",
+        type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "triggerAboveThreshold",
+        type: "bool",
+      },
+    ],
+    name: "updateOrder",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "withdraw",
     outputs: [],
@@ -817,7 +850,7 @@ const _abi = [
     stateMutability: "payable",
     type: "receive",
   },
-];
+] as const;
 
 export class GmxAdapter__factory {
   static readonly abi = _abi;
