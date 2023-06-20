@@ -10,10 +10,10 @@ import {
   binarySearchLeft
 } from '../src/calculator'
 import {
-  computeLiquidationPrice,
   computeClosePosition,
   computeOpenPosition,
-  computeSubAccount
+  computeSubAccount,
+  computeTradingPrice
 } from '../src/computations'
 
 extendExpect()
@@ -176,7 +176,7 @@ describe('calculateClosePositionCollateralAmount', function () {
     }
     const size = new BigNumber('0.5')
     const profitAssetId = 1
-    const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, subAccountId, prices)
+    const { collateralPrice, assetPrice } = computeTradingPrice(assets, subAccountId, prices, false /* isOpen */)
     const oldLeverage = computeSubAccount(assets, subAccountId, subAccount, collateralPrice, assetPrice).computed
       .leverage
     expect(oldLeverage).toBeBigNumber(new BigNumber(2))
@@ -300,7 +300,7 @@ describe('calculateClosePositionCollateralAmount', function () {
     const subAccountId = encodeSubAccountId('0x1111111111111111111111111111111111111111', 1, 1, false)
     const size = new BigNumber('0.00264')
     const profitAssetId = 0
-    const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, subAccountId, prices)
+    const { collateralPrice, assetPrice } = computeTradingPrice(assets, subAccountId, prices, false /* isOpen */)
     const oldLeverage = computeSubAccount(assets, subAccountId, subAccount, collateralPrice, assetPrice).computed
       .leverage
     expect(oldLeverage).toBeBigNumber(new BigNumber('9.56589691246774616423'))

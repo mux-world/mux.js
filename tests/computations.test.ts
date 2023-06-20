@@ -4,12 +4,12 @@ import { encodeSubAccountId } from '../src/data'
 import { SubAccount, SubAccountComputed, Asset, PriceDict, LiquidityPool } from '../src/types'
 import { extendExpect } from './helper'
 import {
-  computeLiquidationPrice,
   computeClosePosition,
   computeLiquidityFeeRate,
   computeOpenPosition,
   computePositionPnlUsd,
   computeSubAccount,
+  computeTradingPrice,
   computeWithdrawCollateral,
   computeWithdrawProfit
 } from '../src/computations'
@@ -218,7 +218,7 @@ describe('computeSubAccount', function () {
     effectiveLeverage: new BigNumber('8.43756402767733790233083130508'), // positionValueUsd / marginBalanceUsd
     pendingRoe: new BigNumber('-0.0507035'),
     pnlUsd: new BigNumber('-80.5'),
-    liquidationPrice: new BigNumber('6470.49036476650224184425'),
+    liquidationPrice: new BigNumber('6462.65766590389015914096'),
     withdrawableCollateral: new BigNumber('296.643'), // marginBalanceUsd - positionMarginUsd < 2000 - 7000 * 2.3 / 10 - fundingFeeUsd / 1
     withdrawableProfit: _0
   }
@@ -236,7 +236,7 @@ describe('computeSubAccount', function () {
     effectiveLeverage: new BigNumber('67.64334545208869070993949067'), // positionValueUsd / marginBalanceUsd
     pendingRoe: new BigNumber('-0.98308407142857142857'),
     pnlUsd: new BigNumber('-13719.27'),
-    liquidationPrice: new BigNumber('6724.03227107371016009381'),
+    liquidationPrice: new BigNumber('6731.39668737060041407867'),
     withdrawableCollateral: _0,
     withdrawableProfit: _0
   }
@@ -267,7 +267,7 @@ describe('computeSubAccount', function () {
   successCases.forEach((element, index) => {
     it(`computeAccount.${index}`, function () {
       const expectedOutput = element.expectedOutput
-      const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, element.subAccountId, prices)
+      const { collateralPrice, assetPrice } = computeTradingPrice(assets, element.subAccountId, prices, false /* isOpen */)
       const accountDetails = computeSubAccount(
         assets,
         element.subAccountId,
@@ -292,7 +292,7 @@ describe('computeSubAccount', function () {
       expect(computed.withdrawableProfit).toApproximate(expectedOutput.withdrawableProfit)
     })
     it(`computeWithdrawCollateral.${index}`, function () {
-      const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, element.subAccountId, prices)
+      const { collateralPrice, assetPrice } = computeTradingPrice(assets, element.subAccountId, prices, false /* isOpen */)
       const accountDetails = computeSubAccount(
         assets,
         element.subAccountId,
@@ -309,7 +309,7 @@ describe('computeSubAccount', function () {
       expect(after.afterTrade.computed.withdrawableCollateral.lt('1e-3')).toBeTruthy()
     })
     it(`computeWithdrawProfit.${index}`, function () {
-      const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, element.subAccountId, prices)
+      const { collateralPrice, assetPrice } = computeTradingPrice(assets, element.subAccountId, prices, false /* isOpen */)
       const accountDetails = computeSubAccount(
         assets,
         element.subAccountId,
@@ -900,5 +900,99 @@ describe('computeLiquidityFeeRate', () => {
       )
       expect(fee).toBeBigNumber(element.expectedOutput)
     })
+  })
+})
+
+describe('liquidation price with spread', () => {
+  const tradeAssets = [
+    {
+      ...assets[0],
+      halfSpread: new BigNumber('0.001')
+    },
+    assets[1]
+  ]
+
+  it('long', () => {
+    let liqPrice = _0
+    const subAccountId = accountStorage2.subAccountId
+    const subAccount = accountStorage2.subAccount
+    const prices: PriceDict = {
+      ETH: subAccount.entryPrice,
+      USDC: _1
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, prices, false /* isOpen */)
+      liqPrice = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      ).computed.liquidationPrice
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, { ...prices, ETH: liqPrice.times('0.9992') }, false /* isOpen */)
+      const computedLiq = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      )
+      expect(computedLiq.computed.isMMSafe).toBeFalsy()
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, { ...prices, ETH: liqPrice.times('1.0002') }, false /* isOpen */)
+      const computedLiq = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      )
+      expect(computedLiq.computed.isMMSafe).toBeTruthy()
+    }
+  })
+
+  it('short', () => {
+    let liqPrice = _0
+    const subAccountId = accountStorage3.subAccountId
+    const subAccount = accountStorage3.subAccount
+    const prices: PriceDict = {
+      ETH: subAccount.entryPrice,
+      USDC: _1
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, prices, false /* isOpen */)
+      liqPrice = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      ).computed.liquidationPrice
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, { ...prices, ETH: liqPrice.times('1.0002') }, false /* isOpen */)
+      const computedLiq = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      )
+      expect(computedLiq.computed.isMMSafe).toBeFalsy()
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, { ...prices, ETH: liqPrice.times('0.9992') }, false /* isOpen */)
+      const computedLiq = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      )
+      expect(computedLiq.computed.isMMSafe).toBeTruthy()
+    }
   })
 })

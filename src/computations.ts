@@ -19,7 +19,6 @@ import { SpreadType, _0, _1 } from './constants'
 import { decodeSubAccountId } from './data'
 import BigNumber from 'bignumber.js'
 
-// note: this function does not add spread. use computeTradingPrice, computeLiquidationPrice or computeLiquidityPrice before this function
 export function computeSubAccount(
   assets: Asset[],
   subAccountId: string,
@@ -91,15 +90,6 @@ export function computeSubAccount(
     withdrawableProfit
   }
   return { subAccount, computed }
-}
-
-// get price with spread when liquidate
-export function computeLiquidationPrice(
-  assets: Asset[],
-  subAccountId: string,
-  prices: PriceDict // given by off-chain broker
-): { assetPrice: BigNumber; collateralPrice: BigNumber } {
-  return computeTradingPrice(assets, subAccountId, prices, false)
 }
 
 // get price with spread when open/close positions
@@ -235,24 +225,33 @@ function _estimateLiquidationPrice(
   if (subAccount.size.eq(_0)) {
     return _0
   }
-  const { maintenanceMarginRate, positionFeeRate } = assets[assetId]
+  const { maintenanceMarginRate } = assets[assetId]
   const longFactor = isLong ? _1 : _1.negated()
   const t = longFactor
     .minus(maintenanceMarginRate)
-    .minus(positionFeeRate)
     .times(subAccount.size)
+  let p = _0
   if (collateralId === assetId) {
-    let p = longFactor.times(subAccount.entryPrice).times(subAccount.size)
+    p = longFactor.times(subAccount.entryPrice).times(subAccount.size)
     p = p.plus(fundingFeeUsd).div(t.plus(subAccount.collateral))
     p = BigNumber.max(_0, p)
-    return p
   } else {
-    let p = longFactor.times(subAccount.entryPrice).times(subAccount.size)
+    p = longFactor.times(subAccount.entryPrice).times(subAccount.size)
     p = p.plus(fundingFeeUsd).minus(collateralPrice.times(subAccount.collateral))
     p = p.div(t)
     p = BigNumber.max(_0, p)
-    return p
   }
+
+  // the liquidation price above is a tradingPrice, not indexPrice
+  // * liquidate  long position: liquidateIndexPrice > tradingPrice (because close long means sell)
+  // * liquidate short position: liquidateIndexPrice < tradingPrice
+  if (isLong) {
+    p = p.div(_1.minus(assets[assetId].halfSpread))
+  } else {
+    p = p.div(_1.plus(assets[assetId].halfSpread))
+  }
+
+  return p
 }
 
 export function computeOpenPosition(
@@ -421,7 +420,7 @@ export function computeWithdrawCollateral(
   // context
   subAccount = cloneSubAccount(subAccount)
   const { collateralId, assetId, isLong } = decodeSubAccountId(subAccountId)
-  const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, subAccountId, prices)
+  const { collateralPrice, assetPrice } = computeTradingPrice(assets, subAccountId, prices, false /* isOpen */)
   if (amount.lte(_0)) {
     throw new InvalidArgumentError(`invalid amount ${amount.toFixed()}`)
   }
@@ -458,7 +457,7 @@ export function computeWithdrawProfit(
   // context
   subAccount = cloneSubAccount(subAccount)
   const { collateralId, assetId, isLong } = decodeSubAccountId(subAccountId)
-  const { collateralPrice, assetPrice } = computeLiquidationPrice(assets, subAccountId, prices)
+  const { collateralPrice, assetPrice } = computeTradingPrice(assets, subAccountId, prices, false /* isOpen */)
   let profitAssetPrice = _0
   if (isLong && !assets[assetId].useStableTokenForProfit) {
     profitAssetId = assetId
