@@ -50,7 +50,7 @@ export const GMX_TOKENS: { [chainID: number]: GmxTokenConfig[] } = {
       muxAssetId: 4
     },
     {
-      symbol: 'USDC',
+      symbol: 'USDC.e',
       decimals: 6,
       address: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
       isAsset: false,
