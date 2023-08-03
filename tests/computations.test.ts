@@ -903,11 +903,12 @@ describe('computeLiquidityFeeRate', () => {
   })
 })
 
-describe('liquidation price with spread', () => {
+describe('liquidation price with spread, asset != collateral', () => {
   const tradeAssets = [
     {
       ...assets[0],
-      halfSpread: new BigNumber('0.001')
+      halfSpread: new BigNumber('0.001'),
+      maintenanceMarginRate: new BigNumber('0.005'),
     },
     assets[1]
   ]
@@ -961,6 +962,110 @@ describe('liquidation price with spread', () => {
     const prices: PriceDict = {
       ETH: subAccount.entryPrice,
       USDC: _1
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, prices, false /* isOpen */)
+      liqPrice = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      ).computed.liquidationPrice
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, { ...prices, ETH: liqPrice.times('1.0002') }, false /* isOpen */)
+      const computedLiq = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      )
+      expect(computedLiq.computed.isMMSafe).toBeFalsy()
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, { ...prices, ETH: liqPrice.times('0.9992') }, false /* isOpen */)
+      const computedLiq = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      )
+      expect(computedLiq.computed.isMMSafe).toBeTruthy()
+    }
+  })
+})
+
+describe('liquidation price with spread, asset == collateral', () => {
+  const tradeAssets = [
+    {
+      ...assets[0],
+      halfSpread: new BigNumber('0.003'),
+      maintenanceMarginRate: new BigNumber('0.005'),
+    },
+  ]
+
+  it('long', () => {
+    let liqPrice = _0
+    const subAccountId = encodeSubAccountId('0x1111111111111111111111111111111111111111', 0, 0, true)
+    const subAccount = {
+      collateral: new BigNumber('195.05525323296'),
+      size: new BigNumber('18729.6196'),
+      lastIncreasedTime: 0,
+      entryPrice: new BigNumber('1.2574611'),
+      entryFunding: new BigNumber('0.911305096913137114')
+    }
+    const prices: PriceDict = {
+      ETH: subAccount.entryPrice,
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, prices, false /* isOpen */)
+      liqPrice = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      ).computed.liquidationPrice
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, { ...prices, ETH: liqPrice.times('0.9992') }, false /* isOpen */)
+      const computedLiq = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      )
+      expect(computedLiq.computed.isMMSafe).toBeFalsy()
+    }
+    {
+      const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, { ...prices, ETH: liqPrice.times('1.0002') }, false /* isOpen */)
+      const computedLiq = computeSubAccount(
+        tradeAssets,
+        subAccountId,
+        subAccount,
+        collateralPrice,
+        assetPrice
+      )
+      expect(computedLiq.computed.isMMSafe).toBeTruthy()
+    }
+  })
+
+  it('short', () => {
+    let liqPrice = _0
+    const subAccountId = encodeSubAccountId('0x1111111111111111111111111111111111111111', 0, 0, false)
+    const subAccount = {
+      collateral: new BigNumber('195.05525323296'),
+      size: new BigNumber('18729.6196'),
+      lastIncreasedTime: 0,
+      entryPrice: new BigNumber('1.2574611'),
+      entryFunding: new BigNumber('20')
+    }
+    const prices: PriceDict = {
+      ETH: subAccount.entryPrice,
     }
     {
       const { collateralPrice, assetPrice } = computeTradingPrice(tradeAssets, subAccountId, prices, false /* isOpen */)
