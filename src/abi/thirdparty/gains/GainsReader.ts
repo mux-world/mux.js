@@ -240,20 +240,33 @@ export declare namespace GainsReader {
     lastFundingUpdateBlock: BigNumber;
   };
 
+  export type PairLeverageStruct = {
+    pairMinLeverage: PromiseOrValue<BigNumberish>;
+    pairMaxLeverage: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PairLeverageStructOutput = [BigNumber, BigNumber] & {
+    pairMinLeverage: BigNumber;
+    pairMaxLeverage: BigNumber;
+  };
+
   export type GainsPairStruct = {
     pair: GNSPairsStorageV6.PairStruct;
     openInterestDai: GainsReader.PairOpenInterestDaiStruct;
     pairInfo: GainsReader.PairInfoStruct;
+    pairLeverage: GainsReader.PairLeverageStruct;
   };
 
   export type GainsPairStructOutput = [
     GNSPairsStorageV6.PairStructOutput,
     GainsReader.PairOpenInterestDaiStructOutput,
-    GainsReader.PairInfoStructOutput
+    GainsReader.PairInfoStructOutput,
+    GainsReader.PairLeverageStructOutput
   ] & {
     pair: GNSPairsStorageV6.PairStructOutput;
     openInterestDai: GainsReader.PairOpenInterestDaiStructOutput;
     pairInfo: GainsReader.PairInfoStructOutput;
+    pairLeverage: GainsReader.PairLeverageStructOutput;
   };
 }
 

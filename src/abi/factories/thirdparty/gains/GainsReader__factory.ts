@@ -650,6 +650,23 @@ const _abi = [
             name: "pairInfo",
             type: "tuple",
           },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "pairMinLeverage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "pairMaxLeverage",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct GainsReader.PairLeverage",
+            name: "pairLeverage",
+            type: "tuple",
+          },
         ],
         internalType: "struct GainsReader.GainsPair",
         name: "gainsPair",
