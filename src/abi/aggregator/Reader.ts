@@ -264,6 +264,7 @@ export interface ReaderInterface extends utils.Interface {
     "getAggregatorSubAccountsOfAccount(address,address,address)": FunctionFragment;
     "getAggregatorSubAccountsOfProxy(address,address,address[])": FunctionFragment;
     "getGmxAdapterStorage(address,address,address,address[],address[])": FunctionFragment;
+    "getProxyProjectId(address)": FunctionFragment;
     "gmxVault()": FunctionFragment;
     "usdg()": FunctionFragment;
     "weth()": FunctionFragment;
@@ -275,6 +276,7 @@ export interface ReaderInterface extends utils.Interface {
       | "getAggregatorSubAccountsOfAccount"
       | "getAggregatorSubAccountsOfProxy"
       | "getGmxAdapterStorage"
+      | "getProxyProjectId"
       | "gmxVault"
       | "usdg"
       | "weth"
@@ -310,6 +312,10 @@ export interface ReaderInterface extends utils.Interface {
       PromiseOrValue<string>[]
     ]
   ): string;
+  encodeFunctionData(
+    functionFragment: "getProxyProjectId",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(functionFragment: "gmxVault", values?: undefined): string;
   encodeFunctionData(functionFragment: "usdg", values?: undefined): string;
   encodeFunctionData(functionFragment: "weth", values?: undefined): string;
@@ -328,6 +334,10 @@ export interface ReaderInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getGmxAdapterStorage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getProxyProjectId",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "gmxVault", data: BytesLike): Result;
@@ -401,6 +411,11 @@ export interface Reader extends BaseContract {
       }
     >;
 
+    getProxyProjectId(
+      proxyAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     gmxVault(overrides?: CallOverrides): Promise<[string]>;
 
     usdg(overrides?: CallOverrides): Promise<[string]>;
@@ -433,6 +448,11 @@ export interface Reader extends BaseContract {
     overrides?: CallOverrides
   ): Promise<Reader.GmxAdapterStorageStructOutput>;
 
+  getProxyProjectId(
+    proxyAddress: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   gmxVault(overrides?: CallOverrides): Promise<string>;
 
   usdg(overrides?: CallOverrides): Promise<string>;
@@ -464,6 +484,11 @@ export interface Reader extends BaseContract {
       gmxTokenAddresses: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<Reader.GmxAdapterStorageStructOutput>;
+
+    getProxyProjectId(
+      proxyAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     gmxVault(overrides?: CallOverrides): Promise<string>;
 
@@ -500,6 +525,11 @@ export interface Reader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getProxyProjectId(
+      proxyAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     gmxVault(overrides?: CallOverrides): Promise<BigNumber>;
 
     usdg(overrides?: CallOverrides): Promise<BigNumber>;
@@ -530,6 +560,11 @@ export interface Reader extends BaseContract {
       gmxOrderBook: PromiseOrValue<string>,
       aggregatorCollateralAddresses: PromiseOrValue<string>[],
       gmxTokenAddresses: PromiseOrValue<string>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getProxyProjectId(
+      proxyAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

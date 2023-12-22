@@ -15,7 +15,7 @@ import {
 } from "ethers";
 import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
-import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
+import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "../common";
 
 export interface VotingEscrowInterface extends utils.Interface {
   contractName: "VotingEscrow";
@@ -23,7 +23,6 @@ export interface VotingEscrowInterface extends utils.Interface {
     "_balanceOf(address,uint256)": FunctionFragment;
     "averageUnlockTime()": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "balanceOfAt(address,uint256)": FunctionFragment;
     "checkpoint()": FunctionFragment;
     "decimals()": FunctionFragment;
     "deposit(address,uint256,uint256)": FunctionFragment;
@@ -53,7 +52,6 @@ export interface VotingEscrowInterface extends utils.Interface {
     "supply()": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalSupply()": FunctionFragment;
-    "totalSupplyAt(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "userPointEpoch(address)": FunctionFragment;
     "userPointHistory(address,uint256)": FunctionFragment;
@@ -72,10 +70,6 @@ export interface VotingEscrowInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "balanceOfAt",
-    values: [string, BigNumberish]
-  ): string;
   encodeFunctionData(
     functionFragment: "checkpoint",
     values?: undefined
@@ -160,10 +154,6 @@ export interface VotingEscrowInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "totalSupplyAt",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
@@ -189,10 +179,6 @@ export interface VotingEscrowInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "balanceOfAt",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "checkpoint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
@@ -259,10 +245,6 @@ export interface VotingEscrowInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "totalSupplyAt",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -373,12 +355,6 @@ export interface VotingEscrow extends BaseContract {
     averageUnlockTime(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     balanceOf(addr: string, overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    balanceOfAt(
-      addr: string,
-      _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
 
     checkpoint(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -514,11 +490,6 @@ export interface VotingEscrow extends BaseContract {
 
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    totalSupplyAt(
-      _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -569,12 +540,6 @@ export interface VotingEscrow extends BaseContract {
   averageUnlockTime(overrides?: CallOverrides): Promise<BigNumber>;
 
   balanceOf(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  balanceOfAt(
-    addr: string,
-    _block: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   checkpoint(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -701,11 +666,6 @@ export interface VotingEscrow extends BaseContract {
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
-  totalSupplyAt(
-    _block: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   transferOwnership(
     newOwner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -753,12 +713,6 @@ export interface VotingEscrow extends BaseContract {
     averageUnlockTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     balanceOf(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    balanceOfAt(
-      addr: string,
-      _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     checkpoint(overrides?: CallOverrides): Promise<void>;
 
@@ -887,11 +841,6 @@ export interface VotingEscrow extends BaseContract {
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
-    totalSupplyAt(
-      _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     transferOwnership(
       newOwner: string,
       overrides?: CallOverrides
@@ -978,12 +927,6 @@ export interface VotingEscrow extends BaseContract {
     averageUnlockTime(overrides?: CallOverrides): Promise<BigNumber>;
 
     balanceOf(addr: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    balanceOfAt(
-      addr: string,
-      _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     checkpoint(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1104,11 +1047,6 @@ export interface VotingEscrow extends BaseContract {
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
-    totalSupplyAt(
-      _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1151,12 +1089,6 @@ export interface VotingEscrow extends BaseContract {
 
     balanceOf(
       addr: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    balanceOfAt(
-      addr: string,
-      _block: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1290,11 +1222,6 @@ export interface VotingEscrow extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    totalSupplyAt(
-      _block: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: string,

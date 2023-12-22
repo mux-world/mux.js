@@ -107,7 +107,7 @@ const _abi = [
             type: "tuple[]",
           },
           {
-            internalType: "contract GNSTradingV6_2",
+            internalType: "contract GNSTradingV6_4_1",
             name: "trading",
             type: "address",
           },
@@ -128,7 +128,7 @@ const _abi = [
           },
           {
             internalType: "address",
-            name: "nftRewards",
+            name: "oracleRewards",
             type: "address",
           },
           {
@@ -243,7 +243,7 @@ const _abi = [
         type: "tuple[]",
       },
       {
-        internalType: "enum GNSNftRewardsV6.OpenLimitOrderType[]",
+        internalType: "enum IGNSOracleRewardsV6_4_1.OpenLimitOrderType[]",
         name: "openLimitOrderTypes",
         type: "uint8[]",
       },

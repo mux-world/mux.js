@@ -705,6 +705,18 @@ const _abi = [
         name: "newHalfSpread",
         type: "uint32",
       },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "newMaxLongPositionSize",
+        type: "uint96",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "newMaxShortPositionSize",
+        type: "uint96",
+      },
     ],
     name: "SetAssetFlags",
     type: "event",
@@ -759,18 +771,6 @@ const _abi = [
         internalType: "uint32",
         name: "newMinProfitTime",
         type: "uint32",
-      },
-      {
-        indexed: false,
-        internalType: "uint96",
-        name: "newMaxLongPositionSize",
-        type: "uint96",
-      },
-      {
-        indexed: false,
-        internalType: "uint96",
-        name: "newMaxShortPositionSize",
-        type: "uint96",
       },
       {
         indexed: false,
@@ -1267,7 +1267,13 @@ const _abi = [
       },
     ],
     name: "addLiquidity",
-    outputs: [],
+    outputs: [
+      {
+        internalType: "uint96",
+        name: "mlpAmount",
+        type: "uint96",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -1365,6 +1371,19 @@ const _abi = [
         type: "uint96",
       },
     ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+    ],
+    name: "delegateVoting",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -2052,7 +2071,13 @@ const _abi = [
       },
     ],
     name: "removeLiquidity",
-    outputs: [],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "rawAmount",
+        type: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -2143,6 +2168,16 @@ const _abi = [
         name: "newHalfSpread",
         type: "uint32",
       },
+      {
+        internalType: "uint96",
+        name: "newMaxLongPositionSize",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "newMaxShortPositionSize",
+        type: "uint96",
+      },
     ],
     name: "setAssetFlags",
     outputs: [],
@@ -2190,16 +2225,6 @@ const _abi = [
         internalType: "uint32",
         name: "newMinProfitTime",
         type: "uint32",
-      },
-      {
-        internalType: "uint96",
-        name: "newMaxLongPositionSize",
-        type: "uint96",
-      },
-      {
-        internalType: "uint96",
-        name: "newMaxShortPositionSize",
-        type: "uint96",
       },
       {
         internalType: "uint32",

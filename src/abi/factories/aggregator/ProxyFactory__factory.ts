@@ -76,6 +76,25 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "uint256",
+        name: "projectId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "assetToken",
+        type: "address",
+      },
+    ],
+    name: "DisableBorrowConfig",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "uint8",
         name: "version",
         type: "uint8",
@@ -176,19 +195,6 @@ const _abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "bytes32",
-        name: "gmxReferralCode",
-        type: "bytes32",
-      },
-    ],
-    name: "SetGmxReferralCode",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
         internalType: "address",
         name: "keeper",
         type: "address",
@@ -201,6 +207,31 @@ const _abi = [
       },
     ],
     name: "SetKeeper",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "projectId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "sourceId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "source",
+        type: "address",
+      },
+    ],
+    name: "SetLiquiditySource",
     type: "event",
   },
   {
@@ -442,66 +473,6 @@ const _abi = [
             type: "uint96",
           },
           {
-            internalType: "uint8",
-            name: "flags",
-            type: "uint8",
-          },
-          {
-            internalType: "bytes32",
-            name: "referralCode",
-            type: "bytes32",
-          },
-        ],
-        internalType: "struct ProxyFactory.ClosePositionArgs",
-        name: "args",
-        type: "tuple",
-      },
-    ],
-    name: "closePosition",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        components: [
-          {
-            internalType: "uint256",
-            name: "projectId",
-            type: "uint256",
-          },
-          {
-            internalType: "address",
-            name: "collateralToken",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "assetToken",
-            type: "address",
-          },
-          {
-            internalType: "bool",
-            name: "isLong",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "collateralUsd",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "sizeUsd",
-            type: "uint256",
-          },
-          {
-            internalType: "uint96",
-            name: "priceUsd",
-            type: "uint96",
-          },
-          {
             internalType: "uint96",
             name: "tpPriceUsd",
             type: "uint96",
@@ -522,7 +493,7 @@ const _abi = [
             type: "bytes32",
           },
         ],
-        internalType: "struct ProxyFactory.ClosePositionArgsV2",
+        internalType: "struct IProxyFactory.ClosePositionArgsV2",
         name: "args",
         type: "tuple",
       },
@@ -563,6 +534,24 @@ const _abi = [
         type: "address",
       },
     ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "projectId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "assetToken",
+        type: "address",
+      },
+    ],
+    name: "disableBorrowConfig",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -648,6 +637,30 @@ const _abi = [
         internalType: "uint32",
         name: "assetConfigVersion",
         type: "uint32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "projectId",
+        type: "uint256",
+      },
+    ],
+    name: "getLiquiditySource",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "sourceId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "source",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -774,6 +787,25 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "proxy_",
+        type: "address",
+      },
+    ],
+    name: "getProxyProjectId",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "implementation",
     outputs: [
@@ -864,74 +896,36 @@ const _abi = [
   {
     inputs: [
       {
-        components: [
-          {
-            internalType: "uint256",
-            name: "projectId",
-            type: "uint256",
-          },
-          {
-            internalType: "address",
-            name: "collateralToken",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "assetToken",
-            type: "address",
-          },
-          {
-            internalType: "bool",
-            name: "isLong",
-            type: "bool",
-          },
-          {
-            internalType: "address",
-            name: "tokenIn",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "amountIn",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "minOut",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "borrow",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "sizeUsd",
-            type: "uint256",
-          },
-          {
-            internalType: "uint96",
-            name: "priceUsd",
-            type: "uint96",
-          },
-          {
-            internalType: "uint8",
-            name: "flags",
-            type: "uint8",
-          },
-          {
-            internalType: "bytes32",
-            name: "referralCode",
-            type: "bytes32",
-          },
-        ],
-        internalType: "struct ProxyFactory.OpenPositionArgs",
-        name: "args",
-        type: "tuple",
+        internalType: "bytes[]",
+        name: "proxyCalls",
+        type: "bytes[]",
       },
     ],
-    name: "openPosition",
+    name: "multicall",
+    outputs: [
+      {
+        internalType: "bytes[]",
+        name: "results",
+        type: "bytes[]",
+      },
+    ],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes",
+        name: "muxCallData",
+        type: "bytes",
+      },
+      {
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "muxFunctionCall",
     outputs: [],
     stateMutability: "payable",
     type: "function",
@@ -1011,7 +1005,7 @@ const _abi = [
             type: "bytes32",
           },
         ],
-        internalType: "struct ProxyFactory.OpenPositionArgsV2",
+        internalType: "struct IProxyFactory.OpenPositionArgsV2",
         name: "args",
         type: "tuple",
       },
@@ -1096,7 +1090,7 @@ const _abi = [
             type: "bytes32",
           },
         ],
-        internalType: "struct ProxyFactory.OpenPositionArgsV2",
+        internalType: "struct IProxyFactory.OpenPositionArgsV2",
         name: "args",
         type: "tuple",
       },
@@ -1170,7 +1164,7 @@ const _abi = [
             type: "tuple",
           },
         ],
-        internalType: "struct ProxyFactory.MuxOrderParams",
+        internalType: "struct IProxyFactory.MuxOrderParams",
         name: "muxParams",
         type: "tuple",
       },
@@ -1196,6 +1190,56 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "projectId",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "collateralToken",
+            type: "address",
+          },
+          {
+            internalType: "address",
+            name: "assetToken",
+            type: "address",
+          },
+          {
+            internalType: "bool",
+            name: "isLong",
+            type: "bool",
+          },
+          {
+            internalType: "bytes32",
+            name: "referralCode",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint256",
+            name: "value",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes",
+            name: "proxyCallData",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct IProxyFactory.ProxyCallParams",
+        name: "params",
+        type: "tuple",
+      },
+    ],
+    name: "proxyFunctionCall",
+    outputs: [],
+    stateMutability: "payable",
     type: "function",
   },
   {
@@ -1280,6 +1324,29 @@ const _abi = [
       },
     ],
     name: "setKeeper",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "projectId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "sourceId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "source",
+        type: "address",
+      },
+    ],
+    name: "setLiquiditySource",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1405,6 +1472,44 @@ const _abi = [
         type: "bool",
       },
       {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "transferToken",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "projectId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "collateralToken",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "assetToken",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "isLong",
+        type: "bool",
+      },
+      {
         components: [
           {
             internalType: "bytes32",
@@ -1432,7 +1537,7 @@ const _abi = [
             type: "bool",
           },
         ],
-        internalType: "struct ProxyFactory.OrderParams[]",
+        internalType: "struct IProxyFactory.OrderParams[]",
         name: "orderParams",
         type: "tuple[]",
       },
@@ -1504,6 +1609,39 @@ const _abi = [
     name: "withdraw",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "projectId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "collateralToken",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "assetToken",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "isLong",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "wrapAndTransferNative",
+    outputs: [],
+    stateMutability: "payable",
     type: "function",
   },
 ] as const;

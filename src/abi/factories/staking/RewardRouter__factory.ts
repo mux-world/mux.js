@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { RewardRouter, RewardRouterInterface } from "../RewardRouter";
+import type { RewardRouter, RewardRouterInterface } from "../../staking/RewardRouter";
 
 const _abi = [
   {

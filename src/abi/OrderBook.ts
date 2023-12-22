@@ -65,7 +65,6 @@ export interface OrderBookInterface extends utils.Interface {
     "owner()": FunctionFragment;
     "pause(bool,bool)": FunctionFragment;
     "placeLiquidityOrder(uint8,uint96,bool)": FunctionFragment;
-    "placePositionOrder2(bytes32,uint96,uint96,uint96,uint8,uint8,uint32,bytes32)": FunctionFragment;
     "placePositionOrder3(bytes32,uint96,uint96,uint96,uint8,uint8,uint32,bytes32,(uint96,uint96,uint8,uint32))": FunctionFragment;
     "placeRebalanceOrder(uint8,uint8,uint96,uint96,bytes32)": FunctionFragment;
     "placeWithdrawalOrder(bytes32,uint96,uint8,bool)": FunctionFragment;
@@ -79,6 +78,8 @@ export interface OrderBookInterface extends utils.Interface {
     "renounceOwnership()": FunctionFragment;
     "renounceRebalancer()": FunctionFragment;
     "setAggregator(address,bool)": FunctionFragment;
+    "setCallbackGasLimit(uint256)": FunctionFragment;
+    "setCallbackWhitelist(address,bool)": FunctionFragment;
     "setLiquidityLockPeriod(uint32)": FunctionFragment;
     "setMaintainer(address)": FunctionFragment;
     "setOrderTimeout(uint32,uint32)": FunctionFragment;
@@ -187,19 +188,6 @@ export interface OrderBookInterface extends utils.Interface {
     values: [BigNumberish, BigNumberish, boolean]
   ): string;
   encodeFunctionData(
-    functionFragment: "placePositionOrder2",
-    values: [
-      BytesLike,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BytesLike
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "placePositionOrder3",
     values: [
       BytesLike,
@@ -256,6 +244,14 @@ export interface OrderBookInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setAggregator",
+    values: [string, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setCallbackGasLimit",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setCallbackWhitelist",
     values: [string, boolean]
   ): string;
   encodeFunctionData(
@@ -365,10 +361,6 @@ export interface OrderBookInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "placePositionOrder2",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "placePositionOrder3",
     data: BytesLike
   ): Result;
@@ -418,6 +410,14 @@ export interface OrderBookInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setAggregator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setCallbackGasLimit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setCallbackWhitelist",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -844,18 +844,6 @@ export interface OrderBook extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    placePositionOrder2(
-      subAccountId: BytesLike,
-      collateralAmount: BigNumberish,
-      size: BigNumberish,
-      price: BigNumberish,
-      profitTokenId: BigNumberish,
-      flags: BigNumberish,
-      deadline: BigNumberish,
-      referralCode: BytesLike,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     placePositionOrder3(
       subAccountId: BytesLike,
       collateralAmount: BigNumberish,
@@ -929,6 +917,17 @@ export interface OrderBook extends BaseContract {
     setAggregator(
       aggregatorAddress: string,
       isEnable: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setCallbackGasLimit(
+      gasLimit: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setCallbackWhitelist(
+      caller: string,
+      enable: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1099,18 +1098,6 @@ export interface OrderBook extends BaseContract {
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  placePositionOrder2(
-    subAccountId: BytesLike,
-    collateralAmount: BigNumberish,
-    size: BigNumberish,
-    price: BigNumberish,
-    profitTokenId: BigNumberish,
-    flags: BigNumberish,
-    deadline: BigNumberish,
-    referralCode: BytesLike,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   placePositionOrder3(
     subAccountId: BytesLike,
     collateralAmount: BigNumberish,
@@ -1181,6 +1168,17 @@ export interface OrderBook extends BaseContract {
   setAggregator(
     aggregatorAddress: string,
     isEnable: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setCallbackGasLimit(
+    gasLimit: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setCallbackWhitelist(
+    caller: string,
+    enable: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1346,18 +1344,6 @@ export interface OrderBook extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    placePositionOrder2(
-      subAccountId: BytesLike,
-      collateralAmount: BigNumberish,
-      size: BigNumberish,
-      price: BigNumberish,
-      profitTokenId: BigNumberish,
-      flags: BigNumberish,
-      deadline: BigNumberish,
-      referralCode: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     placePositionOrder3(
       subAccountId: BytesLike,
       collateralAmount: BigNumberish,
@@ -1422,6 +1408,17 @@ export interface OrderBook extends BaseContract {
     setAggregator(
       aggregatorAddress: string,
       isEnable: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setCallbackGasLimit(
+      gasLimit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setCallbackWhitelist(
+      caller: string,
+      enable: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1782,18 +1779,6 @@ export interface OrderBook extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    placePositionOrder2(
-      subAccountId: BytesLike,
-      collateralAmount: BigNumberish,
-      size: BigNumberish,
-      price: BigNumberish,
-      profitTokenId: BigNumberish,
-      flags: BigNumberish,
-      deadline: BigNumberish,
-      referralCode: BytesLike,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     placePositionOrder3(
       subAccountId: BytesLike,
       collateralAmount: BigNumberish,
@@ -1867,6 +1852,17 @@ export interface OrderBook extends BaseContract {
     setAggregator(
       aggregatorAddress: string,
       isEnable: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setCallbackGasLimit(
+      gasLimit: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setCallbackWhitelist(
+      caller: string,
+      enable: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2046,18 +2042,6 @@ export interface OrderBook extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    placePositionOrder2(
-      subAccountId: BytesLike,
-      collateralAmount: BigNumberish,
-      size: BigNumberish,
-      price: BigNumberish,
-      profitTokenId: BigNumberish,
-      flags: BigNumberish,
-      deadline: BigNumberish,
-      referralCode: BytesLike,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     placePositionOrder3(
       subAccountId: BytesLike,
       collateralAmount: BigNumberish,
@@ -2131,6 +2115,17 @@ export interface OrderBook extends BaseContract {
     setAggregator(
       aggregatorAddress: string,
       isEnable: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setCallbackGasLimit(
+      gasLimit: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setCallbackWhitelist(
+      caller: string,
+      enable: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

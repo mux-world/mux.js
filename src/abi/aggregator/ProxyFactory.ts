@@ -28,41 +28,7 @@ import type {
   PromiseOrValue,
 } from "../common";
 
-export declare namespace ProxyFactory {
-  export type ClosePositionArgsStruct = {
-    projectId: PromiseOrValue<BigNumberish>;
-    collateralToken: PromiseOrValue<string>;
-    assetToken: PromiseOrValue<string>;
-    isLong: PromiseOrValue<boolean>;
-    collateralUsd: PromiseOrValue<BigNumberish>;
-    sizeUsd: PromiseOrValue<BigNumberish>;
-    priceUsd: PromiseOrValue<BigNumberish>;
-    flags: PromiseOrValue<BigNumberish>;
-    referralCode: PromiseOrValue<BytesLike>;
-  };
-
-  export type ClosePositionArgsStructOutput = [
-    BigNumber,
-    string,
-    string,
-    boolean,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    number,
-    string
-  ] & {
-    projectId: BigNumber;
-    collateralToken: string;
-    assetToken: string;
-    isLong: boolean;
-    collateralUsd: BigNumber;
-    sizeUsd: BigNumber;
-    priceUsd: BigNumber;
-    flags: number;
-    referralCode: string;
-  };
-
+export declare namespace IProxyFactory {
   export type ClosePositionArgsV2Struct = {
     projectId: PromiseOrValue<BigNumberish>;
     collateralToken: PromiseOrValue<string>;
@@ -99,49 +65,6 @@ export declare namespace ProxyFactory {
     priceUsd: BigNumber;
     tpPriceUsd: BigNumber;
     slPriceUsd: BigNumber;
-    flags: number;
-    referralCode: string;
-  };
-
-  export type OpenPositionArgsStruct = {
-    projectId: PromiseOrValue<BigNumberish>;
-    collateralToken: PromiseOrValue<string>;
-    assetToken: PromiseOrValue<string>;
-    isLong: PromiseOrValue<boolean>;
-    tokenIn: PromiseOrValue<string>;
-    amountIn: PromiseOrValue<BigNumberish>;
-    minOut: PromiseOrValue<BigNumberish>;
-    borrow: PromiseOrValue<BigNumberish>;
-    sizeUsd: PromiseOrValue<BigNumberish>;
-    priceUsd: PromiseOrValue<BigNumberish>;
-    flags: PromiseOrValue<BigNumberish>;
-    referralCode: PromiseOrValue<BytesLike>;
-  };
-
-  export type OpenPositionArgsStructOutput = [
-    BigNumber,
-    string,
-    string,
-    boolean,
-    string,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    number,
-    string
-  ] & {
-    projectId: BigNumber;
-    collateralToken: string;
-    assetToken: string;
-    isLong: boolean;
-    tokenIn: string;
-    amountIn: BigNumber;
-    minOut: BigNumber;
-    borrow: BigNumber;
-    sizeUsd: BigNumber;
-    priceUsd: BigNumber;
     flags: number;
     referralCode: string;
   };
@@ -229,6 +152,34 @@ export declare namespace ProxyFactory {
     extra: IMuxOrderBook.PositionOrderExtraStructOutput;
   };
 
+  export type ProxyCallParamsStruct = {
+    projectId: PromiseOrValue<BigNumberish>;
+    collateralToken: PromiseOrValue<string>;
+    assetToken: PromiseOrValue<string>;
+    isLong: PromiseOrValue<boolean>;
+    referralCode: PromiseOrValue<BytesLike>;
+    value: PromiseOrValue<BigNumberish>;
+    proxyCallData: PromiseOrValue<BytesLike>;
+  };
+
+  export type ProxyCallParamsStructOutput = [
+    BigNumber,
+    string,
+    string,
+    boolean,
+    string,
+    BigNumber,
+    string
+  ] & {
+    projectId: BigNumber;
+    collateralToken: string;
+    assetToken: string;
+    isLong: boolean;
+    referralCode: string;
+    value: BigNumber;
+    proxyCallData: string;
+  };
+
   export type OrderParamsStruct = {
     orderKey: PromiseOrValue<BytesLike>;
     collateralDelta: PromiseOrValue<BigNumberish>;
@@ -278,39 +229,46 @@ export interface ProxyFactoryInterface extends utils.Interface {
     "borrowAsset(uint256,address,uint256,uint256)": FunctionFragment;
     "cancelOrders(uint256,address,address,bool,bytes32[])": FunctionFragment;
     "cancelTimeoutOrders(uint256,address,address,address,bool,bytes32[])": FunctionFragment;
-    "closePosition((uint256,address,address,bool,uint256,uint256,uint96,uint8,bytes32))": FunctionFragment;
     "closePositionV2((uint256,address,address,bool,uint256,uint256,uint96,uint96,uint96,uint8,bytes32))": FunctionFragment;
     "createProxy(uint256,address,address,bool)": FunctionFragment;
+    "disableBorrowConfig(uint256,address)": FunctionFragment;
     "getAssetId(uint256,address)": FunctionFragment;
     "getBorrowStates(uint256,address)": FunctionFragment;
     "getConfigVersions(uint256,address)": FunctionFragment;
+    "getLiquiditySource(uint256)": FunctionFragment;
     "getProjectAssetConfig(uint256,address)": FunctionFragment;
     "getProjectConfig(uint256)": FunctionFragment;
     "getProxiesOf(address)": FunctionFragment;
     "getProxy(bytes32)": FunctionFragment;
     "getProxyAddress(uint256,address,address,address,bool)": FunctionFragment;
+    "getProxyProjectId(address)": FunctionFragment;
     "implementation()": FunctionFragment;
     "initialize(address,address)": FunctionFragment;
     "isKeeper(address)": FunctionFragment;
     "liquidatePosition(uint256,address,address,address,bool,uint256)": FunctionFragment;
-    "openPosition((uint256,address,address,bool,address,uint256,uint256,uint256,uint256,uint96,uint8,bytes32))": FunctionFragment;
+    "multicall(bytes[])": FunctionFragment;
+    "muxFunctionCall(bytes,uint256)": FunctionFragment;
     "openPositionV2((uint256,address,address,bool,address,uint256,uint256,uint256,uint256,uint96,uint96,uint96,uint8,bytes32))": FunctionFragment;
     "openPositionV3((uint256,address,address,bool,address,uint256,uint256,uint256,uint256,uint96,uint96,uint96,uint8,bytes32),(bytes32,uint96,uint96,uint96,uint8,uint8,uint32,bytes32,(uint96,uint96,uint8,uint32)),uint256)": FunctionFragment;
     "owner()": FunctionFragment;
+    "proxyFunctionCall((uint256,address,address,bool,bytes32,uint256,bytes))": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "repayAsset(uint256,address,uint256,uint256,uint256)": FunctionFragment;
     "setBorrowConfig(uint256,address,uint8,uint256)": FunctionFragment;
     "setKeeper(address,bool)": FunctionFragment;
+    "setLiquiditySource(uint256,uint256,address)": FunctionFragment;
     "setMaintainer(address,bool)": FunctionFragment;
     "setMuxOrderBook(address)": FunctionFragment;
     "setProjectAssetConfig(uint256,address,uint256[])": FunctionFragment;
     "setProjectConfig(uint256,uint256[])": FunctionFragment;
     "setReferralManager(address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
+    "transferToken(uint256,address,address,bool,address,uint256)": FunctionFragment;
     "updateOrder(uint256,address,address,bool,(bytes32,uint256,uint256,uint256,bool)[])": FunctionFragment;
     "upgradeTo(uint256,address)": FunctionFragment;
     "weth()": FunctionFragment;
     "withdraw(uint256,address,address,address,bool)": FunctionFragment;
+    "wrapAndTransferNative(uint256,address,address,bool,uint256)": FunctionFragment;
   };
 
   getFunction(
@@ -318,39 +276,46 @@ export interface ProxyFactoryInterface extends utils.Interface {
       | "borrowAsset"
       | "cancelOrders"
       | "cancelTimeoutOrders"
-      | "closePosition"
       | "closePositionV2"
       | "createProxy"
+      | "disableBorrowConfig"
       | "getAssetId"
       | "getBorrowStates"
       | "getConfigVersions"
+      | "getLiquiditySource"
       | "getProjectAssetConfig"
       | "getProjectConfig"
       | "getProxiesOf"
       | "getProxy"
       | "getProxyAddress"
+      | "getProxyProjectId"
       | "implementation"
       | "initialize"
       | "isKeeper"
       | "liquidatePosition"
-      | "openPosition"
+      | "multicall"
+      | "muxFunctionCall"
       | "openPositionV2"
       | "openPositionV3"
       | "owner"
+      | "proxyFunctionCall"
       | "renounceOwnership"
       | "repayAsset"
       | "setBorrowConfig"
       | "setKeeper"
+      | "setLiquiditySource"
       | "setMaintainer"
       | "setMuxOrderBook"
       | "setProjectAssetConfig"
       | "setProjectConfig"
       | "setReferralManager"
       | "transferOwnership"
+      | "transferToken"
       | "updateOrder"
       | "upgradeTo"
       | "weth"
       | "withdraw"
+      | "wrapAndTransferNative"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -384,12 +349,8 @@ export interface ProxyFactoryInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "closePosition",
-    values: [ProxyFactory.ClosePositionArgsStruct]
-  ): string;
-  encodeFunctionData(
     functionFragment: "closePositionV2",
-    values: [ProxyFactory.ClosePositionArgsV2Struct]
+    values: [IProxyFactory.ClosePositionArgsV2Struct]
   ): string;
   encodeFunctionData(
     functionFragment: "createProxy",
@@ -399,6 +360,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
       PromiseOrValue<string>,
       PromiseOrValue<boolean>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "disableBorrowConfig",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getAssetId",
@@ -411,6 +376,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "getConfigVersions",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getLiquiditySource",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "getProjectAssetConfig",
@@ -439,6 +408,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "getProxyProjectId",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "implementation",
     values?: undefined
   ): string;
@@ -462,22 +435,30 @@ export interface ProxyFactoryInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "openPosition",
-    values: [ProxyFactory.OpenPositionArgsStruct]
+    functionFragment: "multicall",
+    values: [PromiseOrValue<BytesLike>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "muxFunctionCall",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "openPositionV2",
-    values: [ProxyFactory.OpenPositionArgsV2Struct]
+    values: [IProxyFactory.OpenPositionArgsV2Struct]
   ): string;
   encodeFunctionData(
     functionFragment: "openPositionV3",
     values: [
-      ProxyFactory.OpenPositionArgsV2Struct,
-      ProxyFactory.MuxOrderParamsStruct,
+      IProxyFactory.OpenPositionArgsV2Struct,
+      IProxyFactory.MuxOrderParamsStruct,
       PromiseOrValue<BigNumberish>
     ]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "proxyFunctionCall",
+    values: [IProxyFactory.ProxyCallParamsStruct]
+  ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
@@ -504,6 +485,14 @@ export interface ProxyFactoryInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "setKeeper",
     values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setLiquiditySource",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "setMaintainer",
@@ -534,13 +523,24 @@ export interface ProxyFactoryInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "transferToken",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<boolean>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateOrder",
     values: [
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<boolean>,
-      ProxyFactory.OrderParamsStruct[]
+      IProxyFactory.OrderParamsStruct[]
     ]
   ): string;
   encodeFunctionData(
@@ -558,6 +558,16 @@ export interface ProxyFactoryInterface extends utils.Interface {
       PromiseOrValue<boolean>
     ]
   ): string;
+  encodeFunctionData(
+    functionFragment: "wrapAndTransferNative",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<boolean>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "borrowAsset",
@@ -572,15 +582,15 @@ export interface ProxyFactoryInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "closePosition",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "closePositionV2",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "createProxy",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "disableBorrowConfig",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getAssetId", data: BytesLike): Result;
@@ -590,6 +600,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getConfigVersions",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getLiquiditySource",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -610,6 +624,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getProxyProjectId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "implementation",
     data: BytesLike
   ): Result;
@@ -619,8 +637,9 @@ export interface ProxyFactoryInterface extends utils.Interface {
     functionFragment: "liquidatePosition",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "multicall", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "openPosition",
+    functionFragment: "muxFunctionCall",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -633,6 +652,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "proxyFunctionCall",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
@@ -642,6 +665,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setKeeper", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setLiquiditySource",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "setMaintainer",
     data: BytesLike
@@ -667,21 +694,30 @@ export interface ProxyFactoryInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "transferToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "updateOrder",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "upgradeTo", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "weth", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "wrapAndTransferNative",
+    data: BytesLike
+  ): Result;
 
   events: {
     "CreateProxy(uint256,bytes32,address,address,bytes32,address,address,uint8,bool)": EventFragment;
+    "DisableBorrowConfig(uint256,address)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "MuxCall(address,uint256,bytes)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "SetBorrowConfig(uint256,address,uint8,uint8,uint256,uint256)": EventFragment;
-    "SetGmxReferralCode(bytes32)": EventFragment;
     "SetKeeper(address,bool)": EventFragment;
+    "SetLiquiditySource(uint256,uint256,address)": EventFragment;
     "SetMaintainer(address,bool)": EventFragment;
     "SetProjectAssetConfig(uint256,address,uint256[],uint256)": EventFragment;
     "SetProjectConfig(uint256,uint256[],uint256)": EventFragment;
@@ -689,12 +725,13 @@ export interface ProxyFactoryInterface extends utils.Interface {
   };
 
   getEvent(nameOrSignatureOrTopic: "CreateProxy"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DisableBorrowConfig"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MuxCall"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetBorrowConfig"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetGmxReferralCode"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetKeeper"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetLiquiditySource"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMaintainer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetProjectAssetConfig"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetProjectConfig"): EventFragment;
@@ -718,6 +755,18 @@ export type CreateProxyEvent = TypedEvent<
 >;
 
 export type CreateProxyEventFilter = TypedEventFilter<CreateProxyEvent>;
+
+export interface DisableBorrowConfigEventObject {
+  projectId: BigNumber;
+  assetToken: string;
+}
+export type DisableBorrowConfigEvent = TypedEvent<
+  [BigNumber, string],
+  DisableBorrowConfigEventObject
+>;
+
+export type DisableBorrowConfigEventFilter =
+  TypedEventFilter<DisableBorrowConfigEvent>;
 
 export interface InitializedEventObject {
   version: number;
@@ -765,17 +814,6 @@ export type SetBorrowConfigEvent = TypedEvent<
 
 export type SetBorrowConfigEventFilter = TypedEventFilter<SetBorrowConfigEvent>;
 
-export interface SetGmxReferralCodeEventObject {
-  gmxReferralCode: string;
-}
-export type SetGmxReferralCodeEvent = TypedEvent<
-  [string],
-  SetGmxReferralCodeEventObject
->;
-
-export type SetGmxReferralCodeEventFilter =
-  TypedEventFilter<SetGmxReferralCodeEvent>;
-
 export interface SetKeeperEventObject {
   keeper: string;
   enable: boolean;
@@ -786,6 +824,19 @@ export type SetKeeperEvent = TypedEvent<
 >;
 
 export type SetKeeperEventFilter = TypedEventFilter<SetKeeperEvent>;
+
+export interface SetLiquiditySourceEventObject {
+  projectId: BigNumber;
+  sourceId: BigNumber;
+  source: string;
+}
+export type SetLiquiditySourceEvent = TypedEvent<
+  [BigNumber, BigNumber, string],
+  SetLiquiditySourceEventObject
+>;
+
+export type SetLiquiditySourceEventFilter =
+  TypedEventFilter<SetLiquiditySourceEvent>;
 
 export interface SetMaintainerEventObject {
   maintainer: string;
@@ -890,13 +941,8 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    closePosition(
-      args: ProxyFactory.ClosePositionArgsStruct,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     closePositionV2(
-      args: ProxyFactory.ClosePositionArgsV2Struct,
+      args: IProxyFactory.ClosePositionArgsV2Struct,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -905,6 +951,12 @@ export interface ProxyFactory extends BaseContract {
       collateralToken: PromiseOrValue<string>,
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    disableBorrowConfig(
+      projectId: PromiseOrValue<BigNumberish>,
+      assetToken: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -937,6 +989,11 @@ export interface ProxyFactory extends BaseContract {
       }
     >;
 
+    getLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, string] & { sourceId: BigNumber; source: string }>;
+
     getProjectAssetConfig(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
@@ -967,6 +1024,11 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    getProxyProjectId(
+      proxy_: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     implementation(overrides?: CallOverrides): Promise<[string]>;
 
     initialize(
@@ -990,24 +1052,35 @@ export interface ProxyFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    openPosition(
-      args: ProxyFactory.OpenPositionArgsStruct,
+    multicall(
+      proxyCalls: PromiseOrValue<BytesLike>[],
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    muxFunctionCall(
+      muxCallData: PromiseOrValue<BytesLike>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     openPositionV2(
-      args: ProxyFactory.OpenPositionArgsV2Struct,
+      args: IProxyFactory.OpenPositionArgsV2Struct,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     openPositionV3(
-      args: ProxyFactory.OpenPositionArgsV2Struct,
-      muxParams: ProxyFactory.MuxOrderParamsStruct,
+      args: IProxyFactory.OpenPositionArgsV2Struct,
+      muxParams: IProxyFactory.MuxOrderParamsStruct,
       muxValue: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
+
+    proxyFunctionCall(
+      params: IProxyFactory.ProxyCallParamsStruct,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1033,6 +1106,13 @@ export interface ProxyFactory extends BaseContract {
     setKeeper(
       keeper: PromiseOrValue<string>,
       enable: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
+      sourceId: PromiseOrValue<BigNumberish>,
+      source: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1070,12 +1150,22 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    transferToken(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      token: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     updateOrder(
       projectId: PromiseOrValue<BigNumberish>,
       collateralToken: PromiseOrValue<string>,
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
-      orderParams: ProxyFactory.OrderParamsStruct[],
+      orderParams: IProxyFactory.OrderParamsStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1094,6 +1184,15 @@ export interface ProxyFactory extends BaseContract {
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    wrapAndTransferNative(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
 
@@ -1124,13 +1223,8 @@ export interface ProxyFactory extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  closePosition(
-    args: ProxyFactory.ClosePositionArgsStruct,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   closePositionV2(
-    args: ProxyFactory.ClosePositionArgsV2Struct,
+    args: IProxyFactory.ClosePositionArgsV2Struct,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1139,6 +1233,12 @@ export interface ProxyFactory extends BaseContract {
     collateralToken: PromiseOrValue<string>,
     assetToken: PromiseOrValue<string>,
     isLong: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  disableBorrowConfig(
+    projectId: PromiseOrValue<BigNumberish>,
+    assetToken: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1171,6 +1271,11 @@ export interface ProxyFactory extends BaseContract {
     }
   >;
 
+  getLiquiditySource(
+    projectId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, string] & { sourceId: BigNumber; source: string }>;
+
   getProjectAssetConfig(
     projectId: PromiseOrValue<BigNumberish>,
     assetToken: PromiseOrValue<string>,
@@ -1201,6 +1306,11 @@ export interface ProxyFactory extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  getProxyProjectId(
+    proxy_: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   implementation(overrides?: CallOverrides): Promise<string>;
 
   initialize(
@@ -1224,24 +1334,35 @@ export interface ProxyFactory extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  openPosition(
-    args: ProxyFactory.OpenPositionArgsStruct,
+  multicall(
+    proxyCalls: PromiseOrValue<BytesLike>[],
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  muxFunctionCall(
+    muxCallData: PromiseOrValue<BytesLike>,
+    value: PromiseOrValue<BigNumberish>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   openPositionV2(
-    args: ProxyFactory.OpenPositionArgsV2Struct,
+    args: IProxyFactory.OpenPositionArgsV2Struct,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   openPositionV3(
-    args: ProxyFactory.OpenPositionArgsV2Struct,
-    muxParams: ProxyFactory.MuxOrderParamsStruct,
+    args: IProxyFactory.OpenPositionArgsV2Struct,
+    muxParams: IProxyFactory.MuxOrderParamsStruct,
     muxValue: PromiseOrValue<BigNumberish>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   owner(overrides?: CallOverrides): Promise<string>;
+
+  proxyFunctionCall(
+    params: IProxyFactory.ProxyCallParamsStruct,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   renounceOwnership(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1267,6 +1388,13 @@ export interface ProxyFactory extends BaseContract {
   setKeeper(
     keeper: PromiseOrValue<string>,
     enable: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setLiquiditySource(
+    projectId: PromiseOrValue<BigNumberish>,
+    sourceId: PromiseOrValue<BigNumberish>,
+    source: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1304,12 +1432,22 @@ export interface ProxyFactory extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  transferToken(
+    projectId: PromiseOrValue<BigNumberish>,
+    collateralToken: PromiseOrValue<string>,
+    assetToken: PromiseOrValue<string>,
+    isLong: PromiseOrValue<boolean>,
+    token: PromiseOrValue<string>,
+    amount: PromiseOrValue<BigNumberish>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   updateOrder(
     projectId: PromiseOrValue<BigNumberish>,
     collateralToken: PromiseOrValue<string>,
     assetToken: PromiseOrValue<string>,
     isLong: PromiseOrValue<boolean>,
-    orderParams: ProxyFactory.OrderParamsStruct[],
+    orderParams: IProxyFactory.OrderParamsStruct[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1328,6 +1466,15 @@ export interface ProxyFactory extends BaseContract {
     assetToken: PromiseOrValue<string>,
     isLong: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  wrapAndTransferNative(
+    projectId: PromiseOrValue<BigNumberish>,
+    collateralToken: PromiseOrValue<string>,
+    assetToken: PromiseOrValue<string>,
+    isLong: PromiseOrValue<boolean>,
+    amount: PromiseOrValue<BigNumberish>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -1358,13 +1505,8 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    closePosition(
-      args: ProxyFactory.ClosePositionArgsStruct,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     closePositionV2(
-      args: ProxyFactory.ClosePositionArgsV2Struct,
+      args: IProxyFactory.ClosePositionArgsV2Struct,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1375,6 +1517,12 @@ export interface ProxyFactory extends BaseContract {
       isLong: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    disableBorrowConfig(
+      projectId: PromiseOrValue<BigNumberish>,
+      assetToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     getAssetId(
       projectId: PromiseOrValue<BigNumberish>,
@@ -1404,6 +1552,11 @@ export interface ProxyFactory extends BaseContract {
         assetConfigVersion: number;
       }
     >;
+
+    getLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, string] & { sourceId: BigNumber; source: string }>;
 
     getProjectAssetConfig(
       projectId: PromiseOrValue<BigNumberish>,
@@ -1435,6 +1588,11 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    getProxyProjectId(
+      proxy_: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     implementation(overrides?: CallOverrides): Promise<string>;
 
     initialize(
@@ -1458,24 +1616,35 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    openPosition(
-      args: ProxyFactory.OpenPositionArgsStruct,
+    multicall(
+      proxyCalls: PromiseOrValue<BytesLike>[],
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
+    muxFunctionCall(
+      muxCallData: PromiseOrValue<BytesLike>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     openPositionV2(
-      args: ProxyFactory.OpenPositionArgsV2Struct,
+      args: IProxyFactory.OpenPositionArgsV2Struct,
       overrides?: CallOverrides
     ): Promise<void>;
 
     openPositionV3(
-      args: ProxyFactory.OpenPositionArgsV2Struct,
-      muxParams: ProxyFactory.MuxOrderParamsStruct,
+      args: IProxyFactory.OpenPositionArgsV2Struct,
+      muxParams: IProxyFactory.MuxOrderParamsStruct,
       muxValue: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     owner(overrides?: CallOverrides): Promise<string>;
+
+    proxyFunctionCall(
+      params: IProxyFactory.ProxyCallParamsStruct,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
@@ -1499,6 +1668,13 @@ export interface ProxyFactory extends BaseContract {
     setKeeper(
       keeper: PromiseOrValue<string>,
       enable: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
+      sourceId: PromiseOrValue<BigNumberish>,
+      source: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1536,12 +1712,22 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    transferToken(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      token: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     updateOrder(
       projectId: PromiseOrValue<BigNumberish>,
       collateralToken: PromiseOrValue<string>,
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
-      orderParams: ProxyFactory.OrderParamsStruct[],
+      orderParams: IProxyFactory.OrderParamsStruct[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1559,6 +1745,15 @@ export interface ProxyFactory extends BaseContract {
       collateralToken: PromiseOrValue<string>,
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    wrapAndTransferNative(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      amount: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -1586,6 +1781,15 @@ export interface ProxyFactory extends BaseContract {
       collateralTokenId?: null,
       isLong?: null
     ): CreateProxyEventFilter;
+
+    "DisableBorrowConfig(uint256,address)"(
+      projectId?: null,
+      assetToken?: null
+    ): DisableBorrowConfigEventFilter;
+    DisableBorrowConfig(
+      projectId?: null,
+      assetToken?: null
+    ): DisableBorrowConfigEventFilter;
 
     "Initialized(uint8)"(version?: null): InitializedEventFilter;
     Initialized(version?: null): InitializedEventFilter;
@@ -1623,16 +1827,22 @@ export interface ProxyFactory extends BaseContract {
       newLimit?: null
     ): SetBorrowConfigEventFilter;
 
-    "SetGmxReferralCode(bytes32)"(
-      gmxReferralCode?: null
-    ): SetGmxReferralCodeEventFilter;
-    SetGmxReferralCode(gmxReferralCode?: null): SetGmxReferralCodeEventFilter;
-
     "SetKeeper(address,bool)"(
       keeper?: null,
       enable?: null
     ): SetKeeperEventFilter;
     SetKeeper(keeper?: null, enable?: null): SetKeeperEventFilter;
+
+    "SetLiquiditySource(uint256,uint256,address)"(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      sourceId?: null,
+      source?: null
+    ): SetLiquiditySourceEventFilter;
+    SetLiquiditySource(
+      projectId?: PromiseOrValue<BigNumberish> | null,
+      sourceId?: null,
+      source?: null
+    ): SetLiquiditySourceEventFilter;
 
     "SetMaintainer(address,bool)"(
       maintainer?: null,
@@ -1702,13 +1912,8 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    closePosition(
-      args: ProxyFactory.ClosePositionArgsStruct,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     closePositionV2(
-      args: ProxyFactory.ClosePositionArgsV2Struct,
+      args: IProxyFactory.ClosePositionArgsV2Struct,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1717,6 +1922,12 @@ export interface ProxyFactory extends BaseContract {
       collateralToken: PromiseOrValue<string>,
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    disableBorrowConfig(
+      projectId: PromiseOrValue<BigNumberish>,
+      assetToken: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1735,6 +1946,11 @@ export interface ProxyFactory extends BaseContract {
     getConfigVersions(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1768,6 +1984,11 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getProxyProjectId(
+      proxy_: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     implementation(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
@@ -1791,24 +2012,35 @@ export interface ProxyFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    openPosition(
-      args: ProxyFactory.OpenPositionArgsStruct,
+    multicall(
+      proxyCalls: PromiseOrValue<BytesLike>[],
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    muxFunctionCall(
+      muxCallData: PromiseOrValue<BytesLike>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     openPositionV2(
-      args: ProxyFactory.OpenPositionArgsV2Struct,
+      args: IProxyFactory.OpenPositionArgsV2Struct,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     openPositionV3(
-      args: ProxyFactory.OpenPositionArgsV2Struct,
-      muxParams: ProxyFactory.MuxOrderParamsStruct,
+      args: IProxyFactory.OpenPositionArgsV2Struct,
+      muxParams: IProxyFactory.MuxOrderParamsStruct,
       muxValue: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    proxyFunctionCall(
+      params: IProxyFactory.ProxyCallParamsStruct,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1834,6 +2066,13 @@ export interface ProxyFactory extends BaseContract {
     setKeeper(
       keeper: PromiseOrValue<string>,
       enable: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
+      sourceId: PromiseOrValue<BigNumberish>,
+      source: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1871,12 +2110,22 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    transferToken(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      token: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     updateOrder(
       projectId: PromiseOrValue<BigNumberish>,
       collateralToken: PromiseOrValue<string>,
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
-      orderParams: ProxyFactory.OrderParamsStruct[],
+      orderParams: IProxyFactory.OrderParamsStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1895,6 +2144,15 @@ export interface ProxyFactory extends BaseContract {
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    wrapAndTransferNative(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
 
@@ -1926,13 +2184,8 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    closePosition(
-      args: ProxyFactory.ClosePositionArgsStruct,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     closePositionV2(
-      args: ProxyFactory.ClosePositionArgsV2Struct,
+      args: IProxyFactory.ClosePositionArgsV2Struct,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1941,6 +2194,12 @@ export interface ProxyFactory extends BaseContract {
       collateralToken: PromiseOrValue<string>,
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    disableBorrowConfig(
+      projectId: PromiseOrValue<BigNumberish>,
+      assetToken: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1959,6 +2218,11 @@ export interface ProxyFactory extends BaseContract {
     getConfigVersions(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1992,6 +2256,11 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getProxyProjectId(
+      proxy_: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     implementation(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initialize(
@@ -2015,24 +2284,35 @@ export interface ProxyFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    openPosition(
-      args: ProxyFactory.OpenPositionArgsStruct,
+    multicall(
+      proxyCalls: PromiseOrValue<BytesLike>[],
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    muxFunctionCall(
+      muxCallData: PromiseOrValue<BytesLike>,
+      value: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     openPositionV2(
-      args: ProxyFactory.OpenPositionArgsV2Struct,
+      args: IProxyFactory.OpenPositionArgsV2Struct,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     openPositionV3(
-      args: ProxyFactory.OpenPositionArgsV2Struct,
-      muxParams: ProxyFactory.MuxOrderParamsStruct,
+      args: IProxyFactory.OpenPositionArgsV2Struct,
+      muxParams: IProxyFactory.MuxOrderParamsStruct,
       muxValue: PromiseOrValue<BigNumberish>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    proxyFunctionCall(
+      params: IProxyFactory.ProxyCallParamsStruct,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -2058,6 +2338,13 @@ export interface ProxyFactory extends BaseContract {
     setKeeper(
       keeper: PromiseOrValue<string>,
       enable: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
+      sourceId: PromiseOrValue<BigNumberish>,
+      source: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2095,12 +2382,22 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    transferToken(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      token: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     updateOrder(
       projectId: PromiseOrValue<BigNumberish>,
       collateralToken: PromiseOrValue<string>,
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
-      orderParams: ProxyFactory.OrderParamsStruct[],
+      orderParams: IProxyFactory.OrderParamsStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2119,6 +2416,15 @@ export interface ProxyFactory extends BaseContract {
       assetToken: PromiseOrValue<string>,
       isLong: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    wrapAndTransferNative(
+      projectId: PromiseOrValue<BigNumberish>,
+      collateralToken: PromiseOrValue<string>,
+      assetToken: PromiseOrValue<string>,
+      isLong: PromiseOrValue<boolean>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

@@ -230,48 +230,51 @@ export async function getAggregatorPositionsAndOrders(
   subAccounts: AggregatorSubAccount[]
 }> {
   const store = await reader.getAggregatorSubAccountsOfAccount(gmxPositionRouter, gmxOrderBook, account, overrides)
+  const gmxSubAccounts: AggregatorSubAccount[] = []
+  for (let i of store) {
+    const projectId = i.projectId.toNumber() as AggregatorProjectId
+    if (projectId === AggregatorProjectId.Gmx) {
+      gmxSubAccounts.push(_parseGmxAdapterSubAccount(account, chainId, i))
+    }
+  }
   return {
-    subAccounts: _parseGmxAdapterSubAccounts(account, chainId, store)
+    subAccounts: gmxSubAccounts,
   }
 }
 
-function _parseGmxAdapterSubAccounts(
+function _parseGmxAdapterSubAccount(
   accountAddress: string,
   chainId: number,
-  store: AggregatorReader.AggregatorSubAccountStructOutput[]
-): AggregatorSubAccount[] {
-  const ret: AggregatorSubAccount[] = []
-  for (let i of store) {
-    const gmxCollateral = GMX_TOKENS[chainId].find(
-      conf => conf.address.toLowerCase() === i.collateralAddress.toLowerCase()
-    )
-    if (!gmxCollateral) {
-      throw new Error(`missing gmxCollateral[${i.collateralAddress}]`)
-    }
-    const sub: AggregatorSubAccount = {
-      // key
-      proxyAddress: i.proxyAddress,
-      projectId: i.projectId.toNumber() as AggregatorProjectId,
-      account: accountAddress,
-      collateralTokenAddress: i.collateralAddress,
-      assetTokenAddress: i.assetAddress,
-      isLong: i.isLong,
-
-      // store
-      isLiquidating: i.isLiquidating,
-      cumulativeDebt: fromUnit(i.cumulativeDebt, gmxCollateral.decimals),
-      cumulativeFee: fromUnit(i.cumulativeFee, gmxCollateral.decimals),
-      debtEntryFunding: fromWei(i.debtEntryFunding),
-      proxyCollateralBalance: fromUnit(i.proxyCollateralBalance, gmxCollateral.decimals),
-      proxyEthBalance: fromWei(i.proxyEthBalance),
-
-      // gmx
-      gmx: _parseGmxCoreAccount(i),
-      gmxOrders: _parseGmxAdapterOrder(accountAddress, chainId, i)
-    }
-    ret.push(sub)
+  i: AggregatorReader.AggregatorSubAccountStructOutput
+): AggregatorSubAccount {
+  const gmxCollateral = GMX_TOKENS[chainId].find(
+    conf => conf.address.toLowerCase() === i.collateralAddress.toLowerCase()
+  )
+  if (!gmxCollateral) {
+    throw new Error(`missing gmxCollateral[${i.collateralAddress}]`)
   }
-  return ret
+  const sub: AggregatorSubAccount = {
+    // key
+    proxyAddress: i.proxyAddress,
+    projectId: i.projectId.toNumber() as AggregatorProjectId,
+    account: accountAddress,
+    collateralTokenAddress: i.collateralAddress,
+    assetTokenAddress: i.assetAddress,
+    isLong: i.isLong,
+
+    // store
+    isLiquidating: i.isLiquidating,
+    cumulativeDebt: fromUnit(i.cumulativeDebt, gmxCollateral.decimals),
+    cumulativeFee: fromUnit(i.cumulativeFee, gmxCollateral.decimals),
+    debtEntryFunding: fromWei(i.debtEntryFunding),
+    proxyCollateralBalance: fromUnit(i.proxyCollateralBalance, gmxCollateral.decimals),
+    proxyEthBalance: fromWei(i.proxyEthBalance),
+
+    // gmx
+    gmx: _parseGmxCoreAccount(i),
+    gmxOrders: _parseGmxAdapterOrder(accountAddress, chainId, i)
+  }
+  return sub
 }
 
 function _parseGmxCoreAccount(store: AggregatorReader.AggregatorSubAccountStructOutput): GmxCoreAccount {

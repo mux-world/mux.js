@@ -120,7 +120,7 @@ export declare namespace GainsReader {
     callbacks: PromiseOrValue<string>;
     maxTradesPerPair: PromiseOrValue<BigNumberish>;
     supportedTokens: PromiseOrValue<string>[];
-    nftRewards: PromiseOrValue<string>;
+    oracleRewards: PromiseOrValue<string>;
     maxPosDai: PromiseOrValue<BigNumberish>;
     isPaused: PromiseOrValue<boolean>;
     maxNegativePnlOnOpenP: PromiseOrValue<BigNumberish>;
@@ -146,7 +146,7 @@ export declare namespace GainsReader {
     callbacks: string;
     maxTradesPerPair: BigNumber;
     supportedTokens: string[];
-    nftRewards: string;
+    oracleRewards: string;
     maxPosDai: BigNumber;
     isPaused: boolean;
     maxNegativePnlOnOpenP: BigNumber;

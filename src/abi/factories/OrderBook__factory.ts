@@ -1026,54 +1026,6 @@ const _abi = [
         name: "referralCode",
         type: "bytes32",
       },
-    ],
-    name: "placePositionOrder2",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "subAccountId",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint96",
-        name: "collateralAmount",
-        type: "uint96",
-      },
-      {
-        internalType: "uint96",
-        name: "size",
-        type: "uint96",
-      },
-      {
-        internalType: "uint96",
-        name: "price",
-        type: "uint96",
-      },
-      {
-        internalType: "uint8",
-        name: "profitTokenId",
-        type: "uint8",
-      },
-      {
-        internalType: "uint8",
-        name: "flags",
-        type: "uint8",
-      },
-      {
-        internalType: "uint32",
-        name: "deadline",
-        type: "uint32",
-      },
-      {
-        internalType: "bytes32",
-        name: "referralCode",
-        type: "bytes32",
-      },
       {
         components: [
           {
@@ -1320,6 +1272,37 @@ const _abi = [
       },
     ],
     name: "setAggregator",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "gasLimit",
+        type: "uint256",
+      },
+    ],
+    name: "setCallbackGasLimit",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "enable",
+        type: "bool",
+      },
+    ],
+    name: "setCallbackWhitelist",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

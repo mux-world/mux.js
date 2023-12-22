@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { Vester, VesterInterface } from "../Vester";
+import type { Vester, VesterInterface } from "../../staking/Vester";
 
 const _abi = [
   {

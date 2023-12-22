@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { VotingEscrow, VotingEscrowInterface } from "../VotingEscrow";
+import type { VotingEscrow, VotingEscrowInterface } from "../../staking/VotingEscrow";
 
 const _abi = [
   {
@@ -153,30 +153,6 @@ const _abi = [
       },
     ],
     name: "balanceOf",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "addr",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_block",
-        type: "uint256",
-      },
-    ],
-    name: "balanceOfAt",
     outputs: [
       {
         internalType: "uint256",
@@ -714,25 +690,6 @@ const _abi = [
   {
     inputs: [],
     name: "totalSupply",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_block",
-        type: "uint256",
-      },
-    ],
-    name: "totalSupplyAt",
     outputs: [
       {
         internalType: "uint256",
