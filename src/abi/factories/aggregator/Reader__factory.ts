@@ -29,9 +29,63 @@ const _abi = [
         name: "usdg_",
         type: "address",
       },
+      {
+        internalType: "address",
+        name: "gmxV2DataStore_",
+        type: "address",
+      },
+      {
+        internalType: "contract IReader",
+        name: "gmxV2Reader_",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "gmxV2ReferralStorage_",
+        type: "address",
+      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
+  },
+  {
+    inputs: [],
+    name: "GMX_V2_CLAIMABLE_FUNDING_AMOUNT",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "GMX_V2_LONG_TOKEN",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "GMX_V2_SHORT_TOKEN",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [],
@@ -62,6 +116,76 @@ const _abi = [
         internalType: "address",
         name: "accountAddress",
         type: "address",
+      },
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "marketToken",
+            type: "address",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: "uint256",
+                    name: "min",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "max",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IPrice.Props",
+                name: "indexTokenPrice",
+                type: "tuple",
+              },
+              {
+                components: [
+                  {
+                    internalType: "uint256",
+                    name: "min",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "max",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IPrice.Props",
+                name: "longTokenPrice",
+                type: "tuple",
+              },
+              {
+                components: [
+                  {
+                    internalType: "uint256",
+                    name: "min",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "max",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IPrice.Props",
+                name: "shortTokenPrice",
+                type: "tuple",
+              },
+            ],
+            internalType: "struct IMarket.MarketPrices",
+            name: "prices",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct Reader.GmxV2Price[]",
+        name: "gmxV2Prices",
+        type: "tuple[]",
       },
     ],
     name: "getAggregatorSubAccountsOfAccount",
@@ -207,6 +331,522 @@ const _abi = [
             name: "gmxOrders",
             type: "tuple[]",
           },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    components: [
+                      {
+                        internalType: "address",
+                        name: "account",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "market",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "collateralToken",
+                        type: "address",
+                      },
+                    ],
+                    internalType: "struct IPosition.Addresses",
+                    name: "addresses",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "sizeInUsd",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "sizeInTokens",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "collateralAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "fundingFeeAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "longTokenClaimableFundingAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "shortTokenClaimableFundingAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "increasedAtBlock",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "decreasedAtBlock",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPosition.Numbers",
+                    name: "numbers",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "bool",
+                        name: "isLong",
+                        type: "bool",
+                      },
+                    ],
+                    internalType: "struct IPosition.Flags",
+                    name: "flags",
+                    type: "tuple",
+                  },
+                ],
+                internalType: "struct IPosition.Props",
+                name: "position",
+                type: "tuple",
+              },
+              {
+                components: [
+                  {
+                    components: [
+                      {
+                        internalType: "bytes32",
+                        name: "referralCode",
+                        type: "bytes32",
+                      },
+                      {
+                        internalType: "address",
+                        name: "affiliate",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "trader",
+                        type: "address",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "totalRebateFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "traderDiscountFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "totalRebateAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "traderDiscountAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "affiliateRewardAmount",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType:
+                      "struct IPositionPricing.PositionReferralFees",
+                    name: "referral",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "fundingFeeAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "claimableLongTokenAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "claimableShortTokenAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "latestFundingFeeAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "latestLongTokenClaimableFundingAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "latestShortTokenClaimableFundingAmountPerSize",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPositionPricing.PositionFundingFees",
+                    name: "funding",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFeeUsd",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFeeAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFeeReceiverFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFeeAmountForFeeReceiver",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType:
+                      "struct IPositionPricing.PositionBorrowingFees",
+                    name: "borrowing",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "address",
+                        name: "uiFeeReceiver",
+                        type: "address",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "uiFeeReceiverFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "uiFeeAmount",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPositionPricing.PositionUiFees",
+                    name: "ui",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "min",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "max",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPrice.Props",
+                    name: "collateralTokenPrice",
+                    type: "tuple",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "positionFeeFactor",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "protocolFeeAmount",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "positionFeeReceiverFactor",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "feeReceiverAmount",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "feeAmountForPool",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "positionFeeAmountForPool",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "positionFeeAmount",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "totalCostAmountExcludingFunding",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "totalCostAmount",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IPositionPricing.PositionFees",
+                name: "fees",
+                type: "tuple",
+              },
+              {
+                components: [
+                  {
+                    internalType: "int256",
+                    name: "priceImpactUsd",
+                    type: "int256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "priceImpactDiffUsd",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "executionPrice",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IReader.ExecutionPriceResult",
+                name: "executionPriceResult",
+                type: "tuple",
+              },
+              {
+                internalType: "int256",
+                name: "basePnlUsd",
+                type: "int256",
+              },
+              {
+                internalType: "int256",
+                name: "uncappedBasePnlUsd",
+                type: "int256",
+              },
+              {
+                internalType: "int256",
+                name: "pnlAfterPriceImpactUsd",
+                type: "int256",
+              },
+            ],
+            internalType: "struct IReader.PositionInfo",
+            name: "gmx2",
+            type: "tuple",
+          },
+          {
+            internalType: "uint256",
+            name: "claimableFundingAmountLong",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "claimableFundingAmountShort",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "bytes32",
+                name: "orderHistoryKey",
+                type: "bytes32",
+              },
+              {
+                internalType: "bool",
+                name: "isIncrease",
+                type: "bool",
+              },
+              {
+                internalType: "uint256",
+                name: "debt",
+                type: "uint256",
+              },
+              {
+                internalType: "uint32",
+                name: "timestamp",
+                type: "uint32",
+              },
+              {
+                internalType: "uint256",
+                name: "blockNumber",
+                type: "uint256",
+              },
+              {
+                internalType: "bool",
+                name: "isFillOrCancel",
+                type: "bool",
+              },
+              {
+                components: [
+                  {
+                    components: [
+                      {
+                        internalType: "address",
+                        name: "account",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "receiver",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "callbackContract",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "uiFeeReceiver",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "market",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "initialCollateralToken",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address[]",
+                        name: "swapPath",
+                        type: "address[]",
+                      },
+                    ],
+                    internalType: "struct IOrder.Addresses",
+                    name: "addresses",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "enum IOrder.OrderType",
+                        name: "orderType",
+                        type: "uint8",
+                      },
+                      {
+                        internalType: "enum IOrder.DecreasePositionSwapType",
+                        name: "decreasePositionSwapType",
+                        type: "uint8",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "sizeDeltaUsd",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "initialCollateralDeltaAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "triggerPrice",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "acceptablePrice",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "executionFee",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "callbackGasLimit",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "minOutputAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "updatedAtBlock",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IOrder.Numbers",
+                    name: "numbers",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "bool",
+                        name: "isLong",
+                        type: "bool",
+                      },
+                      {
+                        internalType: "bool",
+                        name: "shouldUnwrapNativeToken",
+                        type: "bool",
+                      },
+                      {
+                        internalType: "bool",
+                        name: "isFrozen",
+                        type: "bool",
+                      },
+                    ],
+                    internalType: "struct IOrder.Flags",
+                    name: "flags",
+                    type: "tuple",
+                  },
+                ],
+                internalType: "struct IOrder.Props",
+                name: "gmxOrder",
+                type: "tuple",
+              },
+            ],
+            internalType: "struct Reader.GmxV2AdapterOrder[]",
+            name: "gmx2Orders",
+            type: "tuple[]",
+          },
         ],
         internalType: "struct Reader.AggregatorSubAccount[]",
         name: "subAccounts",
@@ -232,6 +872,76 @@ const _abi = [
         internalType: "address[]",
         name: "proxyAddresses",
         type: "address[]",
+      },
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "marketToken",
+            type: "address",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: "uint256",
+                    name: "min",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "max",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IPrice.Props",
+                name: "indexTokenPrice",
+                type: "tuple",
+              },
+              {
+                components: [
+                  {
+                    internalType: "uint256",
+                    name: "min",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "max",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IPrice.Props",
+                name: "longTokenPrice",
+                type: "tuple",
+              },
+              {
+                components: [
+                  {
+                    internalType: "uint256",
+                    name: "min",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "max",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IPrice.Props",
+                name: "shortTokenPrice",
+                type: "tuple",
+              },
+            ],
+            internalType: "struct IMarket.MarketPrices",
+            name: "prices",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct Reader.GmxV2Price[]",
+        name: "gmxV2Prices",
+        type: "tuple[]",
       },
     ],
     name: "getAggregatorSubAccountsOfProxy",
@@ -377,6 +1087,522 @@ const _abi = [
             name: "gmxOrders",
             type: "tuple[]",
           },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    components: [
+                      {
+                        internalType: "address",
+                        name: "account",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "market",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "collateralToken",
+                        type: "address",
+                      },
+                    ],
+                    internalType: "struct IPosition.Addresses",
+                    name: "addresses",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "sizeInUsd",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "sizeInTokens",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "collateralAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "fundingFeeAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "longTokenClaimableFundingAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "shortTokenClaimableFundingAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "increasedAtBlock",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "decreasedAtBlock",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPosition.Numbers",
+                    name: "numbers",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "bool",
+                        name: "isLong",
+                        type: "bool",
+                      },
+                    ],
+                    internalType: "struct IPosition.Flags",
+                    name: "flags",
+                    type: "tuple",
+                  },
+                ],
+                internalType: "struct IPosition.Props",
+                name: "position",
+                type: "tuple",
+              },
+              {
+                components: [
+                  {
+                    components: [
+                      {
+                        internalType: "bytes32",
+                        name: "referralCode",
+                        type: "bytes32",
+                      },
+                      {
+                        internalType: "address",
+                        name: "affiliate",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "trader",
+                        type: "address",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "totalRebateFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "traderDiscountFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "totalRebateAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "traderDiscountAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "affiliateRewardAmount",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType:
+                      "struct IPositionPricing.PositionReferralFees",
+                    name: "referral",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "fundingFeeAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "claimableLongTokenAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "claimableShortTokenAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "latestFundingFeeAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "latestLongTokenClaimableFundingAmountPerSize",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "latestShortTokenClaimableFundingAmountPerSize",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPositionPricing.PositionFundingFees",
+                    name: "funding",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFeeUsd",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFeeAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFeeReceiverFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "borrowingFeeAmountForFeeReceiver",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType:
+                      "struct IPositionPricing.PositionBorrowingFees",
+                    name: "borrowing",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "address",
+                        name: "uiFeeReceiver",
+                        type: "address",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "uiFeeReceiverFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "uiFeeAmount",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPositionPricing.PositionUiFees",
+                    name: "ui",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "min",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "max",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPrice.Props",
+                    name: "collateralTokenPrice",
+                    type: "tuple",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "positionFeeFactor",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "protocolFeeAmount",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "positionFeeReceiverFactor",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "feeReceiverAmount",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "feeAmountForPool",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "positionFeeAmountForPool",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "positionFeeAmount",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "totalCostAmountExcludingFunding",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "totalCostAmount",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IPositionPricing.PositionFees",
+                name: "fees",
+                type: "tuple",
+              },
+              {
+                components: [
+                  {
+                    internalType: "int256",
+                    name: "priceImpactUsd",
+                    type: "int256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "priceImpactDiffUsd",
+                    type: "uint256",
+                  },
+                  {
+                    internalType: "uint256",
+                    name: "executionPrice",
+                    type: "uint256",
+                  },
+                ],
+                internalType: "struct IReader.ExecutionPriceResult",
+                name: "executionPriceResult",
+                type: "tuple",
+              },
+              {
+                internalType: "int256",
+                name: "basePnlUsd",
+                type: "int256",
+              },
+              {
+                internalType: "int256",
+                name: "uncappedBasePnlUsd",
+                type: "int256",
+              },
+              {
+                internalType: "int256",
+                name: "pnlAfterPriceImpactUsd",
+                type: "int256",
+              },
+            ],
+            internalType: "struct IReader.PositionInfo",
+            name: "gmx2",
+            type: "tuple",
+          },
+          {
+            internalType: "uint256",
+            name: "claimableFundingAmountLong",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "claimableFundingAmountShort",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "bytes32",
+                name: "orderHistoryKey",
+                type: "bytes32",
+              },
+              {
+                internalType: "bool",
+                name: "isIncrease",
+                type: "bool",
+              },
+              {
+                internalType: "uint256",
+                name: "debt",
+                type: "uint256",
+              },
+              {
+                internalType: "uint32",
+                name: "timestamp",
+                type: "uint32",
+              },
+              {
+                internalType: "uint256",
+                name: "blockNumber",
+                type: "uint256",
+              },
+              {
+                internalType: "bool",
+                name: "isFillOrCancel",
+                type: "bool",
+              },
+              {
+                components: [
+                  {
+                    components: [
+                      {
+                        internalType: "address",
+                        name: "account",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "receiver",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "callbackContract",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "uiFeeReceiver",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "market",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "initialCollateralToken",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address[]",
+                        name: "swapPath",
+                        type: "address[]",
+                      },
+                    ],
+                    internalType: "struct IOrder.Addresses",
+                    name: "addresses",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "enum IOrder.OrderType",
+                        name: "orderType",
+                        type: "uint8",
+                      },
+                      {
+                        internalType: "enum IOrder.DecreasePositionSwapType",
+                        name: "decreasePositionSwapType",
+                        type: "uint8",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "sizeDeltaUsd",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "initialCollateralDeltaAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "triggerPrice",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "acceptablePrice",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "executionFee",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "callbackGasLimit",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "minOutputAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "updatedAtBlock",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IOrder.Numbers",
+                    name: "numbers",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "bool",
+                        name: "isLong",
+                        type: "bool",
+                      },
+                      {
+                        internalType: "bool",
+                        name: "shouldUnwrapNativeToken",
+                        type: "bool",
+                      },
+                      {
+                        internalType: "bool",
+                        name: "isFrozen",
+                        type: "bool",
+                      },
+                    ],
+                    internalType: "struct IOrder.Flags",
+                    name: "flags",
+                    type: "tuple",
+                  },
+                ],
+                internalType: "struct IOrder.Props",
+                name: "gmxOrder",
+                type: "tuple",
+              },
+            ],
+            internalType: "struct Reader.GmxV2AdapterOrder[]",
+            name: "gmx2Orders",
+            type: "tuple[]",
+          },
         ],
         internalType: "struct Reader.AggregatorSubAccount[]",
         name: "subAccounts",
@@ -405,7 +1631,7 @@ const _abi = [
       },
       {
         internalType: "address[]",
-        name: "aggregatorCollateralAddresses",
+        name: "gmxAggregatorCollateralAddresses",
         type: "address[]",
       },
       {
@@ -418,6 +1644,11 @@ const _abi = [
     outputs: [
       {
         components: [
+          {
+            internalType: "uint256",
+            name: "borrowSource",
+            type: "uint256",
+          },
           {
             components: [
               {
@@ -611,6 +1842,54 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "address[]",
+        name: "gmxV2MarketsAddresses",
+        type: "address[]",
+      },
+    ],
+    name: "getGmxV2AdapterStorage",
+    outputs: [
+      {
+        components: [
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "boostFeeRate",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "initialMarginRate",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "maintenanceMarginRate",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "liquidationFeeRate",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct Reader.AggregatorMarketConfig[]",
+            name: "markets",
+            type: "tuple[]",
+          },
+        ],
+        internalType: "struct Reader.GmxV2AdapterStorage",
+        name: "store2",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "proxyAddress",
         type: "address",
@@ -629,12 +1908,70 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "gmxV2DataStore",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "gmxV2Reader",
+    outputs: [
+      {
+        internalType: "contract IReader",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "gmxV2ReferralStorage",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "gmxVault",
     outputs: [
       {
         internalType: "contract IGmxVault",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "positionKey",
+        type: "bytes32",
+      },
+    ],
+    name: "hasGmxV2Position",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",

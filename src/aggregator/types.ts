@@ -1,9 +1,12 @@
 import BigNumber from 'bignumber.js'
+import { BigNumber as EthersBigNumber } from 'ethers'
 import { InsufficientLiquidityError } from '../types'
+import { IReader as AggregatorGmxV2Reader, Reader as AggregatorReader } from '../abi/aggregator/Reader'
 
 export enum AggregatorProjectId {
   Invalid,
-  Gmx
+  Gmx,
+  GmxV2
 }
 
 export enum AggregatorOrderCategory {
@@ -12,20 +15,22 @@ export enum AggregatorOrderCategory {
   Close,
   Liquidate
 }
-
 export interface GmxAdapterStorage {
+  borrowSource: BorrowSources
   collaterals: { [lowerCaseTokenAddress: string]: AggregatorCollateral }
   gmx: GmxCoreStorage
   shortFundingAssetId: number // the aggregator uses cumulativeShortFunding of this mux collateral
 }
 
+// note: it is better to split AggregatorCollateral into AggregatorMarketConfig and AggregatorTokenConfig. but
+//       for back-compatibility, we keep it as-is.
 export interface AggregatorCollateral {
   boostFeeRate: BigNumber
   initialMarginRate: BigNumber
   maintenanceMarginRate: BigNumber
   liquidationFeeRate: BigNumber
-  totalBorrow: BigNumber
-  borrowLimit: BigNumber
+  totalBorrow: BigNumber // will offline after LendingPool is online
+  borrowLimit: BigNumber // will offline after LendingPool is online
 }
 
 export interface AggregatorSubAccount {
@@ -48,6 +53,32 @@ export interface AggregatorSubAccount {
   // if gmx
   gmx: GmxCoreAccount
   gmxOrders: GmxAdapterOrder[]
+}
+
+export interface RawAggregatorGmxV2SubAccount {
+  // key
+  proxyAddress: string
+  projectId: AggregatorProjectId
+  account: string
+  collateralTokenAddress: string
+  assetTokenAddress: string
+  isLong: boolean
+
+  // store
+  isLiquidating: boolean
+  cumulativeDebt: EthersBigNumber
+  cumulativeFee: EthersBigNumber
+  debtEntryFunding: EthersBigNumber
+  proxyCollateralBalance: EthersBigNumber
+  proxyEthBalance: EthersBigNumber
+
+  // if gmx v2
+  gmx2?: AggregatorGmxV2Reader.PositionInfoStructOutput // do not use this directly, use gmx2.PositionInfo instead
+  gmx2Orders?: AggregatorReader.GmxV2AdapterOrderStructOutput[] // do not use this directly, use gmx2.Order[] instead
+
+  // funding
+  claimableFundingAmountLong: EthersBigNumber
+  claimableFundingAmountShort: EthersBigNumber
 }
 
 export interface GmxAdapterAccountDetails {
@@ -244,3 +275,24 @@ export interface GmxCoreAccountDetails {
     withdrawableCollateralUsd: BigNumber
   }
 }
+
+export enum BorrowSources {
+  LIQUIDITY_POOL = 1,
+  LENDING_POOL = 2,
+}
+
+export interface LendingPool {
+  collaterals: { [lowerCaseTokenAddress: string]: LendingCollateral }
+}
+
+
+export interface LendingCollateral {
+  flags: number
+  supplyAmount: BigNumber
+}
+
+export const LENDING_STATE_IS_ENABLED = 0x1
+export const LENDING_STATE_IS_BORROWABLE = 0x2
+export const LENDING_STATE_IS_REPAYABLE = 0x4
+export const LENDING_STATE_IS_DEPOSITABLE = 0x8
+export const LENDING_STATE_IS_WITHDRAWABLE = 0x10

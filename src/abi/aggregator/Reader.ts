@@ -21,7 +21,47 @@ import type {
   PromiseOrValue,
 } from "../common";
 
+export declare namespace IPrice {
+  export type PropsStruct = {
+    min: PromiseOrValue<BigNumberish>;
+    max: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PropsStructOutput = [BigNumber, BigNumber] & {
+    min: BigNumber;
+    max: BigNumber;
+  };
+}
+
+export declare namespace IMarket {
+  export type MarketPricesStruct = {
+    indexTokenPrice: IPrice.PropsStruct;
+    longTokenPrice: IPrice.PropsStruct;
+    shortTokenPrice: IPrice.PropsStruct;
+  };
+
+  export type MarketPricesStructOutput = [
+    IPrice.PropsStructOutput,
+    IPrice.PropsStructOutput,
+    IPrice.PropsStructOutput
+  ] & {
+    indexTokenPrice: IPrice.PropsStructOutput;
+    longTokenPrice: IPrice.PropsStructOutput;
+    shortTokenPrice: IPrice.PropsStructOutput;
+  };
+}
+
 export declare namespace Reader {
+  export type GmxV2PriceStruct = {
+    marketToken: PromiseOrValue<string>;
+    prices: IMarket.MarketPricesStruct;
+  };
+
+  export type GmxV2PriceStructOutput = [
+    string,
+    IMarket.MarketPricesStructOutput
+  ] & { marketToken: string; prices: IMarket.MarketPricesStructOutput };
+
   export type GmxCoreAccountStruct = {
     sizeUsd: PromiseOrValue<BigNumberish>;
     collateralUsd: PromiseOrValue<BigNumberish>;
@@ -78,6 +118,34 @@ export declare namespace Reader {
     slOrderHistoryKey: string;
   };
 
+  export type GmxV2AdapterOrderStruct = {
+    orderHistoryKey: PromiseOrValue<BytesLike>;
+    isIncrease: PromiseOrValue<boolean>;
+    debt: PromiseOrValue<BigNumberish>;
+    timestamp: PromiseOrValue<BigNumberish>;
+    blockNumber: PromiseOrValue<BigNumberish>;
+    isFillOrCancel: PromiseOrValue<boolean>;
+    gmxOrder: IOrder.PropsStruct;
+  };
+
+  export type GmxV2AdapterOrderStructOutput = [
+    string,
+    boolean,
+    BigNumber,
+    number,
+    BigNumber,
+    boolean,
+    IOrder.PropsStructOutput
+  ] & {
+    orderHistoryKey: string;
+    isIncrease: boolean;
+    debt: BigNumber;
+    timestamp: number;
+    blockNumber: BigNumber;
+    isFillOrCancel: boolean;
+    gmxOrder: IOrder.PropsStructOutput;
+  };
+
   export type AggregatorSubAccountStruct = {
     proxyAddress: PromiseOrValue<string>;
     projectId: PromiseOrValue<BigNumberish>;
@@ -92,6 +160,10 @@ export declare namespace Reader {
     proxyEthBalance: PromiseOrValue<BigNumberish>;
     gmx: Reader.GmxCoreAccountStruct;
     gmxOrders: Reader.GmxAdapterOrderStruct[];
+    gmx2: IReader.PositionInfoStruct;
+    claimableFundingAmountLong: PromiseOrValue<BigNumberish>;
+    claimableFundingAmountShort: PromiseOrValue<BigNumberish>;
+    gmx2Orders: Reader.GmxV2AdapterOrderStruct[];
   };
 
   export type AggregatorSubAccountStructOutput = [
@@ -107,7 +179,11 @@ export declare namespace Reader {
     BigNumber,
     BigNumber,
     Reader.GmxCoreAccountStructOutput,
-    Reader.GmxAdapterOrderStructOutput[]
+    Reader.GmxAdapterOrderStructOutput[],
+    IReader.PositionInfoStructOutput,
+    BigNumber,
+    BigNumber,
+    Reader.GmxV2AdapterOrderStructOutput[]
   ] & {
     proxyAddress: string;
     projectId: BigNumber;
@@ -122,6 +198,10 @@ export declare namespace Reader {
     proxyEthBalance: BigNumber;
     gmx: Reader.GmxCoreAccountStructOutput;
     gmxOrders: Reader.GmxAdapterOrderStructOutput[];
+    gmx2: IReader.PositionInfoStructOutput;
+    claimableFundingAmountLong: BigNumber;
+    claimableFundingAmountShort: BigNumber;
+    gmx2Orders: Reader.GmxV2AdapterOrderStructOutput[];
   };
 
   export type MuxCollateralStruct = {
@@ -245,43 +325,445 @@ export declare namespace Reader {
   };
 
   export type GmxAdapterStorageStruct = {
+    borrowSource: PromiseOrValue<BigNumberish>;
     collaterals: Reader.MuxCollateralStruct[];
     gmx: Reader.GmxCoreStorageStruct;
   };
 
   export type GmxAdapterStorageStructOutput = [
+    BigNumber,
     Reader.MuxCollateralStructOutput[],
     Reader.GmxCoreStorageStructOutput
   ] & {
+    borrowSource: BigNumber;
     collaterals: Reader.MuxCollateralStructOutput[];
     gmx: Reader.GmxCoreStorageStructOutput;
+  };
+
+  export type AggregatorMarketConfigStruct = {
+    boostFeeRate: PromiseOrValue<BigNumberish>;
+    initialMarginRate: PromiseOrValue<BigNumberish>;
+    maintenanceMarginRate: PromiseOrValue<BigNumberish>;
+    liquidationFeeRate: PromiseOrValue<BigNumberish>;
+  };
+
+  export type AggregatorMarketConfigStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    boostFeeRate: BigNumber;
+    initialMarginRate: BigNumber;
+    maintenanceMarginRate: BigNumber;
+    liquidationFeeRate: BigNumber;
+  };
+
+  export type GmxV2AdapterStorageStruct = {
+    markets: Reader.AggregatorMarketConfigStruct[];
+  };
+
+  export type GmxV2AdapterStorageStructOutput = [
+    Reader.AggregatorMarketConfigStructOutput[]
+  ] & { markets: Reader.AggregatorMarketConfigStructOutput[] };
+}
+
+export declare namespace IPosition {
+  export type AddressesStruct = {
+    account: PromiseOrValue<string>;
+    market: PromiseOrValue<string>;
+    collateralToken: PromiseOrValue<string>;
+  };
+
+  export type AddressesStructOutput = [string, string, string] & {
+    account: string;
+    market: string;
+    collateralToken: string;
+  };
+
+  export type NumbersStruct = {
+    sizeInUsd: PromiseOrValue<BigNumberish>;
+    sizeInTokens: PromiseOrValue<BigNumberish>;
+    collateralAmount: PromiseOrValue<BigNumberish>;
+    borrowingFactor: PromiseOrValue<BigNumberish>;
+    fundingFeeAmountPerSize: PromiseOrValue<BigNumberish>;
+    longTokenClaimableFundingAmountPerSize: PromiseOrValue<BigNumberish>;
+    shortTokenClaimableFundingAmountPerSize: PromiseOrValue<BigNumberish>;
+    increasedAtBlock: PromiseOrValue<BigNumberish>;
+    decreasedAtBlock: PromiseOrValue<BigNumberish>;
+  };
+
+  export type NumbersStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    sizeInUsd: BigNumber;
+    sizeInTokens: BigNumber;
+    collateralAmount: BigNumber;
+    borrowingFactor: BigNumber;
+    fundingFeeAmountPerSize: BigNumber;
+    longTokenClaimableFundingAmountPerSize: BigNumber;
+    shortTokenClaimableFundingAmountPerSize: BigNumber;
+    increasedAtBlock: BigNumber;
+    decreasedAtBlock: BigNumber;
+  };
+
+  export type FlagsStruct = { isLong: PromiseOrValue<boolean> };
+
+  export type FlagsStructOutput = [boolean] & { isLong: boolean };
+
+  export type PropsStruct = {
+    addresses: IPosition.AddressesStruct;
+    numbers: IPosition.NumbersStruct;
+    flags: IPosition.FlagsStruct;
+  };
+
+  export type PropsStructOutput = [
+    IPosition.AddressesStructOutput,
+    IPosition.NumbersStructOutput,
+    IPosition.FlagsStructOutput
+  ] & {
+    addresses: IPosition.AddressesStructOutput;
+    numbers: IPosition.NumbersStructOutput;
+    flags: IPosition.FlagsStructOutput;
+  };
+}
+
+export declare namespace IPositionPricing {
+  export type PositionReferralFeesStruct = {
+    referralCode: PromiseOrValue<BytesLike>;
+    affiliate: PromiseOrValue<string>;
+    trader: PromiseOrValue<string>;
+    totalRebateFactor: PromiseOrValue<BigNumberish>;
+    traderDiscountFactor: PromiseOrValue<BigNumberish>;
+    totalRebateAmount: PromiseOrValue<BigNumberish>;
+    traderDiscountAmount: PromiseOrValue<BigNumberish>;
+    affiliateRewardAmount: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PositionReferralFeesStructOutput = [
+    string,
+    string,
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    referralCode: string;
+    affiliate: string;
+    trader: string;
+    totalRebateFactor: BigNumber;
+    traderDiscountFactor: BigNumber;
+    totalRebateAmount: BigNumber;
+    traderDiscountAmount: BigNumber;
+    affiliateRewardAmount: BigNumber;
+  };
+
+  export type PositionFundingFeesStruct = {
+    fundingFeeAmount: PromiseOrValue<BigNumberish>;
+    claimableLongTokenAmount: PromiseOrValue<BigNumberish>;
+    claimableShortTokenAmount: PromiseOrValue<BigNumberish>;
+    latestFundingFeeAmountPerSize: PromiseOrValue<BigNumberish>;
+    latestLongTokenClaimableFundingAmountPerSize: PromiseOrValue<BigNumberish>;
+    latestShortTokenClaimableFundingAmountPerSize: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PositionFundingFeesStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    fundingFeeAmount: BigNumber;
+    claimableLongTokenAmount: BigNumber;
+    claimableShortTokenAmount: BigNumber;
+    latestFundingFeeAmountPerSize: BigNumber;
+    latestLongTokenClaimableFundingAmountPerSize: BigNumber;
+    latestShortTokenClaimableFundingAmountPerSize: BigNumber;
+  };
+
+  export type PositionBorrowingFeesStruct = {
+    borrowingFeeUsd: PromiseOrValue<BigNumberish>;
+    borrowingFeeAmount: PromiseOrValue<BigNumberish>;
+    borrowingFeeReceiverFactor: PromiseOrValue<BigNumberish>;
+    borrowingFeeAmountForFeeReceiver: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PositionBorrowingFeesStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    borrowingFeeUsd: BigNumber;
+    borrowingFeeAmount: BigNumber;
+    borrowingFeeReceiverFactor: BigNumber;
+    borrowingFeeAmountForFeeReceiver: BigNumber;
+  };
+
+  export type PositionUiFeesStruct = {
+    uiFeeReceiver: PromiseOrValue<string>;
+    uiFeeReceiverFactor: PromiseOrValue<BigNumberish>;
+    uiFeeAmount: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PositionUiFeesStructOutput = [string, BigNumber, BigNumber] & {
+    uiFeeReceiver: string;
+    uiFeeReceiverFactor: BigNumber;
+    uiFeeAmount: BigNumber;
+  };
+
+  export type PositionFeesStruct = {
+    referral: IPositionPricing.PositionReferralFeesStruct;
+    funding: IPositionPricing.PositionFundingFeesStruct;
+    borrowing: IPositionPricing.PositionBorrowingFeesStruct;
+    ui: IPositionPricing.PositionUiFeesStruct;
+    collateralTokenPrice: IPrice.PropsStruct;
+    positionFeeFactor: PromiseOrValue<BigNumberish>;
+    protocolFeeAmount: PromiseOrValue<BigNumberish>;
+    positionFeeReceiverFactor: PromiseOrValue<BigNumberish>;
+    feeReceiverAmount: PromiseOrValue<BigNumberish>;
+    feeAmountForPool: PromiseOrValue<BigNumberish>;
+    positionFeeAmountForPool: PromiseOrValue<BigNumberish>;
+    positionFeeAmount: PromiseOrValue<BigNumberish>;
+    totalCostAmountExcludingFunding: PromiseOrValue<BigNumberish>;
+    totalCostAmount: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PositionFeesStructOutput = [
+    IPositionPricing.PositionReferralFeesStructOutput,
+    IPositionPricing.PositionFundingFeesStructOutput,
+    IPositionPricing.PositionBorrowingFeesStructOutput,
+    IPositionPricing.PositionUiFeesStructOutput,
+    IPrice.PropsStructOutput,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    referral: IPositionPricing.PositionReferralFeesStructOutput;
+    funding: IPositionPricing.PositionFundingFeesStructOutput;
+    borrowing: IPositionPricing.PositionBorrowingFeesStructOutput;
+    ui: IPositionPricing.PositionUiFeesStructOutput;
+    collateralTokenPrice: IPrice.PropsStructOutput;
+    positionFeeFactor: BigNumber;
+    protocolFeeAmount: BigNumber;
+    positionFeeReceiverFactor: BigNumber;
+    feeReceiverAmount: BigNumber;
+    feeAmountForPool: BigNumber;
+    positionFeeAmountForPool: BigNumber;
+    positionFeeAmount: BigNumber;
+    totalCostAmountExcludingFunding: BigNumber;
+    totalCostAmount: BigNumber;
+  };
+}
+
+export declare namespace IReader {
+  export type ExecutionPriceResultStruct = {
+    priceImpactUsd: PromiseOrValue<BigNumberish>;
+    priceImpactDiffUsd: PromiseOrValue<BigNumberish>;
+    executionPrice: PromiseOrValue<BigNumberish>;
+  };
+
+  export type ExecutionPriceResultStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    priceImpactUsd: BigNumber;
+    priceImpactDiffUsd: BigNumber;
+    executionPrice: BigNumber;
+  };
+
+  export type PositionInfoStruct = {
+    position: IPosition.PropsStruct;
+    fees: IPositionPricing.PositionFeesStruct;
+    executionPriceResult: IReader.ExecutionPriceResultStruct;
+    basePnlUsd: PromiseOrValue<BigNumberish>;
+    uncappedBasePnlUsd: PromiseOrValue<BigNumberish>;
+    pnlAfterPriceImpactUsd: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PositionInfoStructOutput = [
+    IPosition.PropsStructOutput,
+    IPositionPricing.PositionFeesStructOutput,
+    IReader.ExecutionPriceResultStructOutput,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    position: IPosition.PropsStructOutput;
+    fees: IPositionPricing.PositionFeesStructOutput;
+    executionPriceResult: IReader.ExecutionPriceResultStructOutput;
+    basePnlUsd: BigNumber;
+    uncappedBasePnlUsd: BigNumber;
+    pnlAfterPriceImpactUsd: BigNumber;
+  };
+}
+
+export declare namespace IOrder {
+  export type AddressesStruct = {
+    account: PromiseOrValue<string>;
+    receiver: PromiseOrValue<string>;
+    callbackContract: PromiseOrValue<string>;
+    uiFeeReceiver: PromiseOrValue<string>;
+    market: PromiseOrValue<string>;
+    initialCollateralToken: PromiseOrValue<string>;
+    swapPath: PromiseOrValue<string>[];
+  };
+
+  export type AddressesStructOutput = [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string[]
+  ] & {
+    account: string;
+    receiver: string;
+    callbackContract: string;
+    uiFeeReceiver: string;
+    market: string;
+    initialCollateralToken: string;
+    swapPath: string[];
+  };
+
+  export type NumbersStruct = {
+    orderType: PromiseOrValue<BigNumberish>;
+    decreasePositionSwapType: PromiseOrValue<BigNumberish>;
+    sizeDeltaUsd: PromiseOrValue<BigNumberish>;
+    initialCollateralDeltaAmount: PromiseOrValue<BigNumberish>;
+    triggerPrice: PromiseOrValue<BigNumberish>;
+    acceptablePrice: PromiseOrValue<BigNumberish>;
+    executionFee: PromiseOrValue<BigNumberish>;
+    callbackGasLimit: PromiseOrValue<BigNumberish>;
+    minOutputAmount: PromiseOrValue<BigNumberish>;
+    updatedAtBlock: PromiseOrValue<BigNumberish>;
+  };
+
+  export type NumbersStructOutput = [
+    number,
+    number,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    orderType: number;
+    decreasePositionSwapType: number;
+    sizeDeltaUsd: BigNumber;
+    initialCollateralDeltaAmount: BigNumber;
+    triggerPrice: BigNumber;
+    acceptablePrice: BigNumber;
+    executionFee: BigNumber;
+    callbackGasLimit: BigNumber;
+    minOutputAmount: BigNumber;
+    updatedAtBlock: BigNumber;
+  };
+
+  export type FlagsStruct = {
+    isLong: PromiseOrValue<boolean>;
+    shouldUnwrapNativeToken: PromiseOrValue<boolean>;
+    isFrozen: PromiseOrValue<boolean>;
+  };
+
+  export type FlagsStructOutput = [boolean, boolean, boolean] & {
+    isLong: boolean;
+    shouldUnwrapNativeToken: boolean;
+    isFrozen: boolean;
+  };
+
+  export type PropsStruct = {
+    addresses: IOrder.AddressesStruct;
+    numbers: IOrder.NumbersStruct;
+    flags: IOrder.FlagsStruct;
+  };
+
+  export type PropsStructOutput = [
+    IOrder.AddressesStructOutput,
+    IOrder.NumbersStructOutput,
+    IOrder.FlagsStructOutput
+  ] & {
+    addresses: IOrder.AddressesStructOutput;
+    numbers: IOrder.NumbersStructOutput;
+    flags: IOrder.FlagsStructOutput;
   };
 }
 
 export interface ReaderInterface extends utils.Interface {
   functions: {
+    "GMX_V2_CLAIMABLE_FUNDING_AMOUNT()": FunctionFragment;
+    "GMX_V2_LONG_TOKEN()": FunctionFragment;
+    "GMX_V2_SHORT_TOKEN()": FunctionFragment;
     "aggregatorFactory()": FunctionFragment;
-    "getAggregatorSubAccountsOfAccount(address,address,address)": FunctionFragment;
-    "getAggregatorSubAccountsOfProxy(address,address,address[])": FunctionFragment;
+    "getAggregatorSubAccountsOfAccount(address,address,address,(address,((uint256,uint256),(uint256,uint256),(uint256,uint256)))[])": FunctionFragment;
+    "getAggregatorSubAccountsOfProxy(address,address,address[],(address,((uint256,uint256),(uint256,uint256),(uint256,uint256)))[])": FunctionFragment;
     "getGmxAdapterStorage(address,address,address,address[],address[])": FunctionFragment;
+    "getGmxV2AdapterStorage(address[])": FunctionFragment;
     "getProxyProjectId(address)": FunctionFragment;
+    "gmxV2DataStore()": FunctionFragment;
+    "gmxV2Reader()": FunctionFragment;
+    "gmxV2ReferralStorage()": FunctionFragment;
     "gmxVault()": FunctionFragment;
+    "hasGmxV2Position(bytes32)": FunctionFragment;
     "usdg()": FunctionFragment;
     "weth()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "GMX_V2_CLAIMABLE_FUNDING_AMOUNT"
+      | "GMX_V2_LONG_TOKEN"
+      | "GMX_V2_SHORT_TOKEN"
       | "aggregatorFactory"
       | "getAggregatorSubAccountsOfAccount"
       | "getAggregatorSubAccountsOfProxy"
       | "getGmxAdapterStorage"
+      | "getGmxV2AdapterStorage"
       | "getProxyProjectId"
+      | "gmxV2DataStore"
+      | "gmxV2Reader"
+      | "gmxV2ReferralStorage"
       | "gmxVault"
+      | "hasGmxV2Position"
       | "usdg"
       | "weth"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "GMX_V2_CLAIMABLE_FUNDING_AMOUNT",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "GMX_V2_LONG_TOKEN",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "GMX_V2_SHORT_TOKEN",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "aggregatorFactory",
     values?: undefined
@@ -291,7 +773,8 @@ export interface ReaderInterface extends utils.Interface {
     values: [
       PromiseOrValue<string>,
       PromiseOrValue<string>,
-      PromiseOrValue<string>
+      PromiseOrValue<string>,
+      Reader.GmxV2PriceStruct[]
     ]
   ): string;
   encodeFunctionData(
@@ -299,7 +782,8 @@ export interface ReaderInterface extends utils.Interface {
     values: [
       PromiseOrValue<string>,
       PromiseOrValue<string>,
-      PromiseOrValue<string>[]
+      PromiseOrValue<string>[],
+      Reader.GmxV2PriceStruct[]
     ]
   ): string;
   encodeFunctionData(
@@ -313,13 +797,45 @@ export interface ReaderInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "getGmxV2AdapterStorage",
+    values: [PromiseOrValue<string>[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getProxyProjectId",
     values: [PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(
+    functionFragment: "gmxV2DataStore",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "gmxV2Reader",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "gmxV2ReferralStorage",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "gmxVault", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "hasGmxV2Position",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
   encodeFunctionData(functionFragment: "usdg", values?: undefined): string;
   encodeFunctionData(functionFragment: "weth", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "GMX_V2_CLAIMABLE_FUNDING_AMOUNT",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "GMX_V2_LONG_TOKEN",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "GMX_V2_SHORT_TOKEN",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "aggregatorFactory",
     data: BytesLike
@@ -337,10 +853,30 @@ export interface ReaderInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getGmxV2AdapterStorage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getProxyProjectId",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "gmxV2DataStore",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "gmxV2Reader",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "gmxV2ReferralStorage",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "gmxVault", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "hasGmxV2Position",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "usdg", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "weth", data: BytesLike): Result;
 
@@ -374,12 +910,21 @@ export interface Reader extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    GMX_V2_CLAIMABLE_FUNDING_AMOUNT(
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    GMX_V2_LONG_TOKEN(overrides?: CallOverrides): Promise<[string]>;
+
+    GMX_V2_SHORT_TOKEN(overrides?: CallOverrides): Promise<[string]>;
+
     aggregatorFactory(overrides?: CallOverrides): Promise<[string]>;
 
     getAggregatorSubAccountsOfAccount(
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
       accountAddress: PromiseOrValue<string>,
+      gmxV2Prices: Reader.GmxV2PriceStruct[],
       overrides?: CallOverrides
     ): Promise<
       [Reader.AggregatorSubAccountStructOutput[]] & {
@@ -391,6 +936,7 @@ export interface Reader extends BaseContract {
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
       proxyAddresses: PromiseOrValue<string>[],
+      gmxV2Prices: Reader.GmxV2PriceStruct[],
       overrides?: CallOverrides
     ): Promise<
       [Reader.AggregatorSubAccountStructOutput[]] & {
@@ -402,7 +948,7 @@ export interface Reader extends BaseContract {
       gmxPositionManager: PromiseOrValue<string>,
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
-      aggregatorCollateralAddresses: PromiseOrValue<string>[],
+      gmxAggregatorCollateralAddresses: PromiseOrValue<string>[],
       gmxTokenAddresses: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<
@@ -411,17 +957,43 @@ export interface Reader extends BaseContract {
       }
     >;
 
+    getGmxV2AdapterStorage(
+      gmxV2MarketsAddresses: PromiseOrValue<string>[],
+      overrides?: CallOverrides
+    ): Promise<
+      [Reader.GmxV2AdapterStorageStructOutput] & {
+        store2: Reader.GmxV2AdapterStorageStructOutput;
+      }
+    >;
+
     getProxyProjectId(
       proxyAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    gmxV2DataStore(overrides?: CallOverrides): Promise<[string]>;
+
+    gmxV2Reader(overrides?: CallOverrides): Promise<[string]>;
+
+    gmxV2ReferralStorage(overrides?: CallOverrides): Promise<[string]>;
+
     gmxVault(overrides?: CallOverrides): Promise<[string]>;
+
+    hasGmxV2Position(
+      positionKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     usdg(overrides?: CallOverrides): Promise<[string]>;
 
     weth(overrides?: CallOverrides): Promise<[string]>;
   };
+
+  GMX_V2_CLAIMABLE_FUNDING_AMOUNT(overrides?: CallOverrides): Promise<string>;
+
+  GMX_V2_LONG_TOKEN(overrides?: CallOverrides): Promise<string>;
+
+  GMX_V2_SHORT_TOKEN(overrides?: CallOverrides): Promise<string>;
 
   aggregatorFactory(overrides?: CallOverrides): Promise<string>;
 
@@ -429,6 +1001,7 @@ export interface Reader extends BaseContract {
     gmxPositionRouter: PromiseOrValue<string>,
     gmxOrderBook: PromiseOrValue<string>,
     accountAddress: PromiseOrValue<string>,
+    gmxV2Prices: Reader.GmxV2PriceStruct[],
     overrides?: CallOverrides
   ): Promise<Reader.AggregatorSubAccountStructOutput[]>;
 
@@ -436,6 +1009,7 @@ export interface Reader extends BaseContract {
     gmxPositionRouter: PromiseOrValue<string>,
     gmxOrderBook: PromiseOrValue<string>,
     proxyAddresses: PromiseOrValue<string>[],
+    gmxV2Prices: Reader.GmxV2PriceStruct[],
     overrides?: CallOverrides
   ): Promise<Reader.AggregatorSubAccountStructOutput[]>;
 
@@ -443,29 +1017,52 @@ export interface Reader extends BaseContract {
     gmxPositionManager: PromiseOrValue<string>,
     gmxPositionRouter: PromiseOrValue<string>,
     gmxOrderBook: PromiseOrValue<string>,
-    aggregatorCollateralAddresses: PromiseOrValue<string>[],
+    gmxAggregatorCollateralAddresses: PromiseOrValue<string>[],
     gmxTokenAddresses: PromiseOrValue<string>[],
     overrides?: CallOverrides
   ): Promise<Reader.GmxAdapterStorageStructOutput>;
+
+  getGmxV2AdapterStorage(
+    gmxV2MarketsAddresses: PromiseOrValue<string>[],
+    overrides?: CallOverrides
+  ): Promise<Reader.GmxV2AdapterStorageStructOutput>;
 
   getProxyProjectId(
     proxyAddress: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  gmxV2DataStore(overrides?: CallOverrides): Promise<string>;
+
+  gmxV2Reader(overrides?: CallOverrides): Promise<string>;
+
+  gmxV2ReferralStorage(overrides?: CallOverrides): Promise<string>;
+
   gmxVault(overrides?: CallOverrides): Promise<string>;
+
+  hasGmxV2Position(
+    positionKey: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   usdg(overrides?: CallOverrides): Promise<string>;
 
   weth(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
+    GMX_V2_CLAIMABLE_FUNDING_AMOUNT(overrides?: CallOverrides): Promise<string>;
+
+    GMX_V2_LONG_TOKEN(overrides?: CallOverrides): Promise<string>;
+
+    GMX_V2_SHORT_TOKEN(overrides?: CallOverrides): Promise<string>;
+
     aggregatorFactory(overrides?: CallOverrides): Promise<string>;
 
     getAggregatorSubAccountsOfAccount(
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
       accountAddress: PromiseOrValue<string>,
+      gmxV2Prices: Reader.GmxV2PriceStruct[],
       overrides?: CallOverrides
     ): Promise<Reader.AggregatorSubAccountStructOutput[]>;
 
@@ -473,6 +1070,7 @@ export interface Reader extends BaseContract {
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
       proxyAddresses: PromiseOrValue<string>[],
+      gmxV2Prices: Reader.GmxV2PriceStruct[],
       overrides?: CallOverrides
     ): Promise<Reader.AggregatorSubAccountStructOutput[]>;
 
@@ -480,17 +1078,33 @@ export interface Reader extends BaseContract {
       gmxPositionManager: PromiseOrValue<string>,
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
-      aggregatorCollateralAddresses: PromiseOrValue<string>[],
+      gmxAggregatorCollateralAddresses: PromiseOrValue<string>[],
       gmxTokenAddresses: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<Reader.GmxAdapterStorageStructOutput>;
+
+    getGmxV2AdapterStorage(
+      gmxV2MarketsAddresses: PromiseOrValue<string>[],
+      overrides?: CallOverrides
+    ): Promise<Reader.GmxV2AdapterStorageStructOutput>;
 
     getProxyProjectId(
       proxyAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    gmxV2DataStore(overrides?: CallOverrides): Promise<string>;
+
+    gmxV2Reader(overrides?: CallOverrides): Promise<string>;
+
+    gmxV2ReferralStorage(overrides?: CallOverrides): Promise<string>;
+
     gmxVault(overrides?: CallOverrides): Promise<string>;
+
+    hasGmxV2Position(
+      positionKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     usdg(overrides?: CallOverrides): Promise<string>;
 
@@ -500,12 +1114,21 @@ export interface Reader extends BaseContract {
   filters: {};
 
   estimateGas: {
+    GMX_V2_CLAIMABLE_FUNDING_AMOUNT(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    GMX_V2_LONG_TOKEN(overrides?: CallOverrides): Promise<BigNumber>;
+
+    GMX_V2_SHORT_TOKEN(overrides?: CallOverrides): Promise<BigNumber>;
+
     aggregatorFactory(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAggregatorSubAccountsOfAccount(
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
       accountAddress: PromiseOrValue<string>,
+      gmxV2Prices: Reader.GmxV2PriceStruct[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -513,6 +1136,7 @@ export interface Reader extends BaseContract {
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
       proxyAddresses: PromiseOrValue<string>[],
+      gmxV2Prices: Reader.GmxV2PriceStruct[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -520,8 +1144,13 @@ export interface Reader extends BaseContract {
       gmxPositionManager: PromiseOrValue<string>,
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
-      aggregatorCollateralAddresses: PromiseOrValue<string>[],
+      gmxAggregatorCollateralAddresses: PromiseOrValue<string>[],
       gmxTokenAddresses: PromiseOrValue<string>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getGmxV2AdapterStorage(
+      gmxV2MarketsAddresses: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -530,7 +1159,18 @@ export interface Reader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    gmxV2DataStore(overrides?: CallOverrides): Promise<BigNumber>;
+
+    gmxV2Reader(overrides?: CallOverrides): Promise<BigNumber>;
+
+    gmxV2ReferralStorage(overrides?: CallOverrides): Promise<BigNumber>;
+
     gmxVault(overrides?: CallOverrides): Promise<BigNumber>;
+
+    hasGmxV2Position(
+      positionKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     usdg(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -538,12 +1178,23 @@ export interface Reader extends BaseContract {
   };
 
   populateTransaction: {
+    GMX_V2_CLAIMABLE_FUNDING_AMOUNT(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    GMX_V2_LONG_TOKEN(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    GMX_V2_SHORT_TOKEN(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     aggregatorFactory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getAggregatorSubAccountsOfAccount(
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
       accountAddress: PromiseOrValue<string>,
+      gmxV2Prices: Reader.GmxV2PriceStruct[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -551,6 +1202,7 @@ export interface Reader extends BaseContract {
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
       proxyAddresses: PromiseOrValue<string>[],
+      gmxV2Prices: Reader.GmxV2PriceStruct[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -558,8 +1210,13 @@ export interface Reader extends BaseContract {
       gmxPositionManager: PromiseOrValue<string>,
       gmxPositionRouter: PromiseOrValue<string>,
       gmxOrderBook: PromiseOrValue<string>,
-      aggregatorCollateralAddresses: PromiseOrValue<string>[],
+      gmxAggregatorCollateralAddresses: PromiseOrValue<string>[],
       gmxTokenAddresses: PromiseOrValue<string>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getGmxV2AdapterStorage(
+      gmxV2MarketsAddresses: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -568,7 +1225,20 @@ export interface Reader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    gmxV2DataStore(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    gmxV2Reader(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    gmxV2ReferralStorage(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     gmxVault(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    hasGmxV2Position(
+      positionKey: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     usdg(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

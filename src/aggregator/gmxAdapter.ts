@@ -9,7 +9,11 @@ import {
   GmxAdapterStorage,
   AggregatorSubAccount,
   GmxAdapterWithdrawCollateralResult,
-  GmxTokenInfo
+  GmxTokenInfo,
+  LendingPool,
+  BorrowSources,
+  LENDING_STATE_IS_ENABLED,
+  LENDING_STATE_IS_BORROWABLE
 } from './types'
 import {
   calculateGmxCoreSwapBySwapOut,
@@ -23,12 +27,13 @@ import {
 import { GMX_MAX_LEVERAGE } from './constants'
 import { DECIMALS, _0, _1 } from '../constants'
 import { binarySearchLeft } from '../calculator'
+import { test64 } from '../data'
 
 export function computeGmxAdapterAccount(
   assets: Asset[], // MUX storage
   storage: GmxAdapterStorage, // aggregator storage
   pos: AggregatorSubAccount,
-  assetApiPrice: BigNumber
+  assetApiPrice: BigNumber,
 ): GmxAdapterAccountDetails {
   if (pos.assetTokenAddress.toLowerCase() !== pos.gmx.assetTokenAddress.toLowerCase()) {
     throw new InvalidArgumentError(`pos.asset != pos.gmx.asset`)
@@ -178,12 +183,13 @@ export function computeGmxAdapterAccountSimulateKeeper(
 export function computeGmxAdapterOpenPosition(
   assets: Asset[], // MUX storage
   storage: GmxAdapterStorage, // aggregator storage
+  lendingPool: LendingPool,
   pos: AggregatorSubAccount,
   assetApiPrice: BigNumber, // asset price
   borrowCollateral: BigNumber, // in collateral token
   sizeDeltaUsd: BigNumber, // position size
   swapInTokenAddress: string, // swapIn token
-  swapInAmount: BigNumber // swapIn amount. in swapIn token. will use contract price because swapping executes immediately
+  swapInAmount: BigNumber, // swapIn amount. in swapIn token. will use contract price because swapping executes immediately
 ): GmxAdapterOpenPositionResult {
   pos = {
     ...pos,
@@ -248,28 +254,53 @@ export function computeGmxAdapterOpenPosition(
     liquidityWarning = gmxOpenPositionWarning
   }
   if (borrowCollateral.gt(_0)) {
-    if (!muxCollateral) {
-      throw new InvalidArgumentError(`mux: can not borrow (${gmxCollateral.config.symbol}): no such token`)
-    }
-    if (muxCollateral.spotLiquidity.lt(borrowCollateral)) {
-      if (!liquidityWarning) {
-        liquidityWarning = new InsufficientLiquidityError(
-          InsufficientLiquidityType.AggregatorLimitedCredit,
-          `can not borrow (${
-            muxCollateral.symbol
-          }): ${muxCollateral.spotLiquidity.toFixed()} < ${borrowCollateral.toFixed()}`
-        )
+    if (storage.borrowSource === BorrowSources.LIQUIDITY_POOL) {
+      if (!muxCollateral) {
+        throw new InvalidArgumentError(`mux: can not borrow (${gmxCollateral.config.symbol}): no such token`)
       }
-    }
-    if (aggregatorCollateral.totalBorrow.plus(borrowCollateral).gt(aggregatorCollateral.borrowLimit)) {
-      if (!liquidityWarning) {
-        liquidityWarning = new InsufficientLiquidityError(
-          InsufficientLiquidityType.AggregatorLimitedCredit,
-          `can not borrow (${
-            muxCollateral.symbol
-          }): ${aggregatorCollateral.totalBorrow.toFixed()} + ${borrowCollateral.toFixed()} > ${aggregatorCollateral.borrowLimit.toFixed()}`
-        )
+      if (muxCollateral.spotLiquidity.lt(borrowCollateral)) {
+        if (!liquidityWarning) {
+          liquidityWarning = new InsufficientLiquidityError(
+            InsufficientLiquidityType.AggregatorLimitedCredit,
+            `can not borrow (${muxCollateral.symbol
+            }): ${muxCollateral.spotLiquidity.toFixed()} < ${borrowCollateral.toFixed()}`
+          )
+        }
       }
+      if (aggregatorCollateral.totalBorrow.plus(borrowCollateral).gt(aggregatorCollateral.borrowLimit)) {
+        if (!liquidityWarning) {
+          liquidityWarning = new InsufficientLiquidityError(
+            InsufficientLiquidityType.AggregatorLimitedCredit,
+            `can not borrow (${muxCollateral.symbol
+            }): ${aggregatorCollateral.totalBorrow.toFixed()} + ${borrowCollateral.toFixed()} > ${aggregatorCollateral.borrowLimit.toFixed()}`
+          )
+        }
+      }
+    } else if (storage.borrowSource === BorrowSources.LENDING_POOL) {
+      const lendingPoolCollateral = lendingPool.collaterals[gmxCollateral.config.address.toLowerCase()]
+      if (!lendingPoolCollateral) {
+        throw new InvalidArgumentError(`lendingPool: can not borrow (${gmxCollateral.config.symbol}): no such token`)
+      }
+      if (!test64(lendingPoolCollateral.flags, LENDING_STATE_IS_ENABLED) || !test64(lendingPoolCollateral.flags, LENDING_STATE_IS_BORROWABLE)) {
+        if (!liquidityWarning) {
+          liquidityWarning = new InsufficientLiquidityError(
+            InsufficientLiquidityType.AggregatorLimitedCredit,
+            `can not borrow (${gmxCollateral.config.symbol
+            }): temporarily disabled`
+          )
+        }
+      }
+      if (borrowCollateral.gt(lendingPoolCollateral.supplyAmount)) {
+        if (!liquidityWarning) {
+          liquidityWarning = new InsufficientLiquidityError(
+            InsufficientLiquidityType.AggregatorLimitedCredit,
+            `can not borrow (${gmxCollateral.config.symbol
+            }): ${lendingPoolCollateral.supplyAmount.toFixed()} < ${borrowCollateral.toFixed()}`
+          )
+        }
+      }
+    } else {
+      throw new BugError(`unknown borrowSource ${storage.borrowSource}`)
     }
   }
 
@@ -358,7 +389,7 @@ export function computeGmxAdapterClosePosition(
     const repayResult = _repayAsset(
       aggregatorCollateral,
       pos,
-      gmxCollateralOutAfterFee /* note: balance in the proxy are ignored */,
+      collateralOut /* note: balance in the proxy are ignored */,
       inflightBorrow
     )
     collateralOut = repayResult.remain
@@ -510,24 +541,23 @@ function _computeAggregatorFundingFee(
       throw new InvalidArgumentError(`can not borrow ${gmxCollateral.config.symbol}. no such token`)
     }
     cumulativeFunding = muxCollateral.longCumulativeFundingRate.minus(pos.debtEntryFunding)
-    cumulativeFunding = cumulativeFunding
   }
   if (!pos.isLong) {
     // this is a design compromise, mux does not have a short funding unit in usd. so the contract uses
     // specified shortFundingAssetId instead
-    const muxCollateral = assets[storage.shortFundingAssetId]
-    if (!muxCollateral) {
+    const shortFundingCollateral = assets[storage.shortFundingAssetId]
+    if (!shortFundingCollateral) {
       throw new InvalidArgumentError(`missing muxAsset[${storage.shortFundingAssetId}]`)
     }
-    if (muxCollateral.isStable) {
+    if (shortFundingCollateral.isStable) {
       throw new InvalidArgumentError(`bad config. muxAsset[${storage.shortFundingAssetId}] can not be stable coin`)
     }
-    const gmxShortFundingAsset = storage.gmx.tokens[muxCollateral.tokenAddress.toLowerCase()]
+    const gmxShortFundingAsset = storage.gmx.tokens[shortFundingCollateral.tokenAddress.toLowerCase()]
     if (!gmxShortFundingAsset) {
-      throw new InvalidArgumentError(`missing gmxAsset[${muxCollateral.tokenAddress}]`)
+      throw new InvalidArgumentError(`missing gmxAsset[${shortFundingCollateral.tokenAddress}]`)
     }
     // note: mux eth.shortCumulativeFunding = Σ_i ethPrice_i * fundingRate_i
-    cumulativeFunding = muxCollateral.shortCumulativeFunding
+    cumulativeFunding = shortFundingCollateral.shortCumulativeFunding
       .minus(pos.debtEntryFunding)
       .div(gmxShortFundingAsset.contractMinPrice)
   }
@@ -830,14 +860,14 @@ function _updateEntryFunding(
   if (!pos.isLong) {
     // this is a design compromise, mux does not have a short funding unit in usd. so the contract uses
     // specified shortFundingAssetId instead
-    const muxCollateral = assets[storage.shortFundingAssetId]
-    if (!muxCollateral) {
+    const shortFundingCollateral = assets[storage.shortFundingAssetId]
+    if (!shortFundingCollateral) {
       throw new InvalidArgumentError(`missing muxAsset[${storage.shortFundingAssetId}]`)
     }
-    if (muxCollateral.isStable) {
+    if (shortFundingCollateral.isStable) {
       throw new InvalidArgumentError(`bad config. muxAsset[${storage.shortFundingAssetId}] can not be stable coin`)
     }
-    pos.debtEntryFunding = muxCollateral.shortCumulativeFunding
+    pos.debtEntryFunding = shortFundingCollateral.shortCumulativeFunding
   }
 }
 
@@ -912,8 +942,8 @@ function _repayAsset(
   paidFee: BigNumber
   badDebt: BigNumber
 } {
-  const boostFee = pos.cumulativeDebt.times(aggregatorCollateral.boostFeeRate)
   const debt = pos.cumulativeDebt.minus(inflightBorrow)
+  const boostFee = debt.times(aggregatorCollateral.boostFeeRate)
   const fee = boostFee.plus(pos.cumulativeFee)
   let remain = collateralBalance
   let paidDebt = _0

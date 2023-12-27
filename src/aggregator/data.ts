@@ -21,7 +21,9 @@ import {
   GmxAdapterOrder,
   AggregatorOrderCategory,
   GmxAdapterOrderReceiver,
-  GmxTokenConfig
+  GmxTokenConfig,
+  RawAggregatorGmxV2SubAccount,
+  BorrowSources
 } from './types'
 import { CallOverrides, ethers } from 'ethers'
 import { fromRate, fromUnit, fromWei } from '../data'
@@ -93,6 +95,7 @@ function _parseGmxAndAggregatorStorage(
   store: AggregatorReader.GmxAdapterStorageStructOutput
 ): GmxAdapterStorage {
   return {
+    borrowSource: store.borrowSource.toNumber() as BorrowSources,
     gmx: {
       liquidationFeeUsd: fromGmxUsd(store.gmx.liquidationFeeUsd),
       marginFeeRate: GMX_POSITION_FEE_RATE,
@@ -225,20 +228,26 @@ export async function getAggregatorPositionsAndOrders(
   gmxPositionRouter: string,
   gmxOrderBook: string,
   account: string,
+  gmxV2Prices: AggregatorReader.GmxV2PriceStruct[],
   overrides: CallOverrides = {}
 ): Promise<{
-  subAccounts: AggregatorSubAccount[]
+  gmxSubAccounts: AggregatorSubAccount[]
+  gmxV2SubAccounts: RawAggregatorGmxV2SubAccount[]
 }> {
-  const store = await reader.getAggregatorSubAccountsOfAccount(gmxPositionRouter, gmxOrderBook, account, overrides)
+  const store = await reader.getAggregatorSubAccountsOfAccount(gmxPositionRouter, gmxOrderBook, account, gmxV2Prices, overrides)
   const gmxSubAccounts: AggregatorSubAccount[] = []
+  const gmxV2SubAccounts: RawAggregatorGmxV2SubAccount[] = []
   for (let i of store) {
     const projectId = i.projectId.toNumber() as AggregatorProjectId
     if (projectId === AggregatorProjectId.Gmx) {
       gmxSubAccounts.push(_parseGmxAdapterSubAccount(account, chainId, i))
+    } else if (projectId === AggregatorProjectId.GmxV2) {
+      gmxV2SubAccounts.push(_parseGmxV2AdapterSubAccount(account, i))
     }
   }
   return {
-    subAccounts: gmxSubAccounts,
+    gmxSubAccounts,
+    gmxV2SubAccounts,
   }
 }
 
@@ -253,7 +262,7 @@ function _parseGmxAdapterSubAccount(
   if (!gmxCollateral) {
     throw new Error(`missing gmxCollateral[${i.collateralAddress}]`)
   }
-  const sub: AggregatorSubAccount = {
+  return {
     // key
     proxyAddress: i.proxyAddress,
     projectId: i.projectId.toNumber() as AggregatorProjectId,
@@ -272,9 +281,39 @@ function _parseGmxAdapterSubAccount(
 
     // gmx
     gmx: _parseGmxCoreAccount(i),
-    gmxOrders: _parseGmxAdapterOrder(accountAddress, chainId, i)
+    gmxOrders: _parseGmxAdapterOrder(accountAddress, chainId, i),
   }
-  return sub
+}
+
+function _parseGmxV2AdapterSubAccount(
+  accountAddress: string,
+  i: AggregatorReader.AggregatorSubAccountStructOutput
+): RawAggregatorGmxV2SubAccount {
+  return {
+    // key
+    proxyAddress: i.proxyAddress,
+    projectId: i.projectId.toNumber() as AggregatorProjectId,
+    account: accountAddress,
+    collateralTokenAddress: i.collateralAddress,
+    assetTokenAddress: i.assetAddress,
+    isLong: i.isLong,
+
+    // store
+    isLiquidating: i.isLiquidating,
+    cumulativeDebt: i.cumulativeDebt,
+    cumulativeFee: i.cumulativeFee,
+    debtEntryFunding: i.debtEntryFunding,
+    proxyCollateralBalance: i.proxyCollateralBalance,
+    proxyEthBalance: i.proxyEthBalance,
+
+    // gmx v2
+    gmx2: i.gmx2,
+    gmx2Orders: i.gmx2Orders,
+
+    // funding
+    claimableFundingAmountLong: i.claimableFundingAmountLong,
+    claimableFundingAmountShort: i.claimableFundingAmountShort
+  }
 }
 
 function _parseGmxCoreAccount(store: AggregatorReader.AggregatorSubAccountStructOutput): GmxCoreAccount {

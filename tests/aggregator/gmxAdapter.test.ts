@@ -4,7 +4,9 @@ import {
   AggregatorProjectId,
   GmxAdapterStorage,
   GmxAdapterOrderReceiver,
-  AggregatorSubAccount
+  AggregatorSubAccount,
+  BorrowSources,
+  LendingPool
 } from '../../src/aggregator/types'
 import { _0, _1 } from '../../src/constants'
 import { Asset } from '../../src/types'
@@ -152,7 +154,12 @@ assets1.push({
   deduct: new BigNumber('999997000000000002.99152693655667301')
 })
 
+const emptyLendingPool: LendingPool = {
+  collaterals: {}
+}
+
 const gmxAggregatorStorage1: GmxAdapterStorage = {
+  borrowSource: BorrowSources.LIQUIDITY_POOL,
   gmx: gmxStorage1,
   collaterals: {
     [usdc]: {
@@ -462,6 +469,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       longEthPos0,
       assetPrice,
       new BigNumber('0.023333333333333334'), // borrow eth
@@ -613,6 +621,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       longEthPos0,
       assetPrice,
       new BigNumber('0.023333333333333334'), // borrow eth
@@ -647,6 +656,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       longEthPos0,
       new BigNumber('1296.5'), // asset price
       new BigNumber('0.002456140350877193'), // borrow eth
@@ -660,6 +670,7 @@ describe('aggregator:gmxAggregator', () => {
     const result2 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       result1.afterTrade.account,
       new BigNumber('1296.5'), // asset price
       new BigNumber('0.005333333333333334'), // borrow eth
@@ -676,6 +687,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       shortEthPos0,
       assetPrice,
       new BigNumber('30.251667'), // borrow usdc
@@ -853,6 +865,7 @@ describe('aggregator:gmxAggregator', () => {
       const result1 = computeGmxAdapterOpenPosition(
         assets1,
         gmxAggregatorStorage1,
+        emptyLendingPool,
         longEthPos0,
         assetPrice,
         new BigNumber('0.023333333333333334'), // borrow eth
@@ -930,6 +943,7 @@ describe('aggregator:gmxAggregator', () => {
       const result1 = computeGmxAdapterOpenPosition(
         assets1,
         gmxAggregatorStorage1,
+        emptyLendingPool,
         shortEthPos0,
         assetPrice,
         new BigNumber('30.251667'), // borrow usdc
@@ -1005,6 +1019,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       longEthPos0,
       assetPrice,
       new BigNumber('0.023333333333333334'), // borrow eth
@@ -1074,6 +1089,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       shortEthPos0,
       assetPrice,
       new BigNumber('30.251667'), // borrow usdc
@@ -1177,6 +1193,7 @@ describe('aggregator:gmxAggregator', () => {
   //   const result1 = computeGmxAdapterOpenPosition(
   //     assets1,
   //     gmxAggregatorStorage1,
+  //      emptyLendingPool,
   //     shortEthPos0,
   //     assetPrice,
   //     new BigNumber('0.34'), // borrow usdc
@@ -1218,6 +1235,7 @@ describe('aggregator:gmxAggregator', () => {
     const result = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       longEthPos0,
       assetPrice,
       new BigNumber('101'), // borrow eth
@@ -1234,6 +1252,7 @@ describe('aggregator:gmxAggregator', () => {
     const result = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       longEthPos0,
       assetPrice,
       new BigNumber('0'), // borrow eth
@@ -1270,6 +1289,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       longUniPos0,
       assetPrice,
       plan1.borrowCollateral,
@@ -1329,6 +1349,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       shortUniPos0,
       assetPrice,
       plan1.borrowCollateral,
@@ -1368,6 +1389,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       longEthPos0,
       assetPrice,
       new BigNumber('0.023333333333333334'), // borrow eth
@@ -1467,6 +1489,7 @@ describe('aggregator:gmxAggregator', () => {
     const result1 = computeGmxAdapterOpenPosition(
       assets1,
       gmxAggregatorStorage1,
+      emptyLendingPool,
       shortEthPos0,
       assetPrice,
       new BigNumber('30.251667'), // borrow usdc
