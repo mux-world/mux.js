@@ -722,6 +722,7 @@ export interface ReaderInterface extends utils.Interface {
     "getAggregatorSubAccountsOfProxy(address,address,address[],(address,((uint256,uint256),(uint256,uint256),(uint256,uint256)))[])": FunctionFragment;
     "getGmxAdapterStorage(address,address,address,address[],address[])": FunctionFragment;
     "getGmxV2AdapterStorage(address[])": FunctionFragment;
+    "getLiquiditySource(uint256)": FunctionFragment;
     "getProxyProjectId(address)": FunctionFragment;
     "gmxV2DataStore()": FunctionFragment;
     "gmxV2Reader()": FunctionFragment;
@@ -742,6 +743,7 @@ export interface ReaderInterface extends utils.Interface {
       | "getAggregatorSubAccountsOfProxy"
       | "getGmxAdapterStorage"
       | "getGmxV2AdapterStorage"
+      | "getLiquiditySource"
       | "getProxyProjectId"
       | "gmxV2DataStore"
       | "gmxV2Reader"
@@ -801,6 +803,10 @@ export interface ReaderInterface extends utils.Interface {
     values: [PromiseOrValue<string>[]]
   ): string;
   encodeFunctionData(
+    functionFragment: "getLiquiditySource",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getProxyProjectId",
     values: [PromiseOrValue<string>]
   ): string;
@@ -854,6 +860,10 @@ export interface ReaderInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getGmxV2AdapterStorage",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getLiquiditySource",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -966,6 +976,11 @@ export interface Reader extends BaseContract {
       }
     >;
 
+    getLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     getProxyProjectId(
       proxyAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1027,6 +1042,11 @@ export interface Reader extends BaseContract {
     overrides?: CallOverrides
   ): Promise<Reader.GmxV2AdapterStorageStructOutput>;
 
+  getLiquiditySource(
+    projectId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   getProxyProjectId(
     proxyAddress: PromiseOrValue<string>,
     overrides?: CallOverrides
@@ -1087,6 +1107,11 @@ export interface Reader extends BaseContract {
       gmxV2MarketsAddresses: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<Reader.GmxV2AdapterStorageStructOutput>;
+
+    getLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getProxyProjectId(
       proxyAddress: PromiseOrValue<string>,
@@ -1154,6 +1179,11 @@ export interface Reader extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getProxyProjectId(
       proxyAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -1217,6 +1247,11 @@ export interface Reader extends BaseContract {
 
     getGmxV2AdapterStorage(
       gmxV2MarketsAddresses: PromiseOrValue<string>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getLiquiditySource(
+      projectId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
