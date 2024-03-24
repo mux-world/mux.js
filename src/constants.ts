@@ -173,6 +173,7 @@ export enum PositionOrderFlags {
   TpSlStrategy = 0x08, // for open-position-order, this flag auto place take-profit and stop-loss orders when open-position-order fills.
   //                     for close-position-order, this flag means ignore limitPrice and profitTokenId, and use extra.tpPrice, extra.slPrice, extra.tpslProfitTokenId instead.
   ShouldReachMinProfit = 0x04, // this flag is used to ensure that either the minProfitTime is met or the minProfitRate ratio is reached when close a position. only available when minProfitTime > 0.
+  AutoDeleverage = 0x02, // denotes that this order is an auto-deleverage order
 }
 
 // do not forget toWei(PreMinedTokenTotalSupply)

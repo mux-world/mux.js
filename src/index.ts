@@ -7,6 +7,10 @@ export * from './aggregator/types'
 export * from './aggregator/constants'
 export * from './aggregator/gmxCore'
 export * from './aggregator/gmxAdapter'
+export * from './degen/types'
+export * from './degen/data'
+export * from './degen/computations'
+export * from './degen/calculator'
 
 export type { IERC20 as IERC20Contract } from "./abi/IERC20";
 export type { LiquidityManager as LiquidityManagerContract } from './abi/LiquidityManager';
@@ -18,7 +22,7 @@ export type { ReferralManager as ReferralManagerContract } from './abi/ReferralM
 export type { RewardRouter as RewardRouterContract } from './abi/staking/RewardRouter';
 export type { Vester as VesterContract } from './abi/staking/Vester';
 export type { VotingEscrow as VotingEscrowContract } from './abi/staking/VotingEscrow';
-export type { ProxyFactory as AggregatorProxyFactory } from './abi/aggregator/ProxyFactory';
+export type { IProxyFactory as AggregatorProxyFactory } from './abi/aggregator/ProxyFactory';
 export type { Reader as AggregatorReader } from './abi/aggregator/Reader';
 export type { GmxAdapter as AggregatorGmxAdapterContract } from './abi/aggregator/GmxAdapter';
 export type { GmxV2Adapter as AggregatorGmxV2AdapterContract } from './abi/aggregator/GmxV2Adapter';

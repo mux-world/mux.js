@@ -14,7 +14,7 @@ export function calculateOpenPositionWithCollateral(
   leverage: BigNumber,
   collateralAmount: BigNumber,
   brokerGasFee: BigNumber // in collateral. you can pass _0 when calling placePositionOrder
-): BigNumber {
+): BigNumber /* position size */ {
   const { collateralId, assetId, isLong } = decodeSubAccountId(subAccountId)
   if (collateralId >= assets.length) {
     throw new InvalidArgumentError(`missing asset[${collateralId}]`)

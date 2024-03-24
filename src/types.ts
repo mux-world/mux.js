@@ -1,8 +1,16 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { Provider } from '@ethersproject/providers'
+import { PromiseOrValue } from './abi/common'
+import { BytesLike } from 'ethers/lib/utils'
 
 export type SignerOrProvider = ethers.Signer | Provider
+
+export interface MultiCallStruct<T = any> {
+  target: PromiseOrValue<string>
+  callData: PromiseOrValue<BytesLike>
+  responseDecoder: (result: string) => T
+}
 
 /**
  * Invalid argument or the query condition is impossible.
@@ -30,9 +38,12 @@ export class InsufficientLiquidityError extends Error {
 
 export enum InsufficientLiquidityType {
   MuxRemoveLiquidityExceedsCurrentAsset,
+  MuxLimitedReservation,
+  MuxLimitedMaxPosition,
 
   AggregatorLimitedCredit,
   AggregatorLimitedMaxPosition,
+
   SwapExceedsCurrentAsset
 }
 
