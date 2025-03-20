@@ -389,8 +389,8 @@ export declare namespace IPosition {
     fundingFeeAmountPerSize: PromiseOrValue<BigNumberish>;
     longTokenClaimableFundingAmountPerSize: PromiseOrValue<BigNumberish>;
     shortTokenClaimableFundingAmountPerSize: PromiseOrValue<BigNumberish>;
-    increasedAtBlock: PromiseOrValue<BigNumberish>;
-    decreasedAtBlock: PromiseOrValue<BigNumberish>;
+    increasedAtTime: PromiseOrValue<BigNumberish>;
+    decreasedAtTime: PromiseOrValue<BigNumberish>;
   };
 
   export type NumbersStructOutput = [
@@ -411,8 +411,8 @@ export declare namespace IPosition {
     fundingFeeAmountPerSize: BigNumber;
     longTokenClaimableFundingAmountPerSize: BigNumber;
     shortTokenClaimableFundingAmountPerSize: BigNumber;
-    increasedAtBlock: BigNumber;
-    decreasedAtBlock: BigNumber;
+    increasedAtTime: BigNumber;
+    decreasedAtTime: BigNumber;
   };
 
   export type FlagsStruct = { isLong: PromiseOrValue<boolean> };
@@ -442,6 +442,8 @@ export declare namespace IPositionPricing {
     affiliate: PromiseOrValue<string>;
     trader: PromiseOrValue<string>;
     totalRebateFactor: PromiseOrValue<BigNumberish>;
+    affiliateRewardFactor: PromiseOrValue<BigNumberish>;
+    adjustedAffiliateRewardFactor: PromiseOrValue<BigNumberish>;
     traderDiscountFactor: PromiseOrValue<BigNumberish>;
     totalRebateAmount: PromiseOrValue<BigNumberish>;
     traderDiscountAmount: PromiseOrValue<BigNumberish>;
@@ -456,16 +458,36 @@ export declare namespace IPositionPricing {
     BigNumber,
     BigNumber,
     BigNumber,
+    BigNumber,
+    BigNumber,
     BigNumber
   ] & {
     referralCode: string;
     affiliate: string;
     trader: string;
     totalRebateFactor: BigNumber;
+    affiliateRewardFactor: BigNumber;
+    adjustedAffiliateRewardFactor: BigNumber;
     traderDiscountFactor: BigNumber;
     totalRebateAmount: BigNumber;
     traderDiscountAmount: BigNumber;
     affiliateRewardAmount: BigNumber;
+  };
+
+  export type PositionProFeesStruct = {
+    traderTier: PromiseOrValue<BigNumberish>;
+    traderDiscountFactor: PromiseOrValue<BigNumberish>;
+    traderDiscountAmount: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PositionProFeesStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    traderTier: BigNumber;
+    traderDiscountFactor: BigNumber;
+    traderDiscountAmount: BigNumber;
   };
 
   export type PositionFundingFeesStruct = {
@@ -524,11 +546,32 @@ export declare namespace IPositionPricing {
     uiFeeAmount: BigNumber;
   };
 
+  export type PositionLiquidationFeesStruct = {
+    liquidationFeeUsd: PromiseOrValue<BigNumberish>;
+    liquidationFeeAmount: PromiseOrValue<BigNumberish>;
+    liquidationFeeReceiverFactor: PromiseOrValue<BigNumberish>;
+    liquidationFeeAmountForFeeReceiver: PromiseOrValue<BigNumberish>;
+  };
+
+  export type PositionLiquidationFeesStructOutput = [
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
+    liquidationFeeUsd: BigNumber;
+    liquidationFeeAmount: BigNumber;
+    liquidationFeeReceiverFactor: BigNumber;
+    liquidationFeeAmountForFeeReceiver: BigNumber;
+  };
+
   export type PositionFeesStruct = {
     referral: IPositionPricing.PositionReferralFeesStruct;
+    pro: IPositionPricing.PositionProFeesStruct;
     funding: IPositionPricing.PositionFundingFeesStruct;
     borrowing: IPositionPricing.PositionBorrowingFeesStruct;
     ui: IPositionPricing.PositionUiFeesStruct;
+    liquidation: IPositionPricing.PositionLiquidationFeesStruct;
     collateralTokenPrice: IPrice.PropsStruct;
     positionFeeFactor: PromiseOrValue<BigNumberish>;
     protocolFeeAmount: PromiseOrValue<BigNumberish>;
@@ -539,14 +582,18 @@ export declare namespace IPositionPricing {
     positionFeeAmount: PromiseOrValue<BigNumberish>;
     totalCostAmountExcludingFunding: PromiseOrValue<BigNumberish>;
     totalCostAmount: PromiseOrValue<BigNumberish>;
+    totalDiscountAmount: PromiseOrValue<BigNumberish>;
   };
 
   export type PositionFeesStructOutput = [
     IPositionPricing.PositionReferralFeesStructOutput,
+    IPositionPricing.PositionProFeesStructOutput,
     IPositionPricing.PositionFundingFeesStructOutput,
     IPositionPricing.PositionBorrowingFeesStructOutput,
     IPositionPricing.PositionUiFeesStructOutput,
+    IPositionPricing.PositionLiquidationFeesStructOutput,
     IPrice.PropsStructOutput,
+    BigNumber,
     BigNumber,
     BigNumber,
     BigNumber,
@@ -558,9 +605,11 @@ export declare namespace IPositionPricing {
     BigNumber
   ] & {
     referral: IPositionPricing.PositionReferralFeesStructOutput;
+    pro: IPositionPricing.PositionProFeesStructOutput;
     funding: IPositionPricing.PositionFundingFeesStructOutput;
     borrowing: IPositionPricing.PositionBorrowingFeesStructOutput;
     ui: IPositionPricing.PositionUiFeesStructOutput;
+    liquidation: IPositionPricing.PositionLiquidationFeesStructOutput;
     collateralTokenPrice: IPrice.PropsStructOutput;
     positionFeeFactor: BigNumber;
     protocolFeeAmount: BigNumber;
@@ -571,6 +620,7 @@ export declare namespace IPositionPricing {
     positionFeeAmount: BigNumber;
     totalCostAmountExcludingFunding: BigNumber;
     totalCostAmount: BigNumber;
+    totalDiscountAmount: BigNumber;
   };
 }
 
@@ -596,7 +646,6 @@ export declare namespace IReader {
     fees: IPositionPricing.PositionFeesStruct;
     executionPriceResult: IReader.ExecutionPriceResultStruct;
     basePnlUsd: PromiseOrValue<BigNumberish>;
-    uncappedBasePnlUsd: PromiseOrValue<BigNumberish>;
     pnlAfterPriceImpactUsd: PromiseOrValue<BigNumberish>;
   };
 
@@ -605,14 +654,12 @@ export declare namespace IReader {
     IPositionPricing.PositionFeesStructOutput,
     IReader.ExecutionPriceResultStructOutput,
     BigNumber,
-    BigNumber,
     BigNumber
   ] & {
     position: IPosition.PropsStructOutput;
     fees: IPositionPricing.PositionFeesStructOutput;
     executionPriceResult: IReader.ExecutionPriceResultStructOutput;
     basePnlUsd: BigNumber;
-    uncappedBasePnlUsd: BigNumber;
     pnlAfterPriceImpactUsd: BigNumber;
   };
 }
@@ -621,6 +668,7 @@ export declare namespace IOrder {
   export type AddressesStruct = {
     account: PromiseOrValue<string>;
     receiver: PromiseOrValue<string>;
+    cancellationReceiver: PromiseOrValue<string>;
     callbackContract: PromiseOrValue<string>;
     uiFeeReceiver: PromiseOrValue<string>;
     market: PromiseOrValue<string>;
@@ -635,10 +683,12 @@ export declare namespace IOrder {
     string,
     string,
     string,
+    string,
     string[]
   ] & {
     account: string;
     receiver: string;
+    cancellationReceiver: string;
     callbackContract: string;
     uiFeeReceiver: string;
     market: string;
@@ -656,12 +706,14 @@ export declare namespace IOrder {
     executionFee: PromiseOrValue<BigNumberish>;
     callbackGasLimit: PromiseOrValue<BigNumberish>;
     minOutputAmount: PromiseOrValue<BigNumberish>;
-    updatedAtBlock: PromiseOrValue<BigNumberish>;
+    updatedAtTime: PromiseOrValue<BigNumberish>;
+    validFromTime: PromiseOrValue<BigNumberish>;
   };
 
   export type NumbersStructOutput = [
     number,
     number,
+    BigNumber,
     BigNumber,
     BigNumber,
     BigNumber,
@@ -680,19 +732,22 @@ export declare namespace IOrder {
     executionFee: BigNumber;
     callbackGasLimit: BigNumber;
     minOutputAmount: BigNumber;
-    updatedAtBlock: BigNumber;
+    updatedAtTime: BigNumber;
+    validFromTime: BigNumber;
   };
 
   export type FlagsStruct = {
     isLong: PromiseOrValue<boolean>;
     shouldUnwrapNativeToken: PromiseOrValue<boolean>;
     isFrozen: PromiseOrValue<boolean>;
+    autoCancel: PromiseOrValue<boolean>;
   };
 
-  export type FlagsStructOutput = [boolean, boolean, boolean] & {
+  export type FlagsStructOutput = [boolean, boolean, boolean, boolean] & {
     isLong: boolean;
     shouldUnwrapNativeToken: boolean;
     isFrozen: boolean;
+    autoCancel: boolean;
   };
 
   export type PropsStruct = {

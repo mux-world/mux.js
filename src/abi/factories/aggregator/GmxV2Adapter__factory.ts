@@ -46,6 +46,11 @@ const _abi = [
               },
               {
                 internalType: "address",
+                name: "cancellationReceiver",
+                type: "address",
+              },
+              {
+                internalType: "address",
                 name: "callbackContract",
                 type: "address",
               },
@@ -123,7 +128,12 @@ const _abi = [
               },
               {
                 internalType: "uint256",
-                name: "updatedAtBlock",
+                name: "updatedAtTime",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "validFromTime",
                 type: "uint256",
               },
             ],
@@ -146,6 +156,11 @@ const _abi = [
               {
                 internalType: "bool",
                 name: "isFrozen",
+                type: "bool",
+              },
+              {
+                internalType: "bool",
+                name: "autoCancel",
                 type: "bool",
               },
             ],
@@ -481,6 +496,11 @@ const _abi = [
               },
               {
                 internalType: "address",
+                name: "cancellationReceiver",
+                type: "address",
+              },
+              {
+                internalType: "address",
                 name: "callbackContract",
                 type: "address",
               },
@@ -558,7 +578,12 @@ const _abi = [
               },
               {
                 internalType: "uint256",
-                name: "updatedAtBlock",
+                name: "updatedAtTime",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "validFromTime",
                 type: "uint256",
               },
             ],
@@ -581,6 +606,11 @@ const _abi = [
               {
                 internalType: "bool",
                 name: "isFrozen",
+                type: "bool",
+              },
+              {
+                internalType: "bool",
+                name: "autoCancel",
                 type: "bool",
               },
             ],
@@ -916,6 +946,11 @@ const _abi = [
               },
               {
                 internalType: "address",
+                name: "cancellationReceiver",
+                type: "address",
+              },
+              {
+                internalType: "address",
                 name: "callbackContract",
                 type: "address",
               },
@@ -993,7 +1028,12 @@ const _abi = [
               },
               {
                 internalType: "uint256",
-                name: "updatedAtBlock",
+                name: "updatedAtTime",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "validFromTime",
                 type: "uint256",
               },
             ],
@@ -1016,6 +1056,11 @@ const _abi = [
               {
                 internalType: "bool",
                 name: "isFrozen",
+                type: "bool",
+              },
+              {
+                internalType: "bool",
+                name: "autoCancel",
                 type: "bool",
               },
             ],
@@ -1801,6 +1846,11 @@ const _abi = [
         name: "triggerPrice",
         type: "uint256",
       },
+      {
+        internalType: "bool",
+        name: "autoCancel",
+        type: "bool",
+      },
     ],
     name: "updateOrder",
     outputs: [],
@@ -1811,7 +1861,7 @@ const _abi = [
     stateMutability: "payable",
     type: "receive",
   },
-] as const;
+];
 
 export class GmxV2Adapter__factory {
   static readonly abi = _abi;

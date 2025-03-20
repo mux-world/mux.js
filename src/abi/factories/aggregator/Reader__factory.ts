@@ -396,12 +396,12 @@ const _abi = [
                       },
                       {
                         internalType: "uint256",
-                        name: "increasedAtBlock",
+                        name: "increasedAtTime",
                         type: "uint256",
                       },
                       {
                         internalType: "uint256",
-                        name: "decreasedAtBlock",
+                        name: "decreasedAtTime",
                         type: "uint256",
                       },
                     ],
@@ -452,6 +452,16 @@ const _abi = [
                       },
                       {
                         internalType: "uint256",
+                        name: "affiliateRewardFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "adjustedAffiliateRewardFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
                         name: "traderDiscountFactor",
                         type: "uint256",
                       },
@@ -474,6 +484,28 @@ const _abi = [
                     internalType:
                       "struct IPositionPricing.PositionReferralFees",
                     name: "referral",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "traderTier",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "traderDiscountFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "traderDiscountAmount",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPositionPricing.PositionProFees",
+                    name: "pro",
                     type: "tuple",
                   },
                   {
@@ -567,6 +599,34 @@ const _abi = [
                     components: [
                       {
                         internalType: "uint256",
+                        name: "liquidationFeeUsd",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "liquidationFeeAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "liquidationFeeReceiverFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "liquidationFeeAmountForFeeReceiver",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType:
+                      "struct IPositionPricing.PositionLiquidationFees",
+                    name: "liquidation",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
                         name: "min",
                         type: "uint256",
                       },
@@ -625,6 +685,11 @@ const _abi = [
                     name: "totalCostAmount",
                     type: "uint256",
                   },
+                  {
+                    internalType: "uint256",
+                    name: "totalDiscountAmount",
+                    type: "uint256",
+                  },
                 ],
                 internalType: "struct IPositionPricing.PositionFees",
                 name: "fees",
@@ -655,11 +720,6 @@ const _abi = [
               {
                 internalType: "int256",
                 name: "basePnlUsd",
-                type: "int256",
-              },
-              {
-                internalType: "int256",
-                name: "uncappedBasePnlUsd",
                 type: "int256",
               },
               {
@@ -726,6 +786,11 @@ const _abi = [
                       {
                         internalType: "address",
                         name: "receiver",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "cancellationReceiver",
                         type: "address",
                       },
                       {
@@ -807,7 +872,12 @@ const _abi = [
                       },
                       {
                         internalType: "uint256",
-                        name: "updatedAtBlock",
+                        name: "updatedAtTime",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "validFromTime",
                         type: "uint256",
                       },
                     ],
@@ -830,6 +900,11 @@ const _abi = [
                       {
                         internalType: "bool",
                         name: "isFrozen",
+                        type: "bool",
+                      },
+                      {
+                        internalType: "bool",
+                        name: "autoCancel",
                         type: "bool",
                       },
                     ],
@@ -1152,12 +1227,12 @@ const _abi = [
                       },
                       {
                         internalType: "uint256",
-                        name: "increasedAtBlock",
+                        name: "increasedAtTime",
                         type: "uint256",
                       },
                       {
                         internalType: "uint256",
-                        name: "decreasedAtBlock",
+                        name: "decreasedAtTime",
                         type: "uint256",
                       },
                     ],
@@ -1208,6 +1283,16 @@ const _abi = [
                       },
                       {
                         internalType: "uint256",
+                        name: "affiliateRewardFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "adjustedAffiliateRewardFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
                         name: "traderDiscountFactor",
                         type: "uint256",
                       },
@@ -1230,6 +1315,28 @@ const _abi = [
                     internalType:
                       "struct IPositionPricing.PositionReferralFees",
                     name: "referral",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
+                        name: "traderTier",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "traderDiscountFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "traderDiscountAmount",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType: "struct IPositionPricing.PositionProFees",
+                    name: "pro",
                     type: "tuple",
                   },
                   {
@@ -1323,6 +1430,34 @@ const _abi = [
                     components: [
                       {
                         internalType: "uint256",
+                        name: "liquidationFeeUsd",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "liquidationFeeAmount",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "liquidationFeeReceiverFactor",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "liquidationFeeAmountForFeeReceiver",
+                        type: "uint256",
+                      },
+                    ],
+                    internalType:
+                      "struct IPositionPricing.PositionLiquidationFees",
+                    name: "liquidation",
+                    type: "tuple",
+                  },
+                  {
+                    components: [
+                      {
+                        internalType: "uint256",
                         name: "min",
                         type: "uint256",
                       },
@@ -1381,6 +1516,11 @@ const _abi = [
                     name: "totalCostAmount",
                     type: "uint256",
                   },
+                  {
+                    internalType: "uint256",
+                    name: "totalDiscountAmount",
+                    type: "uint256",
+                  },
                 ],
                 internalType: "struct IPositionPricing.PositionFees",
                 name: "fees",
@@ -1411,11 +1551,6 @@ const _abi = [
               {
                 internalType: "int256",
                 name: "basePnlUsd",
-                type: "int256",
-              },
-              {
-                internalType: "int256",
-                name: "uncappedBasePnlUsd",
                 type: "int256",
               },
               {
@@ -1482,6 +1617,11 @@ const _abi = [
                       {
                         internalType: "address",
                         name: "receiver",
+                        type: "address",
+                      },
+                      {
+                        internalType: "address",
+                        name: "cancellationReceiver",
                         type: "address",
                       },
                       {
@@ -1563,7 +1703,12 @@ const _abi = [
                       },
                       {
                         internalType: "uint256",
-                        name: "updatedAtBlock",
+                        name: "updatedAtTime",
+                        type: "uint256",
+                      },
+                      {
+                        internalType: "uint256",
+                        name: "validFromTime",
                         type: "uint256",
                       },
                     ],
@@ -1586,6 +1731,11 @@ const _abi = [
                       {
                         internalType: "bool",
                         name: "isFrozen",
+                        type: "bool",
+                      },
+                      {
+                        internalType: "bool",
+                        name: "autoCancel",
                         type: "bool",
                       },
                     ],

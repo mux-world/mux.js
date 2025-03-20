@@ -9,7 +9,6 @@ export interface DegenPoolStorage {
   pool: DegenPool
   orderBook: DegenOrderBook
   assets: DegenAsset[]
-  liquidityLockPeriod: number
 }
 
 export interface DegenPool {

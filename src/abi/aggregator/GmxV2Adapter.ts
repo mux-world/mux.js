@@ -32,6 +32,7 @@ export declare namespace IOrder {
   export type AddressesStruct = {
     account: PromiseOrValue<string>;
     receiver: PromiseOrValue<string>;
+    cancellationReceiver: PromiseOrValue<string>;
     callbackContract: PromiseOrValue<string>;
     uiFeeReceiver: PromiseOrValue<string>;
     market: PromiseOrValue<string>;
@@ -46,10 +47,12 @@ export declare namespace IOrder {
     string,
     string,
     string,
+    string,
     string[]
   ] & {
     account: string;
     receiver: string;
+    cancellationReceiver: string;
     callbackContract: string;
     uiFeeReceiver: string;
     market: string;
@@ -67,12 +70,14 @@ export declare namespace IOrder {
     executionFee: PromiseOrValue<BigNumberish>;
     callbackGasLimit: PromiseOrValue<BigNumberish>;
     minOutputAmount: PromiseOrValue<BigNumberish>;
-    updatedAtBlock: PromiseOrValue<BigNumberish>;
+    updatedAtTime: PromiseOrValue<BigNumberish>;
+    validFromTime: PromiseOrValue<BigNumberish>;
   };
 
   export type NumbersStructOutput = [
     number,
     number,
+    BigNumber,
     BigNumber,
     BigNumber,
     BigNumber,
@@ -91,19 +96,22 @@ export declare namespace IOrder {
     executionFee: BigNumber;
     callbackGasLimit: BigNumber;
     minOutputAmount: BigNumber;
-    updatedAtBlock: BigNumber;
+    updatedAtTime: BigNumber;
+    validFromTime: BigNumber;
   };
 
   export type FlagsStruct = {
     isLong: PromiseOrValue<boolean>;
     shouldUnwrapNativeToken: PromiseOrValue<boolean>;
     isFrozen: PromiseOrValue<boolean>;
+    autoCancel: PromiseOrValue<boolean>;
   };
 
-  export type FlagsStructOutput = [boolean, boolean, boolean] & {
+  export type FlagsStructOutput = [boolean, boolean, boolean, boolean] & {
     isLong: boolean;
     shouldUnwrapNativeToken: boolean;
     isFrozen: boolean;
+    autoCancel: boolean;
   };
 
   export type PropsStruct = {
@@ -512,9 +520,9 @@ export declare namespace IGmxV2Adatper {
 
 export interface GmxV2AdapterInterface extends utils.Interface {
   functions: {
-    "afterOrderCancellation(bytes32,((address,address,address,address,address,address,address[]),(uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256),(bool,bool,bool)),(((string,address)[],(string,address[])[]),((string,uint256)[],(string,uint256[])[]),((string,int256)[],(string,int256[])[]),((string,bool)[],(string,bool[])[]),((string,bytes32)[],(string,bytes32[])[]),((string,bytes)[],(string,bytes[])[]),((string,string)[],(string,string[])[])))": FunctionFragment;
-    "afterOrderExecution(bytes32,((address,address,address,address,address,address,address[]),(uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256),(bool,bool,bool)),(((string,address)[],(string,address[])[]),((string,uint256)[],(string,uint256[])[]),((string,int256)[],(string,int256[])[]),((string,bool)[],(string,bool[])[]),((string,bytes32)[],(string,bytes32[])[]),((string,bytes)[],(string,bytes[])[]),((string,string)[],(string,string[])[])))": FunctionFragment;
-    "afterOrderFrozen(bytes32,((address,address,address,address,address,address,address[]),(uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256),(bool,bool,bool)),(((string,address)[],(string,address[])[]),((string,uint256)[],(string,uint256[])[]),((string,int256)[],(string,int256[])[]),((string,bool)[],(string,bool[])[]),((string,bytes32)[],(string,bytes32[])[]),((string,bytes)[],(string,bytes[])[]),((string,string)[],(string,string[])[])))": FunctionFragment;
+    "afterOrderCancellation(bytes32,((address,address,address,address,address,address,address,address[]),(uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256),(bool,bool,bool,bool)),(((string,address)[],(string,address[])[]),((string,uint256)[],(string,uint256[])[]),((string,int256)[],(string,int256[])[]),((string,bool)[],(string,bool[])[]),((string,bytes32)[],(string,bytes32[])[]),((string,bytes)[],(string,bytes[])[]),((string,string)[],(string,string[])[])))": FunctionFragment;
+    "afterOrderExecution(bytes32,((address,address,address,address,address,address,address,address[]),(uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256),(bool,bool,bool,bool)),(((string,address)[],(string,address[])[]),((string,uint256)[],(string,uint256[])[]),((string,int256)[],(string,int256[])[]),((string,bool)[],(string,bool[])[]),((string,bytes32)[],(string,bytes32[])[]),((string,bytes)[],(string,bytes[])[]),((string,string)[],(string,string[])[])))": FunctionFragment;
+    "afterOrderFrozen(bytes32,((address,address,address,address,address,address,address,address[]),(uint8,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256),(bool,bool,bool,bool)),(((string,address)[],(string,address[])[]),((string,uint256)[],(string,uint256[])[]),((string,int256)[],(string,int256[])[]),((string,bool)[],(string,bool[])[]),((string,bytes32)[],(string,bytes32[])[]),((string,bytes)[],(string,bytes[])[]),((string,string)[],(string,string[])[])))": FunctionFragment;
     "cancelExpiredOrder(bytes32)": FunctionFragment;
     "cancelOrder(bytes32)": FunctionFragment;
     "claimFundingFees(address[],address[])": FunctionFragment;
@@ -528,7 +536,7 @@ export interface GmxV2AdapterInterface extends utils.Interface {
     "muxAccountState()": FunctionFragment;
     "placeOrder((bytes,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint8))": FunctionFragment;
     "positionKey()": FunctionFragment;
-    "updateOrder(bytes32,uint256,uint256,uint256)": FunctionFragment;
+    "updateOrder(bytes32,uint256,uint256,uint256,bool)": FunctionFragment;
   };
 
   getFunction(
@@ -645,7 +653,8 @@ export interface GmxV2AdapterInterface extends utils.Interface {
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<boolean>
     ]
   ): string;
 
@@ -847,6 +856,7 @@ export interface GmxV2Adapter extends BaseContract {
       sizeDeltaUsd: PromiseOrValue<BigNumberish>,
       acceptablePrice: PromiseOrValue<BigNumberish>,
       triggerPrice: PromiseOrValue<BigNumberish>,
+      autoCancel: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
@@ -944,6 +954,7 @@ export interface GmxV2Adapter extends BaseContract {
     sizeDeltaUsd: PromiseOrValue<BigNumberish>,
     acceptablePrice: PromiseOrValue<BigNumberish>,
     triggerPrice: PromiseOrValue<BigNumberish>,
+    autoCancel: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1039,6 +1050,7 @@ export interface GmxV2Adapter extends BaseContract {
       sizeDeltaUsd: PromiseOrValue<BigNumberish>,
       acceptablePrice: PromiseOrValue<BigNumberish>,
       triggerPrice: PromiseOrValue<BigNumberish>,
+      autoCancel: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -1138,6 +1150,7 @@ export interface GmxV2Adapter extends BaseContract {
       sizeDeltaUsd: PromiseOrValue<BigNumberish>,
       acceptablePrice: PromiseOrValue<BigNumberish>,
       triggerPrice: PromiseOrValue<BigNumberish>,
+      autoCancel: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
@@ -1232,6 +1245,7 @@ export interface GmxV2Adapter extends BaseContract {
       sizeDeltaUsd: PromiseOrValue<BigNumberish>,
       acceptablePrice: PromiseOrValue<BigNumberish>,
       triggerPrice: PromiseOrValue<BigNumberish>,
+      autoCancel: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };

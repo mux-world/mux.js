@@ -246,43 +246,6 @@ export declare namespace Events {
     remainPosition: BigNumber;
     remainCollateral: BigNumber;
   };
-
-  export type WithdrawProfitArgsStruct = {
-    subAccountId: BytesLike;
-    collateralId: BigNumberish;
-    profitAssetId: BigNumberish;
-    isLong: boolean;
-    withdrawRawAmount: BigNumberish;
-    assetPrice: BigNumberish;
-    collateralPrice: BigNumberish;
-    profitAssetPrice: BigNumberish;
-    entryPrice: BigNumberish;
-    feeUsd: BigNumberish;
-  };
-
-  export type WithdrawProfitArgsStructOutput = [
-    string,
-    number,
-    number,
-    boolean,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    BigNumber
-  ] & {
-    subAccountId: string;
-    collateralId: number;
-    profitAssetId: number;
-    isLong: boolean;
-    withdrawRawAmount: BigNumber;
-    assetPrice: BigNumber;
-    collateralPrice: BigNumber;
-    profitAssetPrice: BigNumber;
-    entryPrice: BigNumber;
-    feeUsd: BigNumber;
-  };
 }
 
 export interface LiquidityPoolInterface extends utils.Interface {
@@ -293,7 +256,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "borrowAsset(address,uint8,uint256,uint256)": FunctionFragment;
     "claimBrokerGasRebate(address)": FunctionFragment;
     "closePosition(bytes32,uint96,uint8,uint96,uint96,uint96)": FunctionFragment;
-    "delegateVoting(address)": FunctionFragment;
     "depositCollateral(bytes32,uint256)": FunctionFragment;
     "getAllAssetInfo()": FunctionFragment;
     "getAssetAddress(uint8)": FunctionFragment;
@@ -317,6 +279,7 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "setMaintainer(address)": FunctionFragment;
     "setNumbers(uint32,uint32,uint32,uint32,uint96)": FunctionFragment;
     "setReferenceOracle(uint8,uint8,address,uint32)": FunctionFragment;
+    "setTotalPosition(uint8,uint96,uint96,uint96,uint96)": FunctionFragment;
     "takeOwnership()": FunctionFragment;
     "transferLiquidityIn(uint8[],uint256[])": FunctionFragment;
     "transferLiquidityOut(uint8[],uint256[])": FunctionFragment;
@@ -326,7 +289,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "withdrawAllCollateral(bytes32)": FunctionFragment;
     "withdrawCollateral(bytes32,uint256,uint96,uint96)": FunctionFragment;
     "withdrawCollectedFee(uint8[])": FunctionFragment;
-    "withdrawProfit(bytes32,uint256,uint8,uint96,uint96,uint96)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -363,10 +325,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
       BigNumberish,
       BigNumberish
     ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "delegateVoting",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "depositCollateral",
@@ -503,6 +461,16 @@ export interface LiquidityPoolInterface extends utils.Interface {
     values: [BigNumberish, BigNumberish, string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "setTotalPosition",
+    values: [
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "takeOwnership",
     values?: undefined
   ): string;
@@ -538,17 +506,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
     functionFragment: "withdrawCollectedFee",
     values: [BigNumberish[]]
   ): string;
-  encodeFunctionData(
-    functionFragment: "withdrawProfit",
-    values: [
-      BytesLike,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish
-    ]
-  ): string;
 
   decodeFunctionResult(functionFragment: "addAsset", data: BytesLike): Result;
   decodeFunctionResult(
@@ -565,10 +522,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "closePosition",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "delegateVoting",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -646,6 +599,10 @@ export interface LiquidityPoolInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setTotalPosition",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "takeOwnership",
     data: BytesLike
   ): Result;
@@ -679,10 +636,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "withdrawCollectedFee",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "withdrawProfit",
     data: BytesLike
   ): Result;
 
@@ -720,7 +673,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "UpgradeChainedProxy(address,address)": EventFragment;
     "WithdrawCollateral(bytes32,address,uint8,uint256,uint96)": EventFragment;
     "WithdrawCollectedFee(uint8,uint96)": EventFragment;
-    "WithdrawProfit(address,uint8,tuple)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AddAsset"): EventFragment;
@@ -756,7 +708,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "UpgradeChainedProxy"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WithdrawCollateral"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WithdrawCollectedFee"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "WithdrawProfit"): EventFragment;
 }
 
 export type AddAssetEvent = TypedEvent<
@@ -1088,17 +1039,6 @@ export type WithdrawCollectedFeeEvent = TypedEvent<
 export type WithdrawCollectedFeeEventFilter =
   TypedEventFilter<WithdrawCollectedFeeEvent>;
 
-export type WithdrawProfitEvent = TypedEvent<
-  [string, number, Events.WithdrawProfitArgsStructOutput],
-  {
-    trader: string;
-    assetId: number;
-    args: Events.WithdrawProfitArgsStructOutput;
-  }
->;
-
-export type WithdrawProfitEventFilter = TypedEventFilter<WithdrawProfitEvent>;
-
 export interface LiquidityPool extends BaseContract {
   contractName: "LiquidityPool";
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -1168,11 +1108,6 @@ export interface LiquidityPool extends BaseContract {
       collateralPrice: BigNumberish,
       assetPrice: BigNumberish,
       profitAssetPrice: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    delegateVoting(
-      to: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1357,6 +1292,15 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setTotalPosition(
+      assetId: BigNumberish,
+      ifLongPositionSize: BigNumberish,
+      ifShortPositionSize: BigNumberish,
+      newLongEntry: BigNumberish,
+      newShortEntry: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     takeOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -1408,16 +1352,6 @@ export interface LiquidityPool extends BaseContract {
       assetIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    withdrawProfit(
-      subAccountId: BytesLike,
-      rawAmount: BigNumberish,
-      profitAssetId: BigNumberish,
-      collateralPrice: BigNumberish,
-      assetPrice: BigNumberish,
-      profitAssetPrice: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
   };
 
   addAsset(
@@ -1461,11 +1395,6 @@ export interface LiquidityPool extends BaseContract {
     collateralPrice: BigNumberish,
     assetPrice: BigNumberish,
     profitAssetPrice: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  delegateVoting(
-    to: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1650,6 +1579,15 @@ export interface LiquidityPool extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setTotalPosition(
+    assetId: BigNumberish,
+    ifLongPositionSize: BigNumberish,
+    ifShortPositionSize: BigNumberish,
+    newLongEntry: BigNumberish,
+    newShortEntry: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   takeOwnership(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1702,16 +1640,6 @@ export interface LiquidityPool extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  withdrawProfit(
-    subAccountId: BytesLike,
-    rawAmount: BigNumberish,
-    profitAssetId: BigNumberish,
-    collateralPrice: BigNumberish,
-    assetPrice: BigNumberish,
-    profitAssetPrice: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   callStatic: {
     addAsset(
       assetId: BigNumberish,
@@ -1756,8 +1684,6 @@ export interface LiquidityPool extends BaseContract {
       profitAssetPrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    delegateVoting(to: string, overrides?: CallOverrides): Promise<void>;
 
     depositCollateral(
       subAccountId: BytesLike,
@@ -1938,6 +1864,15 @@ export interface LiquidityPool extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setTotalPosition(
+      assetId: BigNumberish,
+      ifLongPositionSize: BigNumberish,
+      ifShortPositionSize: BigNumberish,
+      newLongEntry: BigNumberish,
+      newShortEntry: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     takeOwnership(overrides?: CallOverrides): Promise<void>;
 
     transferLiquidityIn(
@@ -1985,16 +1920,6 @@ export interface LiquidityPool extends BaseContract {
 
     withdrawCollectedFee(
       assetIds: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    withdrawProfit(
-      subAccountId: BytesLike,
-      rawAmount: BigNumberish,
-      profitAssetId: BigNumberish,
-      collateralPrice: BigNumberish,
-      assetPrice: BigNumberish,
-      profitAssetPrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -2385,17 +2310,6 @@ export interface LiquidityPool extends BaseContract {
       assetId?: BigNumberish | null,
       collectedFee?: null
     ): WithdrawCollectedFeeEventFilter;
-
-    "WithdrawProfit(address,uint8,tuple)"(
-      trader?: string | null,
-      assetId?: BigNumberish | null,
-      args?: null
-    ): WithdrawProfitEventFilter;
-    WithdrawProfit(
-      trader?: string | null,
-      assetId?: BigNumberish | null,
-      args?: null
-    ): WithdrawProfitEventFilter;
   };
 
   estimateGas: {
@@ -2440,11 +2354,6 @@ export interface LiquidityPool extends BaseContract {
       collateralPrice: BigNumberish,
       assetPrice: BigNumberish,
       profitAssetPrice: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    delegateVoting(
-      to: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2614,6 +2523,15 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setTotalPosition(
+      assetId: BigNumberish,
+      ifLongPositionSize: BigNumberish,
+      ifShortPositionSize: BigNumberish,
+      newLongEntry: BigNumberish,
+      newShortEntry: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     takeOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -2665,16 +2583,6 @@ export interface LiquidityPool extends BaseContract {
       assetIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    withdrawProfit(
-      subAccountId: BytesLike,
-      rawAmount: BigNumberish,
-      profitAssetId: BigNumberish,
-      collateralPrice: BigNumberish,
-      assetPrice: BigNumberish,
-      profitAssetPrice: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -2719,11 +2627,6 @@ export interface LiquidityPool extends BaseContract {
       collateralPrice: BigNumberish,
       assetPrice: BigNumberish,
       profitAssetPrice: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    delegateVoting(
-      to: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2895,6 +2798,15 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setTotalPosition(
+      assetId: BigNumberish,
+      ifLongPositionSize: BigNumberish,
+      ifShortPositionSize: BigNumberish,
+      newLongEntry: BigNumberish,
+      newShortEntry: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     takeOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -2944,16 +2856,6 @@ export interface LiquidityPool extends BaseContract {
 
     withdrawCollectedFee(
       assetIds: BigNumberish[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    withdrawProfit(
-      subAccountId: BytesLike,
-      rawAmount: BigNumberish,
-      profitAssetId: BigNumberish,
-      collateralPrice: BigNumberish,
-      assetPrice: BigNumberish,
-      profitAssetPrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

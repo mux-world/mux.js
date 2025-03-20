@@ -15,6 +15,7 @@ export const _0: BigNumber = new BigNumber('0')
 export const _1: BigNumber = new BigNumber('1')
 export const _2: BigNumber = new BigNumber('2')
 export const _3: BigNumber = new BigNumber('3')
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 export const MAIN_CHAIN_IDS = [
   421611, // arb rinkeby

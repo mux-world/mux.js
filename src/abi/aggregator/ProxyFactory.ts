@@ -231,7 +231,6 @@ export interface ProxyFactoryInterface extends utils.Interface {
     "cancelTimeoutOrders(uint256,address,address,address,bool,bytes32[])": FunctionFragment;
     "closePositionV2((uint256,address,address,bool,uint256,uint256,uint96,uint96,uint96,uint8,bytes32))": FunctionFragment;
     "createProxy(uint256,address,address,bool)": FunctionFragment;
-    "disableBorrowConfig(uint256,address)": FunctionFragment;
     "getAssetId(uint256,address)": FunctionFragment;
     "getBorrowStates(uint256,address)": FunctionFragment;
     "getConfigVersions(uint256,address)": FunctionFragment;
@@ -247,6 +246,7 @@ export interface ProxyFactoryInterface extends utils.Interface {
     "isKeeper(address)": FunctionFragment;
     "liquidatePosition(uint256,address,address,address,bool,uint256)": FunctionFragment;
     "multicall(bytes[])": FunctionFragment;
+    "mux3PositionCall(address,uint256,bytes,uint256,uint256)": FunctionFragment;
     "muxFunctionCall(bytes,uint256)": FunctionFragment;
     "openPositionV2((uint256,address,address,bool,address,uint256,uint256,uint256,uint256,uint96,uint96,uint96,uint8,bytes32))": FunctionFragment;
     "openPositionV3((uint256,address,address,bool,address,uint256,uint256,uint256,uint256,uint96,uint96,uint96,uint8,bytes32),(bytes32,uint96,uint96,uint96,uint8,uint8,uint32,bytes32,(uint96,uint96,uint8,uint32)),uint256)": FunctionFragment;
@@ -258,6 +258,7 @@ export interface ProxyFactoryInterface extends utils.Interface {
     "setKeeper(address,bool)": FunctionFragment;
     "setLiquiditySource(uint256,uint256,address)": FunctionFragment;
     "setMaintainer(address,bool)": FunctionFragment;
+    "setMux3OrderBook(address)": FunctionFragment;
     "setMuxOrderBook(address)": FunctionFragment;
     "setProjectAssetConfig(uint256,address,uint256[])": FunctionFragment;
     "setProjectConfig(uint256,uint256[])": FunctionFragment;
@@ -278,7 +279,6 @@ export interface ProxyFactoryInterface extends utils.Interface {
       | "cancelTimeoutOrders"
       | "closePositionV2"
       | "createProxy"
-      | "disableBorrowConfig"
       | "getAssetId"
       | "getBorrowStates"
       | "getConfigVersions"
@@ -294,6 +294,7 @@ export interface ProxyFactoryInterface extends utils.Interface {
       | "isKeeper"
       | "liquidatePosition"
       | "multicall"
+      | "mux3PositionCall"
       | "muxFunctionCall"
       | "openPositionV2"
       | "openPositionV3"
@@ -305,6 +306,7 @@ export interface ProxyFactoryInterface extends utils.Interface {
       | "setKeeper"
       | "setLiquiditySource"
       | "setMaintainer"
+      | "setMux3OrderBook"
       | "setMuxOrderBook"
       | "setProjectAssetConfig"
       | "setProjectConfig"
@@ -360,10 +362,6 @@ export interface ProxyFactoryInterface extends utils.Interface {
       PromiseOrValue<string>,
       PromiseOrValue<boolean>
     ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "disableBorrowConfig",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getAssetId",
@@ -439,6 +437,16 @@ export interface ProxyFactoryInterface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>[]]
   ): string;
   encodeFunctionData(
+    functionFragment: "mux3PositionCall",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "muxFunctionCall",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
@@ -497,6 +505,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "setMaintainer",
     values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMux3OrderBook",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "setMuxOrderBook",
@@ -589,10 +601,6 @@ export interface ProxyFactoryInterface extends utils.Interface {
     functionFragment: "createProxy",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "disableBorrowConfig",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "getAssetId", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getBorrowStates",
@@ -639,6 +647,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "multicall", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "mux3PositionCall",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "muxFunctionCall",
     data: BytesLike
   ): Result;
@@ -671,6 +683,10 @@ export interface ProxyFactoryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setMaintainer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setMux3OrderBook",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -954,12 +970,6 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    disableBorrowConfig(
-      projectId: PromiseOrValue<BigNumberish>,
-      assetToken: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     getAssetId(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
@@ -1057,6 +1067,15 @@ export interface ProxyFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    mux3PositionCall(
+      collateralToken: PromiseOrValue<string>,
+      collateralAmount: PromiseOrValue<BigNumberish>,
+      positionOrderCallData: PromiseOrValue<BytesLike>,
+      initialLeverage: PromiseOrValue<BigNumberish>,
+      gas: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     muxFunctionCall(
       muxCallData: PromiseOrValue<BytesLike>,
       value: PromiseOrValue<BigNumberish>,
@@ -1119,6 +1138,11 @@ export interface ProxyFactory extends BaseContract {
     setMaintainer(
       maintainer: PromiseOrValue<string>,
       enable: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setMux3OrderBook(
+      mux3OrderBook: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1236,12 +1260,6 @@ export interface ProxyFactory extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  disableBorrowConfig(
-    projectId: PromiseOrValue<BigNumberish>,
-    assetToken: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   getAssetId(
     projectId: PromiseOrValue<BigNumberish>,
     assetToken: PromiseOrValue<string>,
@@ -1339,6 +1357,15 @@ export interface ProxyFactory extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  mux3PositionCall(
+    collateralToken: PromiseOrValue<string>,
+    collateralAmount: PromiseOrValue<BigNumberish>,
+    positionOrderCallData: PromiseOrValue<BytesLike>,
+    initialLeverage: PromiseOrValue<BigNumberish>,
+    gas: PromiseOrValue<BigNumberish>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   muxFunctionCall(
     muxCallData: PromiseOrValue<BytesLike>,
     value: PromiseOrValue<BigNumberish>,
@@ -1401,6 +1428,11 @@ export interface ProxyFactory extends BaseContract {
   setMaintainer(
     maintainer: PromiseOrValue<string>,
     enable: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setMux3OrderBook(
+    mux3OrderBook: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1518,12 +1550,6 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    disableBorrowConfig(
-      projectId: PromiseOrValue<BigNumberish>,
-      assetToken: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     getAssetId(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
@@ -1621,6 +1647,15 @@ export interface ProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string[]>;
 
+    mux3PositionCall(
+      collateralToken: PromiseOrValue<string>,
+      collateralAmount: PromiseOrValue<BigNumberish>,
+      positionOrderCallData: PromiseOrValue<BytesLike>,
+      initialLeverage: PromiseOrValue<BigNumberish>,
+      gas: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     muxFunctionCall(
       muxCallData: PromiseOrValue<BytesLike>,
       value: PromiseOrValue<BigNumberish>,
@@ -1681,6 +1716,11 @@ export interface ProxyFactory extends BaseContract {
     setMaintainer(
       maintainer: PromiseOrValue<string>,
       enable: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setMux3OrderBook(
+      mux3OrderBook: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1925,12 +1965,6 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    disableBorrowConfig(
-      projectId: PromiseOrValue<BigNumberish>,
-      assetToken: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     getAssetId(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
@@ -2017,6 +2051,15 @@ export interface ProxyFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    mux3PositionCall(
+      collateralToken: PromiseOrValue<string>,
+      collateralAmount: PromiseOrValue<BigNumberish>,
+      positionOrderCallData: PromiseOrValue<BytesLike>,
+      initialLeverage: PromiseOrValue<BigNumberish>,
+      gas: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     muxFunctionCall(
       muxCallData: PromiseOrValue<BytesLike>,
       value: PromiseOrValue<BigNumberish>,
@@ -2079,6 +2122,11 @@ export interface ProxyFactory extends BaseContract {
     setMaintainer(
       maintainer: PromiseOrValue<string>,
       enable: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setMux3OrderBook(
+      mux3OrderBook: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -2197,12 +2245,6 @@ export interface ProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    disableBorrowConfig(
-      projectId: PromiseOrValue<BigNumberish>,
-      assetToken: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     getAssetId(
       projectId: PromiseOrValue<BigNumberish>,
       assetToken: PromiseOrValue<string>,
@@ -2289,6 +2331,15 @@ export interface ProxyFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    mux3PositionCall(
+      collateralToken: PromiseOrValue<string>,
+      collateralAmount: PromiseOrValue<BigNumberish>,
+      positionOrderCallData: PromiseOrValue<BytesLike>,
+      initialLeverage: PromiseOrValue<BigNumberish>,
+      gas: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     muxFunctionCall(
       muxCallData: PromiseOrValue<BytesLike>,
       value: PromiseOrValue<BigNumberish>,
@@ -2351,6 +2402,11 @@ export interface ProxyFactory extends BaseContract {
     setMaintainer(
       maintainer: PromiseOrValue<string>,
       enable: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMux3OrderBook(
+      mux3OrderBook: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

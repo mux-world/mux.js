@@ -1110,83 +1110,6 @@ const _abi = [
     type: "event",
   },
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "trader",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint8",
-        name: "assetId",
-        type: "uint8",
-      },
-      {
-        components: [
-          {
-            internalType: "bytes32",
-            name: "subAccountId",
-            type: "bytes32",
-          },
-          {
-            internalType: "uint8",
-            name: "collateralId",
-            type: "uint8",
-          },
-          {
-            internalType: "uint8",
-            name: "profitAssetId",
-            type: "uint8",
-          },
-          {
-            internalType: "bool",
-            name: "isLong",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "withdrawRawAmount",
-            type: "uint256",
-          },
-          {
-            internalType: "uint96",
-            name: "assetPrice",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "collateralPrice",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "profitAssetPrice",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "entryPrice",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "feeUsd",
-            type: "uint96",
-          },
-        ],
-        indexed: false,
-        internalType: "struct Events.WithdrawProfitArgs",
-        name: "args",
-        type: "tuple",
-      },
-    ],
-    name: "WithdrawProfit",
-    type: "event",
-  },
-  {
     stateMutability: "payable",
     type: "fallback",
   },
@@ -1371,19 +1294,6 @@ const _abi = [
         type: "uint96",
       },
     ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-    ],
-    name: "delegateVoting",
-    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -2371,6 +2281,39 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "assetId",
+        type: "uint8",
+      },
+      {
+        internalType: "uint96",
+        name: "ifLongPositionSize",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "ifShortPositionSize",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "newLongEntry",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "newShortEntry",
+        type: "uint96",
+      },
+    ],
+    name: "setTotalPosition",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "takeOwnership",
     outputs: [],
@@ -2517,44 +2460,6 @@ const _abi = [
       },
     ],
     name: "withdrawCollectedFee",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "subAccountId",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint256",
-        name: "rawAmount",
-        type: "uint256",
-      },
-      {
-        internalType: "uint8",
-        name: "profitAssetId",
-        type: "uint8",
-      },
-      {
-        internalType: "uint96",
-        name: "collateralPrice",
-        type: "uint96",
-      },
-      {
-        internalType: "uint96",
-        name: "assetPrice",
-        type: "uint96",
-      },
-      {
-        internalType: "uint96",
-        name: "profitAssetPrice",
-        type: "uint96",
-      },
-    ],
-    name: "withdrawProfit",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

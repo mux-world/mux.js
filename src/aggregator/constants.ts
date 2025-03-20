@@ -3,7 +3,7 @@ import { GmxTokenConfig } from './types'
 
 export const CHAIN_ID_TO_AGGREGATOR_READER_ADDRESS: { [chainID: number]: string } = {
   // arb1
-  42161: '0x697af744dCe3229cd43a16554B67267686FaDdAc'
+  42161: '0xB3dF04aabc5CB86Fa73cF9eDdA53939A40937E9d'
 }
 
 export const CHAIN_ID_TO_AGGREGATOR_FACTORY_ADDRESS: { [chainID: number]: string } = {

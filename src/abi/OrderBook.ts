@@ -43,8 +43,10 @@ export interface OrderBookInterface extends utils.Interface {
     "addBroker(address)": FunctionFragment;
     "addRebalancer(address)": FunctionFragment;
     "brokers(address)": FunctionFragment;
+    "cancelCoolDown()": FunctionFragment;
     "cancelOrder(uint64)": FunctionFragment;
     "claimBrokerGasRebate()": FunctionFragment;
+    "collectFundingFee(bytes32,uint96,uint96)": FunctionFragment;
     "depositCollateral(bytes32,uint256)": FunctionFragment;
     "fillLiquidityOrder(uint64,uint96,uint96,uint96,uint96)": FunctionFragment;
     "fillPositionOrder(uint64,uint96,uint96,uint96)": FunctionFragment;
@@ -82,7 +84,8 @@ export interface OrderBookInterface extends utils.Interface {
     "setCallbackWhitelist(address,bool)": FunctionFragment;
     "setLiquidityLockPeriod(uint32)": FunctionFragment;
     "setMaintainer(address)": FunctionFragment;
-    "setOrderTimeout(uint32,uint32)": FunctionFragment;
+    "setNativeUnwrapper(address,address)": FunctionFragment;
+    "setOrderTimeout(uint32,uint32,uint32)": FunctionFragment;
     "setReferralManager(address)": FunctionFragment;
     "takeOwnership()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -97,12 +100,20 @@ export interface OrderBookInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "brokers", values: [string]): string;
   encodeFunctionData(
+    functionFragment: "cancelCoolDown",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "cancelOrder",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "claimBrokerGasRebate",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "collectFundingFee",
+    values: [BytesLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "depositCollateral",
@@ -263,8 +274,12 @@ export interface OrderBookInterface extends utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "setNativeUnwrapper",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setOrderTimeout",
-    values: [BigNumberish, BigNumberish]
+    values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setReferralManager",
@@ -294,11 +309,19 @@ export interface OrderBookInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "brokers", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "cancelCoolDown",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "cancelOrder",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "claimBrokerGasRebate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "collectFundingFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -429,6 +452,10 @@ export interface OrderBookInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setNativeUnwrapper",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setOrderTimeout",
     data: BytesLike
   ): Result;
@@ -472,7 +499,7 @@ export interface OrderBookInterface extends utils.Interface {
     "SetAggregator(address,bool)": EventFragment;
     "SetLiquidityLockPeriod(uint32,uint32)": EventFragment;
     "SetMaintainer(address)": EventFragment;
-    "SetOrderTimeout(uint32,uint32)": EventFragment;
+    "SetOrderTimeout(uint32,uint32,uint32)": EventFragment;
     "SetReferralManager(address)": EventFragment;
   };
 
@@ -679,8 +706,12 @@ export type SetMaintainerEvent = TypedEvent<
 export type SetMaintainerEventFilter = TypedEventFilter<SetMaintainerEvent>;
 
 export type SetOrderTimeoutEvent = TypedEvent<
-  [number, number],
-  { marketOrderTimeout: number; maxLimitOrderTimeout: number }
+  [number, number, number],
+  {
+    marketOrderTimeout: number;
+    maxLimitOrderTimeout: number;
+    cancelCoolDown: number;
+  }
 >;
 
 export type SetOrderTimeoutEventFilter = TypedEventFilter<SetOrderTimeoutEvent>;
@@ -733,12 +764,21 @@ export interface OrderBook extends BaseContract {
 
     brokers(broker: string, overrides?: CallOverrides): Promise<[boolean]>;
 
+    cancelCoolDown(overrides?: CallOverrides): Promise<[number]>;
+
     cancelOrder(
       orderId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     claimBrokerGasRebate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    collectFundingFee(
+      subAccountId: BytesLike,
+      collateralPrice: BigNumberish,
+      assetPrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -941,9 +981,16 @@ export interface OrderBook extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setNativeUnwrapper(
+      oldNativeUnwrapper: string,
+      newNativeUnwrapper: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setOrderTimeout(
       marketOrderTimeout_: BigNumberish,
       maxLimitOrderTimeout_: BigNumberish,
+      cancelCoolDown_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -987,12 +1034,21 @@ export interface OrderBook extends BaseContract {
 
   brokers(broker: string, overrides?: CallOverrides): Promise<boolean>;
 
+  cancelCoolDown(overrides?: CallOverrides): Promise<number>;
+
   cancelOrder(
     orderId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   claimBrokerGasRebate(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  collectFundingFee(
+    subAccountId: BytesLike,
+    collateralPrice: BigNumberish,
+    assetPrice: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1192,9 +1248,16 @@ export interface OrderBook extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setNativeUnwrapper(
+    oldNativeUnwrapper: string,
+    newNativeUnwrapper: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setOrderTimeout(
     marketOrderTimeout_: BigNumberish,
     maxLimitOrderTimeout_: BigNumberish,
+    cancelCoolDown_: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1235,12 +1298,21 @@ export interface OrderBook extends BaseContract {
 
     brokers(broker: string, overrides?: CallOverrides): Promise<boolean>;
 
+    cancelCoolDown(overrides?: CallOverrides): Promise<number>;
+
     cancelOrder(
       orderId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
     claimBrokerGasRebate(overrides?: CallOverrides): Promise<BigNumber>;
+
+    collectFundingFee(
+      subAccountId: BytesLike,
+      collateralPrice: BigNumberish,
+      assetPrice: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     depositCollateral(
       subAccountId: BytesLike,
@@ -1432,9 +1504,16 @@ export interface OrderBook extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setNativeUnwrapper(
+      oldNativeUnwrapper: string,
+      newNativeUnwrapper: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setOrderTimeout(
       marketOrderTimeout_: BigNumberish,
       maxLimitOrderTimeout_: BigNumberish,
+      cancelCoolDown_: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1643,13 +1722,15 @@ export interface OrderBook extends BaseContract {
     ): SetMaintainerEventFilter;
     SetMaintainer(newMaintainer?: string | null): SetMaintainerEventFilter;
 
-    "SetOrderTimeout(uint32,uint32)"(
+    "SetOrderTimeout(uint32,uint32,uint32)"(
       marketOrderTimeout?: null,
-      maxLimitOrderTimeout?: null
+      maxLimitOrderTimeout?: null,
+      cancelCoolDown?: null
     ): SetOrderTimeoutEventFilter;
     SetOrderTimeout(
       marketOrderTimeout?: null,
-      maxLimitOrderTimeout?: null
+      maxLimitOrderTimeout?: null,
+      cancelCoolDown?: null
     ): SetOrderTimeoutEventFilter;
 
     "SetReferralManager(address)"(
@@ -1673,12 +1754,21 @@ export interface OrderBook extends BaseContract {
 
     brokers(broker: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    cancelCoolDown(overrides?: CallOverrides): Promise<BigNumber>;
+
     cancelOrder(
       orderId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     claimBrokerGasRebate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    collectFundingFee(
+      subAccountId: BytesLike,
+      collateralPrice: BigNumberish,
+      assetPrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1876,9 +1966,16 @@ export interface OrderBook extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setNativeUnwrapper(
+      oldNativeUnwrapper: string,
+      newNativeUnwrapper: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setOrderTimeout(
       marketOrderTimeout_: BigNumberish,
       maxLimitOrderTimeout_: BigNumberish,
+      cancelCoolDown_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1926,12 +2023,21 @@ export interface OrderBook extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    cancelCoolDown(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     cancelOrder(
       orderId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     claimBrokerGasRebate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    collectFundingFee(
+      subAccountId: BytesLike,
+      collateralPrice: BigNumberish,
+      assetPrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2139,9 +2245,16 @@ export interface OrderBook extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setNativeUnwrapper(
+      oldNativeUnwrapper: string,
+      newNativeUnwrapper: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setOrderTimeout(
       marketOrderTimeout_: BigNumberish,
       maxLimitOrderTimeout_: BigNumberish,
+      cancelCoolDown_: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

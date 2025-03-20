@@ -494,6 +494,12 @@ const _abi = [
         name: "maxLimitOrderTimeout",
         type: "uint32",
       },
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "cancelCoolDown",
+        type: "uint32",
+      },
     ],
     name: "SetOrderTimeout",
     type: "event",
@@ -557,6 +563,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "cancelCoolDown",
+    outputs: [
+      {
+        internalType: "uint32",
+        name: "",
+        type: "uint32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint64",
@@ -579,6 +598,29 @@ const _abi = [
         type: "uint256",
       },
     ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "subAccountId",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint96",
+        name: "collateralPrice",
+        type: "uint96",
+      },
+      {
+        internalType: "uint96",
+        name: "assetPrice",
+        type: "uint96",
+      },
+    ],
+    name: "collectFundingFee",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -1336,6 +1378,24 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "contract INativeUnwrapper",
+        name: "oldNativeUnwrapper",
+        type: "address",
+      },
+      {
+        internalType: "contract INativeUnwrapper",
+        name: "newNativeUnwrapper",
+        type: "address",
+      },
+    ],
+    name: "setNativeUnwrapper",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint32",
         name: "marketOrderTimeout_",
         type: "uint32",
@@ -1343,6 +1403,11 @@ const _abi = [
       {
         internalType: "uint32",
         name: "maxLimitOrderTimeout_",
+        type: "uint32",
+      },
+      {
+        internalType: "uint32",
+        name: "cancelCoolDown_",
         type: "uint32",
       },
     ],
