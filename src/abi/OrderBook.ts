@@ -83,8 +83,8 @@ export interface OrderBookInterface extends utils.Interface {
     "setCallbackGasLimit(uint256)": FunctionFragment;
     "setCallbackWhitelist(address,bool)": FunctionFragment;
     "setLiquidityLockPeriod(uint32)": FunctionFragment;
+    "setLotSize(uint8,uint96)": FunctionFragment;
     "setMaintainer(address)": FunctionFragment;
-    "setNativeUnwrapper(address,address)": FunctionFragment;
     "setOrderTimeout(uint32,uint32,uint32)": FunctionFragment;
     "setReferralManager(address)": FunctionFragment;
     "takeOwnership()": FunctionFragment;
@@ -270,12 +270,12 @@ export interface OrderBookInterface extends utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMaintainer",
-    values: [string]
+    functionFragment: "setLotSize",
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setNativeUnwrapper",
-    values: [string, string]
+    functionFragment: "setMaintainer",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "setOrderTimeout",
@@ -447,12 +447,9 @@ export interface OrderBookInterface extends utils.Interface {
     functionFragment: "setLiquidityLockPeriod",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setLotSize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMaintainer",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setNativeUnwrapper",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -498,6 +495,7 @@ export interface OrderBookInterface extends utils.Interface {
     "RemoveRebalancer(address)": EventFragment;
     "SetAggregator(address,bool)": EventFragment;
     "SetLiquidityLockPeriod(uint32,uint32)": EventFragment;
+    "SetLotSize(uint8,uint96)": EventFragment;
     "SetMaintainer(address)": EventFragment;
     "SetOrderTimeout(uint32,uint32,uint32)": EventFragment;
     "SetReferralManager(address)": EventFragment;
@@ -520,6 +518,7 @@ export interface OrderBookInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "RemoveRebalancer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetAggregator"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetLiquidityLockPeriod"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetLotSize"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMaintainer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetOrderTimeout"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetReferralManager"): EventFragment;
@@ -697,6 +696,13 @@ export type SetLiquidityLockPeriodEvent = TypedEvent<
 
 export type SetLiquidityLockPeriodEventFilter =
   TypedEventFilter<SetLiquidityLockPeriodEvent>;
+
+export type SetLotSizeEvent = TypedEvent<
+  [number, BigNumber],
+  { assetId: number; lotSize: BigNumber }
+>;
+
+export type SetLotSizeEventFilter = TypedEventFilter<SetLotSizeEvent>;
 
 export type SetMaintainerEvent = TypedEvent<
   [string],
@@ -976,14 +982,14 @@ export interface OrderBook extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setMaintainer(
-      newMaintainer: string,
+    setLotSize(
+      assetId: BigNumberish,
+      lotSize: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setNativeUnwrapper(
-      oldNativeUnwrapper: string,
-      newNativeUnwrapper: string,
+    setMaintainer(
+      newMaintainer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1243,14 +1249,14 @@ export interface OrderBook extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setMaintainer(
-    newMaintainer: string,
+  setLotSize(
+    assetId: BigNumberish,
+    lotSize: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setNativeUnwrapper(
-    oldNativeUnwrapper: string,
-    newNativeUnwrapper: string,
+  setMaintainer(
+    newMaintainer: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1499,14 +1505,14 @@ export interface OrderBook extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setMaintainer(
-      newMaintainer: string,
+    setLotSize(
+      assetId: BigNumberish,
+      lotSize: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setNativeUnwrapper(
-      oldNativeUnwrapper: string,
-      newNativeUnwrapper: string,
+    setMaintainer(
+      newMaintainer: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1716,6 +1722,12 @@ export interface OrderBook extends BaseContract {
       oldLockPeriod?: null,
       newLockPeriod?: null
     ): SetLiquidityLockPeriodEventFilter;
+
+    "SetLotSize(uint8,uint96)"(
+      assetId?: null,
+      lotSize?: null
+    ): SetLotSizeEventFilter;
+    SetLotSize(assetId?: null, lotSize?: null): SetLotSizeEventFilter;
 
     "SetMaintainer(address)"(
       newMaintainer?: string | null
@@ -1961,14 +1973,14 @@ export interface OrderBook extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setMaintainer(
-      newMaintainer: string,
+    setLotSize(
+      assetId: BigNumberish,
+      lotSize: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setNativeUnwrapper(
-      oldNativeUnwrapper: string,
-      newNativeUnwrapper: string,
+    setMaintainer(
+      newMaintainer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2240,14 +2252,14 @@ export interface OrderBook extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setMaintainer(
-      newMaintainer: string,
+    setLotSize(
+      assetId: BigNumberish,
+      lotSize: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setNativeUnwrapper(
-      oldNativeUnwrapper: string,
-      newNativeUnwrapper: string,
+    setMaintainer(
+      newMaintainer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

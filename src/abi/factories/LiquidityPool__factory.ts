@@ -2281,39 +2281,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint8",
-        name: "assetId",
-        type: "uint8",
-      },
-      {
-        internalType: "uint96",
-        name: "ifLongPositionSize",
-        type: "uint96",
-      },
-      {
-        internalType: "uint96",
-        name: "ifShortPositionSize",
-        type: "uint96",
-      },
-      {
-        internalType: "uint96",
-        name: "newLongEntry",
-        type: "uint96",
-      },
-      {
-        internalType: "uint96",
-        name: "newShortEntry",
-        type: "uint96",
-      },
-    ],
-    name: "setTotalPosition",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [],
     name: "takeOwnership",
     outputs: [],

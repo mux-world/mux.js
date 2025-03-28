@@ -279,7 +279,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
     "setMaintainer(address)": FunctionFragment;
     "setNumbers(uint32,uint32,uint32,uint32,uint96)": FunctionFragment;
     "setReferenceOracle(uint8,uint8,address,uint32)": FunctionFragment;
-    "setTotalPosition(uint8,uint96,uint96,uint96,uint96)": FunctionFragment;
     "takeOwnership()": FunctionFragment;
     "transferLiquidityIn(uint8[],uint256[])": FunctionFragment;
     "transferLiquidityOut(uint8[],uint256[])": FunctionFragment;
@@ -461,16 +460,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
     values: [BigNumberish, BigNumberish, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setTotalPosition",
-    values: [
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "takeOwnership",
     values?: undefined
   ): string;
@@ -596,10 +585,6 @@ export interface LiquidityPoolInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "setNumbers", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setReferenceOracle",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setTotalPosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1292,15 +1277,6 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setTotalPosition(
-      assetId: BigNumberish,
-      ifLongPositionSize: BigNumberish,
-      ifShortPositionSize: BigNumberish,
-      newLongEntry: BigNumberish,
-      newShortEntry: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     takeOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -1579,15 +1555,6 @@ export interface LiquidityPool extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setTotalPosition(
-    assetId: BigNumberish,
-    ifLongPositionSize: BigNumberish,
-    ifShortPositionSize: BigNumberish,
-    newLongEntry: BigNumberish,
-    newShortEntry: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   takeOwnership(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1861,15 +1828,6 @@ export interface LiquidityPool extends BaseContract {
       referenceOracleType: BigNumberish,
       referenceOracle: string,
       referenceDeviation: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setTotalPosition(
-      assetId: BigNumberish,
-      ifLongPositionSize: BigNumberish,
-      ifShortPositionSize: BigNumberish,
-      newLongEntry: BigNumberish,
-      newShortEntry: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -2523,15 +2481,6 @@ export interface LiquidityPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setTotalPosition(
-      assetId: BigNumberish,
-      ifLongPositionSize: BigNumberish,
-      ifShortPositionSize: BigNumberish,
-      newLongEntry: BigNumberish,
-      newShortEntry: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     takeOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -2795,15 +2744,6 @@ export interface LiquidityPool extends BaseContract {
       referenceOracleType: BigNumberish,
       referenceOracle: string,
       referenceDeviation: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setTotalPosition(
-      assetId: BigNumberish,
-      ifLongPositionSize: BigNumberish,
-      ifShortPositionSize: BigNumberish,
-      newLongEntry: BigNumberish,
-      newShortEntry: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -470,6 +470,25 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint8",
+        name: "assetId",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint96",
+        name: "lotSize",
+        type: "uint96",
+      },
+    ],
+    name: "SetLotSize",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "newMaintainer",
@@ -1365,12 +1384,17 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "newMaintainer",
-        type: "address",
+        internalType: "uint8",
+        name: "assetId",
+        type: "uint8",
+      },
+      {
+        internalType: "uint96",
+        name: "lotSize",
+        type: "uint96",
       },
     ],
-    name: "setMaintainer",
+    name: "setLotSize",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1378,17 +1402,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract INativeUnwrapper",
-        name: "oldNativeUnwrapper",
-        type: "address",
-      },
-      {
-        internalType: "contract INativeUnwrapper",
-        name: "newNativeUnwrapper",
+        internalType: "address",
+        name: "newMaintainer",
         type: "address",
       },
     ],
-    name: "setNativeUnwrapper",
+    name: "setMaintainer",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
